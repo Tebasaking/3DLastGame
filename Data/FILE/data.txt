@@ -1,0 +1,18 @@
+// モデルの最大数
+MAX_TYPE = 12
+
+//***************************
+// Xファイル名の読み込み
+//***************************
+MODEL_FILENAME = Data/MODEL/00_body.x		# [0]体
+MODEL_FILENAME = Data/MODEL/01_head.x		# [1]頭
+MODEL_FILENAME = Data/MODEL/02_armR.x		# [2]右腕
+MODEL_FILENAME = Data/MODEL/03_handR.x		# [3]右手
+MODEL_FILENAME = Data/MODEL/04_armL.x		# [4]左腕
+MODEL_FILENAME = Data/MODEL/05_handL.x		# [5]左手
+MODEL_FILENAME = Data/MODEL/06_legR.x		# [6]右腿
+MODEL_FILENAME = Data/MODEL/07_footR.x		# [7]右足
+MODEL_FILENAME = Data/MODEL/08_legL.x		# [8]左腿
+MODEL_FILENAME = Data/MODEL/09_footL.x		# [9]左足
+MODEL_FILENAME = Data/MODEL/thunder.x
+MODEL_FILENAME = Data/MODEL/robot.x

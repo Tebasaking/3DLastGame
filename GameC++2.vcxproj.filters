@@ -1,0 +1,288 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="ソース ファイル">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="ヘッダー ファイル">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="リソース ファイル">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="ソース ファイル\ゲーム">
+      <UniqueIdentifier>{2577b23b-5f0d-4098-b475-f32ca2b29f03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\システム">
+      <UniqueIdentifier>{2b7d2ec1-978a-40b1-9a79-834a01f5b85e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\ゲーム">
+      <UniqueIdentifier>{496eae9c-a9ec-4d0f-8d76-627a52dd2dea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\システム">
+      <UniqueIdentifier>{c3284010-2b53-4f38-b3d4-a72d5ff49858}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\ゲーム\3D">
+      <UniqueIdentifier>{b94d90b9-c451-4af9-9fb0-95b848e9349f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\ゲーム\3D">
+      <UniqueIdentifier>{57399578-1b0d-4cb7-a89b-d56b06983ced}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\ゲーム\2D">
+      <UniqueIdentifier>{3016f41b-eb0f-4884-9a8f-745722422ce2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\ゲーム\2D">
+      <UniqueIdentifier>{57c36add-3fd2-4247-a94c-3df64a051c36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\ゲーム\3DPolygon">
+      <UniqueIdentifier>{5bff6774-5371-48bd-bed9-f8983d09e035}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\ゲーム\3DPolygon">
+      <UniqueIdentifier>{3a061182-c38c-40ba-8d49-d0be22282b0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ヘッダー ファイル\システム\モード">
+      <UniqueIdentifier>{621b4c49-6fd3-47f4-bc49-f1dc66ca85df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\システム\モード">
+      <UniqueIdentifier>{9467b161-801a-4ed7-ab6f-0e50ca20a106}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\ゲーム\3D\motion">
+      <UniqueIdentifier>{cceb547f-d799-4172-ad01-2325ed4fe8b3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="application.cpp">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClCompile>
+    <ClCompile Include="camera.cpp">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClCompile>
+    <ClCompile Include="input.cpp">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClCompile>
+    <ClCompile Include="object.cpp">
+      <Filter>ソース ファイル\ゲーム</Filter>
+    </ClCompile>
+    <ClCompile Include="render.cpp">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClCompile>
+    <ClCompile Include="sound.cpp">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClCompile>
+    <ClCompile Include="texture.cpp">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClCompile>
+    <ClCompile Include="light.cpp">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClCompile>
+    <ClCompile Include="Object3D.cpp">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="player3D.cpp">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="Object2D.cpp">
+      <Filter>ソース ファイル\ゲーム\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="billboard.cpp">
+      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
+    </ClCompile>
+    <ClCompile Include="meshfield.cpp">
+      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
+    </ClCompile>
+    <ClCompile Include="sphere.cpp">
+      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
+    </ClCompile>
+    <ClCompile Include="mouse.cpp">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClCompile>
+    <ClCompile Include="inputkeyboard.cpp">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClCompile>
+    <ClCompile Include="move.cpp">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClCompile>
+    <ClCompile Include="calculation.cpp">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClCompile>
+    <ClCompile Include="game.cpp">
+      <Filter>ソース ファイル\システム\モード</Filter>
+    </ClCompile>
+    <ClCompile Include="mode.cpp">
+      <Filter>ソース ファイル\システム\モード</Filter>
+    </ClCompile>
+    <ClCompile Include="score.cpp">
+      <Filter>ソース ファイル\ゲーム\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="number.cpp">
+      <Filter>ソース ファイル\ゲーム\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="title.cpp">
+      <Filter>ソース ファイル\システム\モード</Filter>
+    </ClCompile>
+    <ClCompile Include="result.cpp">
+      <Filter>ソース ファイル\システム\モード</Filter>
+    </ClCompile>
+    <ClCompile Include="debug.cpp">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClCompile>
+    <ClCompile Include="model.cpp">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="ball.cpp">
+      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
+    </ClCompile>
+    <ClCompile Include="bullt.cpp">
+      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
+    </ClCompile>
+    <ClCompile Include="fade.cpp">
+      <Filter>ソース ファイル\ゲーム\2D</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy.cpp">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="explosion.cpp">
+      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
+    </ClCompile>
+    <ClCompile Include="motion.cpp">
+      <Filter>ソース ファイル\ゲーム\3D\motion</Filter>
+    </ClCompile>
+    <ClCompile Include="motion_model3D.cpp">
+      <Filter>ソース ファイル\ゲーム\3D\motion</Filter>
+    </ClCompile>
+    <ClCompile Include="parts.cpp">
+      <Filter>ソース ファイル\ゲーム\3D\motion</Filter>
+    </ClCompile>
+    <ClCompile Include="model3D.cpp">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="texture3D.cpp">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="player_manager.cpp">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ball.h">
+      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
+    </ClInclude>
+    <ClInclude Include="number.h">
+      <Filter>ソース ファイル\ゲーム\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Object2D.h">
+      <Filter>ソース ファイル\ゲーム\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="model.h">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="Object3D.h">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="player3D.h">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="billboard.h">
+      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
+    </ClInclude>
+    <ClInclude Include="meshfield.h">
+      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
+    </ClInclude>
+    <ClInclude Include="object.h">
+      <Filter>ソース ファイル\ゲーム</Filter>
+    </ClInclude>
+    <ClInclude Include="game.h">
+      <Filter>ソース ファイル\システム\モード</Filter>
+    </ClInclude>
+    <ClInclude Include="mode.h">
+      <Filter>ソース ファイル\システム\モード</Filter>
+    </ClInclude>
+    <ClInclude Include="result.h">
+      <Filter>ソース ファイル\システム\モード</Filter>
+    </ClInclude>
+    <ClInclude Include="title.h">
+      <Filter>ソース ファイル\システム\モード</Filter>
+    </ClInclude>
+    <ClInclude Include="sound.h">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClInclude>
+    <ClInclude Include="application.h">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClInclude>
+    <ClInclude Include="calculation.h">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClInclude>
+    <ClInclude Include="debug.h">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClInclude>
+    <ClInclude Include="input.h">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClInclude>
+    <ClInclude Include="inputkeyboard.h">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClInclude>
+    <ClInclude Include="light.h">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClInclude>
+    <ClInclude Include="main.h">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClInclude>
+    <ClInclude Include="mouse.h">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClInclude>
+    <ClInclude Include="move.h">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClInclude>
+    <ClInclude Include="render.h">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClInclude>
+    <ClInclude Include="texture.h">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClInclude>
+    <ClInclude Include="bullet.h">
+      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
+    </ClInclude>
+    <ClInclude Include="sphere.h">
+      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
+    </ClInclude>
+    <ClInclude Include="fade.h">
+      <Filter>ソース ファイル\ゲーム\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="score.h">
+      <Filter>ソース ファイル\ゲーム\2D</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy.h">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="explosion.h">
+      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
+    </ClInclude>
+    <ClInclude Include="motion.h">
+      <Filter>ソース ファイル\ゲーム\3D\motion</Filter>
+    </ClInclude>
+    <ClInclude Include="motion_model3D.h">
+      <Filter>ソース ファイル\ゲーム\3D\motion</Filter>
+    </ClInclude>
+    <ClInclude Include="parts.h">
+      <Filter>ソース ファイル\ゲーム\3D\motion</Filter>
+    </ClInclude>
+    <ClInclude Include="model3D.h">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="texture3D.h">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="player_manager.h">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
