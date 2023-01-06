@@ -45,7 +45,6 @@ CMotionModel3D * CMotionModel3D::Create()
 // 概要 : インスタンス生成時に行う処理
 //=============================================================================
 CMotionModel3D::CMotionModel3D() : m_pMotion(nullptr),		// モーション情報
-m_mtxWorld(D3DXMATRIX()),									// ワールドマトリックス
 m_pos(D3DXVECTOR3()),										// 位置
 m_posOld(D3DXVECTOR3()),									// 過去位置
 m_rot(D3DXVECTOR3()),										// 向き
@@ -123,39 +122,43 @@ void CMotionModel3D::Draw()
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CApplication::GetRender()->GetDevice();
 
+	// 計算用マトリックス
+	D3DXMATRIX mtxWorld, mtxRot, mtxTrans;
+
 	// 描画の終了
 	pDevice->EndScene();
 
 	if (SUCCEEDED(pDevice->BeginScene()))
 	{
-		// 計算用マトリックス
-		D3DXMATRIX mtxRot, mtxTrans;
-
 		// ワールドマトリックスの初期化
-		D3DXMatrixIdentity(&m_mtxWorld);											// 行列初期化関数
+		D3DXMatrixIdentity(&mtxWorld);											// 行列初期化関数
 
 		// クォータニオンの反映
 		D3DXMatrixRotationQuaternion(&mtxRot, &m_quaternion);						// クオータニオンによる行列回転
-		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);						// 行列掛け算関数(第2引数×第3引数第を１引数に格納)
+		D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);						// 行列掛け算関数(第2引数×第3引数第を１引数に格納)
 
 		// 向きの反映
 		D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);			// 行列回転関数
-		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);						// 行列掛け算関数 
+		D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);						// 行列掛け算関数 
 
 		// 位置を反映
 		D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);				// 行列移動関数
-		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);					// 行列掛け算関数
+		D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxTrans);					// 行列掛け算関数
 
 		// ワールドマトリックスの設定
-		pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);
+		pDevice->SetTransform(D3DTS_WORLD, &mtxWorld);
 
 	}
 
 	pDevice->EndScene();
+
 	if (m_pMotion != nullptr)
 	{// パーツの描画設定
-		m_pMotion->SetParts(m_mtxWorld);
+		m_pMotion->SetParts(mtxWorld);
 	}
+
+	// マトリックスの設定
+	SetMtxWorld(mtxWorld);
 }
 
 //=============================================================================

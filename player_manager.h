@@ -7,7 +7,6 @@
 #ifndef _PLAYER_MANAGE_H_		//このマクロ定義がされてなかったら
 #define _PLAYER_MANAGE_H_		//２重インクルード防止のマクロ定義
 
-#include "main.h"
 #include "player3D.h"
 
 class CPlayer3D;

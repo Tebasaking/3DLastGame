@@ -77,6 +77,7 @@ HRESULT CBillboard::Init(const D3DXVECTOR3 &pos)
 
 	SetSize(10.0f);
 
+	Draw();
 	return S_OK;
 }
 
@@ -191,6 +192,8 @@ void CBillboard::Draw()
 
 	// テクスチャの設定
 	pDevice->SetTexture(0, nullptr);
+
+	SetMtxWorld(m_mtxWorld);
 }
 
 //=========================================

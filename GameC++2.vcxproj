@@ -123,7 +123,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
     </ClCompile>
     <Link>
@@ -158,13 +158,14 @@
     <ClCompile Include="bullt.cpp" />
     <ClCompile Include="calculation.cpp" />
     <ClCompile Include="camera.cpp" />
-    <ClCompile Include="debug.cpp" />
+    <ClCompile Include="debug_proc.cpp" />
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="explosion.cpp" />
     <ClCompile Include="fade.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="inputkeyboard.cpp" />
+    <ClCompile Include="joypad.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="meshfield.cpp" />
@@ -182,11 +183,13 @@
     <ClCompile Include="parts.cpp" />
     <ClCompile Include="player3D.cpp" />
     <ClCompile Include="player_manager.cpp" />
+    <ClCompile Include="radar.cpp" />
     <ClCompile Include="render.cpp" />
     <ClCompile Include="result.cpp" />
     <ClCompile Include="score.cpp" />
     <ClCompile Include="sound.cpp" />
     <ClCompile Include="sphere.cpp" />
+    <ClCompile Include="target.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="texture3D.cpp" />
     <ClCompile Include="title.cpp" />
@@ -198,13 +201,14 @@
     <ClInclude Include="bullet.h" />
     <ClInclude Include="calculation.h" />
     <ClInclude Include="camera.h" />
-    <ClInclude Include="debug.h" />
+    <ClInclude Include="debug_proc.h" />
     <ClInclude Include="enemy.h" />
     <ClInclude Include="explosion.h" />
     <ClInclude Include="fade.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="inputkeyboard.h" />
+    <ClInclude Include="joypad.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="meshfield.h" />
@@ -222,11 +226,13 @@
     <ClInclude Include="parts.h" />
     <ClInclude Include="player3D.h" />
     <ClInclude Include="player_manager.h" />
+    <ClInclude Include="radar.h" />
     <ClInclude Include="render.h" />
     <ClInclude Include="result.h" />
     <ClInclude Include="score.h" />
     <ClInclude Include="sound.h" />
     <ClInclude Include="sphere.h" />
+    <ClInclude Include="target.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="texture3D.h" />
     <ClInclude Include="title.h" />

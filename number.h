@@ -7,7 +7,6 @@
 #ifndef _NUMBER_H_		// このマクロ定義がされてなかったら
 #define _NUMBER_H_		// 二重インク―ルード防止のマクロ定義
 
-#include "main.h"
 #include "object2D.h"
 
 //=========================================

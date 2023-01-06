@@ -5,6 +5,8 @@
 //
 //=========================================
 #include "object.h"
+#include "camera.h"
+#include "application.h"
 #include <assert.h>
 
 int CObject::m_nNumAll = 0;
@@ -15,6 +17,9 @@ CObject *CObject::m_pCurrent[LAYER_MAX] = { nullptr };
 //=========================================
 CObject::CObject(int nPriority /*= LAYER_ONE*/)
 {
+	// オブジェクトを通常モードにする
+	m_objmode = MAX_MODE;
+
 	//先頭ポインターが割り振られていない時
 	if (m_pTop[nPriority] == nullptr)
 	{
@@ -91,8 +96,30 @@ void CObject::UpdateAll()
 //=========================================
 //全ての描画処理
 //=========================================
-void CObject::DrawAll()
+void CObject::DrawAll(Object_mode mode)
 {
+	// カメラをアプリケーションから取得
+	CCamera *pCamera = nullptr;
+
+	switch (mode)
+	{
+	case NORMAL_MODE:
+		// カメラをアプリケーションから取得
+		pCamera = CApplication::GetCamera();
+		break;
+
+	case RADAR_MODE:
+		// レーダー用カメラをアプリケーションから取得
+		pCamera = CApplication::GetRader();
+		break;
+
+	default:
+		break;
+	}
+
+	// カメラの設定
+	pCamera->Set();
+
 	for (int nCnt = 0; nCnt < LAYER_MAX; nCnt++)
 	{
 		if (m_pTop[nCnt] != nullptr)
@@ -101,8 +128,15 @@ void CObject::DrawAll()
 
 			while (pBox != nullptr)
 			{
-				//描画処理
-				pBox->Draw();
+				//if (pBox->m_type != OBJECT_RADAR/* && mode == NORMAL_MODE*/)
+				//{
+					//描画処理
+					pBox->Draw();
+				/*}
+				else if (pBox->m_type == OBJECT_RADAR && mode == RADAR_MODE)
+				{
+					pBox->Draw();
+				}*/
 				pBox = pBox->m_pNext;
 			}
 		}

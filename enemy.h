@@ -9,12 +9,13 @@
 
 #define MAX_PARTS (1)
 
-#include "main.h"
 #include "object.h"
 
 #include "motion_model3D.h"
 
 class CModel3D;
+class CTarget;
+class CRadar;
 class CEnemy :public CMotionModel3D
 {
 public:
@@ -24,6 +25,14 @@ public:
 		ENEMY_IDOL,			// エネミーの待機状態
 		ENEMY_WARNNING,		// エネミーがプレイヤーを発見した状態
 							//見失った状態とかも作りたいけど余裕があれば。
+	};
+
+	// エネミーの種類
+	enum EnemyType
+	{
+		ENEMY_FLY,			// 空にいる敵
+		ENEMY_GROUND,		// 陸にいる敵
+		ENEMY_MAX
 	};
 
 	CEnemy();			//コンストラクタ
@@ -47,15 +56,20 @@ public:
 	//番号取得処理
 	int GetNumber() { return m_Number; }
 
+	// タイプの設定
+	void SetType(EnemyType type) { m_type = type; }
+
 	CModel3D *GetModel() { return m_apModel[0]; }
 
 private:
-	float m_scale;										// 大きさ
+	CTarget*				m_Target;					// 自身につけるターゲット
+	CRadar*					m_Radar;					// レーダー
+	float					m_scale;					// 大きさ
 
+	EnemyType				m_type;						// タイプの設定
 	CModel3D*				m_apModel[MAX_PARTS];		// モデルの最大数
-	D3DXVECTOR3				m_pos;						// 座標
-	D3DXVECTOR3				m_rot;						// 回転
 	EnemyState				m_state;					// 状態
+	D3DXMATRIX				m_WorldMtx;					// ワールドマトリックス
 };
 
 #endif

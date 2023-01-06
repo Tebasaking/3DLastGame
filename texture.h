@@ -25,6 +25,7 @@ public: /* 定義 */
 		TEXTURE_EXPLOSION,	// 爆発画像
 		TEXTURE_SKY,		// 空
 		TEXTURE_SEA,		// 海
+		TEXTURE_GROUND,		// 陸
 		TEXTURE_THUNDER,	// 戦闘機のテクスチャ
 		TEXTURE_TARGET,		// ターゲット
 		TEXTURE_TITLE,		// タイトル

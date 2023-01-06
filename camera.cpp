@@ -22,17 +22,21 @@
 #include "move.h"
 #include "calculation.h"
 #include "player_manager.h"
+#include "game.h"
+#include "meshfield.h"
+#include "object.h"
+#include "joypad.h"
 
 //*****************************************************************************
 // 定数定義
 //*****************************************************************************
-const float CCamera::CAMERA_NEAR = 1.0f;	// ニア
+const float CCamera::CAMERA_NEAR = 1.0f;		// ニア
 const float CCamera::CAMERA_FUR = 100000000.0f;	// ファー
 
 //=============================================================================
 // コンストラクタ
-// Author : 唐﨑結斗
-// 概要 : インスタンス生成時に行う処理
+// Author	: 唐﨑結斗
+// 概要		: インスタンス生成時に行う処理
 //=============================================================================
 CCamera::CCamera() :
 	m_posV(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),					// 視点
@@ -48,6 +52,7 @@ CCamera::CCamera() :
 	m_mtxWorld = {};	// ワールドマトリックス
 	m_mtxProj = {};		// プロジェクションマトリックス
 	m_mtxView = {};		// ビューマトリックス
+	m_Objectmode = (CObject::Object_mode)3;
 }
 
 //=============================================================================
@@ -67,19 +72,31 @@ CCamera::~CCamera()
 //=============================================================================
 HRESULT CCamera::Init()
 {
-	m_posV = D3DXVECTOR3(0.0f, 0.0f, -150.0f);
-	m_posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);			// 固定
-	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	switch (m_Objectmode)
+	{
+	case CObject::NORMAL_MODE:
+		m_posV = D3DXVECTOR3(0.0f, 1000.0f, -150.0f);
+		m_posR = D3DXVECTOR3(0.0f, 1000.0f, 0.0f);
+		m_vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);			// 固定
+		m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		m_viewport.MinZ = 0.0f;
+		m_viewport.MaxZ = 1.0f;
+		break;
+
+	case CObject::RADAR_MODE:
+		m_posV = D3DXVECTOR3(0.0f, 300.0f, -150.0f);
+		m_posR = D3DXVECTOR3(0.0f, 5000.0f, 0.0f);
+		m_vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);			// 固定
+		m_rot = D3DXVECTOR3(0.0f, D3DX_PI, 0.0f);
+		m_viewport.MinZ = 0.0f;
+		m_viewport.MaxZ = 1.0f;
+
+		break;
+	}
 
 	// 視点と注視点の距離
 	D3DXVECTOR3 posDiss = m_posR - m_posV;
 	m_fDistance = sqrtf((posDiss.y * posDiss.y) + (posDiss.x * posDiss.x) + (posDiss.z * posDiss.z));
-
-	// 角度の算出
-	m_rot.y = 0.0f;
-	m_rot.x = 0.0f;
-	m_rot.z = 0.0f;
 
 	// クォータニオンの適応
 	D3DXQuaternionRotationYawPitchRoll(&m_quaternion, m_rot.y, m_rot.x, m_rot.z);
@@ -116,29 +133,17 @@ void CCamera::Uninit(void)
 //=============================================================================
 void CCamera::Update(void)
 {
-	MouseMove();	// マウス移動
+	UpdateNormal();
 
-	m_mode = (CCamera::CAMERA_TYPE)CPlayerManager::GetMode();
-
-	// 状態ごとに移動方法を変える
-	switch (m_mode)
+	// カメラのモードごとの処理
+	switch (m_Objectmode)
 	{
-	case TYPE_FREE:
-		FreeMove();		// 移動
+	case CObject::NORMAL_MODE:
 		break;
-	case TYPE_SHOULDER:
-		ShoulderMove();	// 肩越しモード
+
+	case CObject::RADAR_MODE:
+		UpdateRadar();
 		break;
-	}
-
-	// キーボードの取得
-	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
-
-	// エンターキーが押された
-	if (pKeyboard->GetTrigger(DIK_RETURN))
-	{
-		// m_modeがFREEの時はSHOULDERに、SHOULDERの時はFREEにする
-		m_mode = (m_mode == TYPE_FREE) ? TYPE_SHOULDER : TYPE_FREE;
 	}
 }
 
@@ -165,6 +170,9 @@ void CCamera::Set()
 	D3DXMatrixRotationQuaternion(&mtxRot, &m_quaternion);		// クオータニオンによる行列回転
 	D3DXMatrixInverse(&mtxRot, NULL, &mtxRot);					// 逆行列に計算
 	D3DXMatrixMultiply(&m_mtxView, &m_mtxView, &mtxRot);		// 行列掛け算関数(第2引数×第3引数第を１引数に格納)
+
+	// ビューポートの適応
+	pDevice->SetViewport(&m_viewport);
 
 	// ビューマトリックスの設定
 	pDevice->SetTransform(D3DTS_VIEW, &m_mtxView);
@@ -375,7 +383,6 @@ void CCamera::FreeMove(void)
 	{
 		MOVE_SPEED = 5.0f;
 	}
-
 		//常に前進し続ける
 		m_fDistance -= MOVE_SPEED;
 		VPosRotate();
@@ -389,6 +396,19 @@ void CCamera::FreeMove(void)
 		// 視点位置の更新
 		m_posV = m_posV + move * CAMERA_MOVE_SPEED;
 		m_posR = m_posR + move * CAMERA_MOVE_SPEED;
+	}
+
+	// グラウンドの取得
+	CMesh *pGround = CGame::GetGround();
+
+	if (pGround != nullptr)
+	{// 陸の当たり判定
+		D3DXVECTOR3 FlyPos = D3DXVECTOR3(m_posV.x, m_posV.y + 50.0f, m_posV.z);
+		if (pGround->Collision(&FlyPos))
+		{
+			m_posV = FlyPos;
+			m_posV.y += 50.0f;
+		}
 	}
 }
 
@@ -438,7 +458,7 @@ void CCamera::ShoulderMove()
 	}
 	if (CAMERA_MOVE_SPEED >= 10.0f)
 	{
-		CAMERA_MOVE_SPEED = 10.0f;
+		CAMERA_MOVE_SPEED = 10.0f;	
 	}
 	if (CAMERA_MOVE_SPEED <= 5.0f)
 	{
@@ -458,6 +478,21 @@ void CCamera::ShoulderMove()
 		m_posR = m_posR + move * CAMERA_MOVE_SPEED;
 	}
 
+	// カメラを下降させる
+	m_posV.y -= 5.0f;
+	VPosRotate();
+	m_posR.y -= 5.0f;
+
+	// グラウンドの取得
+	CMesh *pGround = CGame::GetGround();
+
+	if (pGround != nullptr)
+	{// 陸の当たり判定
+		if (pGround->Collision(&m_posV))
+		{
+			m_posV.y += 50.0f;
+		}
+	}
 }
 
 //=========================================
@@ -489,4 +524,164 @@ void CCamera::MouseMove(void)
 		Rotate();
 		VPosRotate();
 	}
+}
+
+//=========================================
+// ジョイパッドの移動
+// Author : 冨所知生
+// 概要 : ジョイパッド使用時のカメラの旋回
+//=========================================
+void CCamera::JoyPadMove(void)
+{
+	CJoypad *pJoypad = CApplication::GetJoy();
+	
+	if (pJoypad->GetUseJoyPad() >= 1)
+	{
+		// 回転のベクトルを設定。
+		m_rotMove.x = pJoypad->GetStickAngle(CJoypad::JOYKEY_LEFT_STICK, 0) * pJoypad->GetStick(CJoypad::JOYKEY_LEFT_STICK, 0).y * 100.0f;
+
+		if ((pJoypad->GetStickAngle(CJoypad::JOYKEY_LEFT_STICK, 0) >= D3DX_PI * 0.25f && pJoypad->GetStickAngle(CJoypad::JOYKEY_LEFT_STICK, 0) <= D3DX_PI * 0.75f) ||
+			(pJoypad->GetStickAngle(CJoypad::JOYKEY_LEFT_STICK, 0) >= -D3DX_PI * 0.75f && pJoypad->GetStickAngle(CJoypad::JOYKEY_LEFT_STICK, 0) <= -D3DX_PI * 0.25f))
+		{
+			// 回転のベクトルを設定。
+			m_rotMove.y = pJoypad->GetStick(CJoypad::JOYKEY_LEFT_STICK, 0).x * 100.0f;
+		}
+	
+	Rotate();
+	VPosRotate();
+	}
+}
+
+//==================================================
+// ビューポートの大きさ設定
+// Author : 冨所知生
+// 引数 : 画面左上の座標X,Y、幅、高さ
+//==================================================
+void CCamera::SetViewSize(DWORD X, DWORD Y, int fWidth, int fHeight)
+{
+	//引数を代入
+	m_viewport.X = X;				//ビューポートの左上X座標
+	m_viewport.Y = Y;				//ビューポートの左上Y座標
+	m_viewport.Width = fWidth;		//ビューポートの幅
+	m_viewport.Height = fHeight;	//ビューポートの高さ
+}
+
+//==================================================
+// ビューポートの拡縮
+// Author : 冨所知生
+// 引数 : 開始位置X、開始位置Y、幅、高さ
+//==================================================
+void CCamera::AddViewSize(DWORD X, DWORD Y, int fWidth, int fHeight)
+{
+	//------------------------------
+	// 幅の加算
+	//------------------------------
+	if (m_viewport.Width < SCREEN_WIDTH - 1.0f)
+	{//幅がスクリーン内なら
+	 //幅の加算
+		m_viewport.Width += fWidth;
+
+		if (m_viewport.X > 0)
+		{//ビューポートの左上が画面の左上より大きいなら
+			m_viewport.X += X;	//ビューポートの左上座標を移動
+		}
+	}
+
+	//------------------------------
+	// 高さの加算
+	//------------------------------
+	if (m_viewport.Height < SCREEN_HEIGHT - 1.0f)
+	{//幅がスクリーン内なら
+	 //高さの加算
+		m_viewport.Height += fHeight;
+
+		if (m_viewport.Y > 0)
+		{//ビューポートの左上が画面の左上より大きいなら
+			m_viewport.Y += Y;	//ビューポートの左上座標を移動
+		}
+	}
+}
+
+//=========================================
+//	通常カメラの描画処理
+//	Author: 冨所知生
+//=========================================
+void CCamera::UpdateNormal()
+{
+	MouseMove();	// マウス移動
+	JoyPadMove();	// ジョイパッド移動
+
+	m_mode = (CCamera::CAMERA_TYPE)CPlayerManager::GetMode();
+
+	// 状態ごとに移動方法を変える
+	switch (m_mode)
+	{
+	case TYPE_FREE:
+		FreeMove();		// 移動
+		break;
+	case TYPE_SHOULDER:
+		ShoulderMove();	// 肩越しモード
+		break;
+	}
+
+	// キーボードの取得
+	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
+
+	//==================================================================================
+
+	// オブジェクトの取得
+	CObject *object = CObject::GetObjectTop();
+
+	D3DXVECTOR3 PlayerPos = {};
+	D3DXVECTOR3	PlayerRot = {};
+
+	//プレイヤーの座標を取得
+	while (object)
+	{
+		if (object != nullptr)
+		{
+			CObject::EObjType ObjType = object->GetObjectType();
+
+			if (ObjType == CObject::OBJECT_PLAYER)
+			{
+				PlayerPos = object->GetPosition();
+				PlayerRot = object->GetRot();
+				break;
+			}
+		}
+		object = object->GetObjectNext();
+	}
+
+	if (object != nullptr)
+	{
+		// エンターキーが押された
+		if (pKeyboard->GetTrigger(DIK_RETURN))
+		{
+			switch (m_mode)
+			{
+			case TYPE_FREE:
+				m_mode = TYPE_SHOULDER;
+				break;
+
+			case TYPE_SHOULDER:
+				m_mode = TYPE_FREE;
+
+				// 1.0f浮かせる処理
+				m_posV.y += 100.0f;
+				VPosRotate();
+				m_posR.y += 100.0f;
+
+				break;
+			}
+		}
+	}
+}
+
+//=========================================
+//	レーダー用カメラの処理
+//	Author : 冨所知生
+//=========================================
+void CCamera::UpdateRadar()
+{
+
 }

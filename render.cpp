@@ -9,7 +9,7 @@
 #include "object.h"
 #include "camera.h"
 #include "application.h"
-#include "debug.h"
+#include "debug_proc.h"
 #include "input.h"
 #include "inputkeyboard.h"
 #include "model3D.h"
@@ -174,13 +174,14 @@ void CRender::Draw()
 		CDebugProc::Draw();
 #endif // _DEBUG
 
-		CCamera *m_pCamera = CApplication::GetCamera();
-
-		//ƒJƒƒ‰‚Ì•`‰æˆ—
-		m_pCamera->Set();
+		if (CApplication::GetMode() == CApplication::MODE_GAME)
+		{
+			//•`‰æˆ—
+			CObject::DrawAll(CObject::RADAR_MODE);
+		}
 
 		//•`‰æˆ—
-		CObject::DrawAll();
+		CObject::DrawAll(CObject::NORMAL_MODE);
 
 		// Direct3D‚É‚æ‚é•`‰æ‚ÌI—¹
 		m_pD3DDevice->EndScene();

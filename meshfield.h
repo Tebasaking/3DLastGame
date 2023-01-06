@@ -22,6 +22,13 @@
 class CMesh :public CObject
 {
 public:
+
+	enum MeshType
+	{
+		TYPE_SEA = 0,
+		TYPE_GROUND,
+	};
+
 	CMesh();			//コンストラクタ
 	virtual ~CMesh();			//デストラクタ
 
@@ -34,7 +41,7 @@ public:
 	//終了処理
 	void Uninit(void) override;
 	//クリエイト処理
-	static CMesh* Create(const D3DXVECTOR3 &pos);
+	static CMesh* Create(const D3DXVECTOR3 &pos, MeshType type);
 	//テクスチャの設定処理
 	void SetTexture(CTexture::TEXTURE texture);	// テクスチャの設定
 	
@@ -44,6 +51,10 @@ public:
 
 	void NorCreate();								// メッシュフィールドの法線作成
 	bool Collision(D3DXVECTOR3 *pos);				// 判定処理
+
+	// メッシュタイプの設定
+	void SetType(MeshType type) { m_type = type; }
+	
 
 private:
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;		//バッファ
@@ -55,6 +66,7 @@ private:
 	float m_scale;							// 拡大率
 	float m_polygon;						// ポリゴン数
 	D3DXVECTOR3 m_rot;
+	MeshType	m_type;						// メッシュのタイプ
 	// 法線格納
 	D3DXVECTOR3	m_norBox[MESH_PRIMITIVE_NUM];
 };

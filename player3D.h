@@ -8,7 +8,6 @@
 #define _PLAYER_H_		//２重インクルード防止のマクロ定義
 #define MAX_PARTS (1)
 
-#include "main.h"
 #include "object3D.h"
 #include "model.h"
 #include "motion_model3D.h"
@@ -44,7 +43,7 @@ public:
 	// 回転処理
 	void Rotate(void);
 	// 弾の発射処理
-	void Bullet(void);
+	void Bullet(D3DXVECTOR3 pos);
 
 	// 更新処理(飛行)
 	void UpdateFly(void);

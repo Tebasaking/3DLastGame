@@ -23,11 +23,12 @@
 #include "score.h"
 #include "game.h"
 #include "title.h"
-#include "debug.h"
+#include "debug_proc.h"
 #include "result.h"
 #include "fade.h"
 #include "model3D.h"
 #include "texture3D.h"
+#include "joypad.h"
 
 CDebugProc *CApplication::m_pDebug = nullptr;
 CRender *CApplication::m_pRender = nullptr;
@@ -35,27 +36,24 @@ CInputKeyboard *CApplication::m_pInputKeyboard = nullptr;
 CPlayer *CApplication::m_pPlayer = nullptr;
 CEnemy *CApplication::m_pEnemy = nullptr;
 CTexture* CApplication::m_pTexture = nullptr;
-CCamera* CApplication::m_pCamera = nullptr;
 CMouse* CApplication::m_pMouse = nullptr;
 CMode* CApplication::m_pMode = nullptr;
+CJoypad *CApplication::m_pJoy = {};	
 CGame* CApplication::m_pGame = nullptr;
 CTexture3D* CApplication::m_pTexture3D = nullptr;
+
+CCamera* CApplication::m_pRader = nullptr;
+CCamera* CApplication::m_pCamera = nullptr;
+
 CSound *pSound = nullptr;
 CApplication::MODE CApplication::m_NextMode = MODE_MAX;
+CApplication::MODE CApplication::m_mode = MODE_MAX;
 
 //=========================================
 // コンストラクタ
 //=========================================
 CApplication::CApplication()
 {
-	m_pRender = new CRender;
-	m_pTexture = new CTexture;
-	m_pCamera = new CCamera;
-	m_pInputKeyboard = new CInputKeyboard;
-	pSound = new CSound;
-	m_pMouse = new CMouse;
-	m_pDebug = new CDebugProc;
-	m_pTexture3D = new CTexture3D;
 }
 
 //=========================================
@@ -70,6 +68,17 @@ CApplication::~CApplication()
 //=========================================
 HRESULT CApplication::Init(HINSTANCE hInstance,HWND hWnd)
 {
+	m_pRender = new CRender;
+	m_pTexture = new CTexture;
+	m_pCamera = new CCamera;
+	m_pRader = new CCamera;
+	m_pInputKeyboard = new CInputKeyboard;
+	pSound = new CSound;
+	m_pMouse = new CMouse;
+	m_pDebug = new CDebugProc;
+	m_pTexture3D = new CTexture3D;
+	m_pJoy = new CJoypad;
+
 	if (FAILED(m_pRender->Init(hWnd, true)))
 	{// 初期化処理が失敗した場合
 		return -1;
@@ -94,8 +103,27 @@ HRESULT CApplication::Init(HINSTANCE hInstance,HWND hWnd)
 		return E_FAIL;
 	}
 
+	// 初期化処理
+	if (FAILED(m_pJoy->Init(1)))
+	{
+		return E_FAIL;
+	}
+
 	// カメラの初期化設定
-	m_pCamera->Init();
+	if (m_pCamera != nullptr)
+	{
+		m_pCamera->SetObjMode(CObject::NORMAL_MODE);
+		m_pCamera->Init();
+		m_pCamera->SetViewSize(0, 0, SCREEN_WIDTH , SCREEN_HEIGHT);
+	}
+
+	if (m_pRader != nullptr)
+	{
+		// カメラの初期化設定2
+		m_pRader->SetObjMode(CObject::RADAR_MODE);
+		m_pRader->Init();
+		m_pRader->SetViewSize(0, 0, SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f);
+	}
 
 	// ゲームスタート時の初期設定
 	// モードの設定
@@ -126,12 +154,17 @@ void CApplication::Update()
 
 	// ライトの更新処理
 	UpdateLight();
-	
-	// レンダーの更新処理
-	m_pRender->Update();
 
 	// カメラの更新処理
 	m_pCamera->Update();
+
+	// レーダーの更新処理
+	m_pRader->Update();
+	// レンダーの更新処理
+	m_pRender->Update();
+
+	//// ジョイパッドの更新処理
+	//m_pJoy->Update();
 
 	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
 }
@@ -174,6 +207,9 @@ void CApplication::Uninit()
 	// カメラの終了処理
 	m_pCamera->Uninit();
 
+	// レーダーの終了処理
+	m_pRader->Uninit();
+
 	// デバックの終了処理
 	m_pDebug->Uninit();
 
@@ -192,10 +228,22 @@ void CApplication::Uninit()
 		delete m_pCamera;
 		m_pCamera = nullptr;
 	}
+	if (m_pRader != nullptr)
+	{
+		delete m_pRader;
+		m_pRader = nullptr;
+	}
 	if (m_pInputKeyboard != nullptr)
 	{
 		delete m_pInputKeyboard;
 		m_pInputKeyboard = nullptr;
+	}
+	if (m_pJoy != nullptr)
+	{// 終了処理
+		m_pJoy->Uninit();
+
+		delete m_pJoy;
+		m_pJoy = nullptr;
 	}
 }
 
@@ -229,14 +277,6 @@ CEnemy *CApplication::GetEnemy()
 CTexture* CApplication::GetTexture()
 {
 	return m_pTexture;
-}
-
-//=========================================
-// テクスチャの情報の取得
-//=========================================
-CCamera* CApplication::GetCamera()
-{
-	return m_pCamera;
 }
 
 //=========================================
@@ -289,6 +329,7 @@ D3DXVECTOR3 CApplication::WorldToScreen(D3DXVECTOR3 pos)
 void CApplication::SetNextMode(MODE mode)
 {
 	m_NextMode = mode;
+	m_mode = mode;
 }
 
 //=========================================
@@ -301,6 +342,7 @@ void CApplication::ChangeMode()
 		return;
 	}
 
+	// オブジェクト全ての終了処理
 	CObject::UninitAll();
 
 	//モードの設定
@@ -313,6 +355,7 @@ void CApplication::ChangeMode()
 		break;
 
 	case MODE_GAME:
+		m_pRader->Init();
 		m_pMode = new CGame;
 		break;
 

@@ -50,8 +50,6 @@ public:
 
 	D3DXVECTOR3 GetPosOld() { return m_posOld; }									// 過去位置のゲッター
 
-	void SetMtxWorld(D3DXMATRIX mtxWorld) { m_mtxWorld = mtxWorld; }				// ワールドマトリックスのセッター
-	D3DXMATRIX *GetMtxWorld() { return &m_mtxWorld; }								// ワールドマトリックスのゲッター
 	void SetMotion(const char *pName);												// モーション情報の設定
 	void SetMotion(const char *pName, const int nNumMotion);						// モーション情報の設定(オーバーロード)
 	CMotion *GetMotion() { return m_pMotion; }										// モーション情報の取得
@@ -62,16 +60,15 @@ public:
 protected:
 	D3DXVECTOR3		m_pos;															// 位置
 	D3DXQUATERNION	m_quaternion;													// クオータニオン
+	D3DXVECTOR3		m_rot;					// 向き
 
 private:
 	//--------------------------------------------------------------------
 	// メンバ変数
 	//--------------------------------------------------------------------
 	CMotion			*m_pMotion;				// モーションインスタンス
-	D3DXMATRIX		m_mtxWorld;				// ワールドマトリックス
 	D3DXVECTOR3		m_posOld;				// 過去位置
 	D3DXVECTOR3		m_size;					// 大きさ
-	D3DXVECTOR3		m_rot;					// 向き
 };
 
 #endif

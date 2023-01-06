@@ -12,7 +12,6 @@
 // インクルード
 //*****************************************************************************
 #include "object.h"
-#include "main.h"
 
 #define MAX_MATERIAL_TEXTURE_NUM (100)
 class CModel3D

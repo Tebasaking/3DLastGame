@@ -17,6 +17,7 @@
 //*****************************************************************************
 #include "main.h"
 #include "application.h"
+#include "debug_proc.h"
 #include <time.h>
 
 //*****************************************************************************
@@ -49,6 +50,9 @@ int g_nCountFPS;
 //=============================================================================
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpCmdLine*/, int nCmdShow)
 {
+
+	srand((unsigned int)time(NULL));
+
 	WNDCLASSEX wcex =
 	{
 		sizeof(WNDCLASSEX),
@@ -147,6 +151,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
 				// 更新処理
 				pCApplication->Update();
 
+				// デバック
+				CDebugProc::Print("FSP : %d",g_nCountFPS);
+
 				// 描画処理
 				pCApplication->Draw();
 
@@ -167,8 +174,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
 
 	// ウィンドウクラスの登録を解除
 	UnregisterClass(CLASS_NAME, wcex.hInstance);
-
-	srand((unsigned int)time(NULL));
 
 	// 分解能を戻す
 	timeEndPeriod(1);

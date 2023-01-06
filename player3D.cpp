@@ -27,7 +27,7 @@ int BulletDelay = 0;
 CPlayer3D::CPlayer3D()
 {
 	SetObjectType(OBJECT_PLAYER);
-	m_mode = MODE_FLY;
+	m_mode = MODE_MAX;
 }
 
 //=========================================
@@ -71,6 +71,8 @@ HRESULT CPlayer3D::Init(const D3DXVECTOR3 &pos)
 	//大きさの設定
 	m_size = m_pRobot->GetSize();
 
+	SetPosition(pos);
+
 	CMotionModel3D::Init(pos);
 
 	return S_OK;
@@ -93,12 +95,14 @@ void CPlayer3D::Update()
 		UpdateRob();
 		break;
 	}
-
 	// 座標の設定
 	m_apModel[0]->SetPos(D3DXVECTOR3(m_pos.x, m_pos.y, m_pos.z));
 
 	// 座標の設定
 	m_pRobot->SetPos(m_pos);
+
+	// 座標の設定
+	SetPosition(m_pos);
 
 	// 飛行モデルの更新処理
 	for (int nCnt = 0; nCnt < 1; nCnt++)
@@ -146,12 +150,6 @@ void CPlayer3D::Draw()
 
 		// 計算用マトリックス
 		D3DXMATRIX mtxRot, mtxTrans, mtxScale;
-		D3DXMATRIX mtxParents;
-
-		// 現在のマテリアル保存用
-		D3DMATERIAL9 matDef;
-		// マテリアルデータへのポインタ
-		D3DXVECTOR3 scale(5.0f, 5.0f, 5.0f);
 
 		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);				// カリングの設定
 
@@ -240,7 +238,7 @@ void CPlayer3D::UpdateFly()
 	m_pos = m_apModel[0]->GetPos();				// 座標の取得
 	m_posDest = pCamera->GetPosR();				// カメラの座標の取得
 
-	m_posDest.y -= 10.0f;
+	m_posDest.y -= 20.0f;
 	D3DXVECTOR3 m_posResult = m_posDest - m_pos;
 	D3DXVECTOR3 posDiss = m_pos - pCamera->GetPosV();
 
@@ -252,9 +250,6 @@ void CPlayer3D::UpdateFly()
 
 	// 回転
 	Rotate();
-	
-	// 弾の発射処理
-	Bullet();
 
 	//ロックオン処理
 	LockOn();
@@ -262,6 +257,23 @@ void CPlayer3D::UpdateFly()
 	// 姿勢制御処理
 	Attitude();
 
+	// 弾の発射処理
+	Bullet(m_pos);
+
+	// 座標の設定
+	m_apModel[0]->SetPos(D3DXVECTOR3(m_pos.x, m_pos.y, m_pos.z));
+
+	// グラウンドの取得
+	CMesh *pGround = CGame::GetGround();
+
+	if (pGround != nullptr)
+	{
+		// 陸の当たり判定
+		bool bCollision = pGround->Collision(&m_pos);
+
+		// 当たり判定の設定
+		SetCollision(bCollision);
+	}
 }
 
 //=========================================
@@ -274,17 +286,37 @@ void CPlayer3D::UpdateRob()
 
 	// 目標のpos
 	D3DXVECTOR3	m_posDest;
-	D3DXVECTOR3 m_CameraV;
-	D3DXVECTOR3 m_CameraR;
-	//カメラ
+
 	CCamera *pCamera = CApplication::GetCamera();
 
-	m_CameraR = pCamera->GetPosR();
-	m_CameraV = pCamera->GetPosR();
-
 	m_pos = m_apModel[0]->GetPos();				// 座標の取得
-	m_pos = D3DXVECTOR3(m_CameraV.x, m_CameraV.y, m_CameraV.z);	// カメラの座標の取得
+	m_posDest = pCamera->GetPosR();				// カメラの座標の取得
 
+	m_posDest.y -= 30.0f;
+	D3DXVECTOR3 m_posResult = m_posDest - m_pos;
+	D3DXVECTOR3 posDiss = m_pos - pCamera->GetPosV();
+
+	m_pos.x += m_posResult.x / 5;
+	m_pos.z += m_posResult.z / 5;
+	m_pos.y += m_posResult.y / 5;
+
+	// グラウンドの取得
+	CMesh *pGround = CGame::GetGround();
+
+	if (pGround != nullptr)
+	{
+		// 陸の当たり判定
+		bool bCollision = pGround->Collision(&m_pos);
+
+		// 当たり判定の設定
+		SetCollision(bCollision);
+	}
+
+	// 弾の発射処理
+	Bullet(D3DXVECTOR3(m_pos.x, m_pos.y + 50.0f, m_pos.z));
+
+	// 座標の設定
+	m_pRobot->SetPos(D3DXVECTOR3(m_pos.x, m_pos.y, m_pos.z));
 	//m_posDest.y -= 10.0f;
 	//m_posDest.z += 100.0f;
 
@@ -298,23 +330,31 @@ void CPlayer3D::UpdateRob()
 //=========================================
 // 弾の発射処理
 //=========================================
-void CPlayer3D::Bullet()
+void CPlayer3D::Bullet(D3DXVECTOR3 pos)
 {
 	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
 
-	//弾の発射
-	if (pKeyboard->GetPress(DIK_SPACE))
+	// マネージャ―のモードと一致した時
+	if (m_mode == (CPlayer3D::PLAYER_MODE)CPlayerManager::GetMode())
 	{
-		BulletDelay++;
-
-		//バレットの発射レート
-		if (BulletDelay >= 10)
+		//弾の発射
+		if (pKeyboard->GetPress(DIK_SPACE))
 		{
-			int BulletSpeed = 50;
+			BulletDelay++;
 
-			CBullet::Create(D3DXVECTOR3(m_pos.x, m_pos.y, m_pos.z), m_quaternion);
+			//バレットの発射レート
+			if (BulletDelay >= 10)
+			{
+				int BulletSpeed = 50;
 
-			BulletDelay = 0;
+				// カメラ情報の取得
+				CCamera *pCamera = CApplication::GetCamera();
+
+				// 人型の時プレイヤーの向きが変わらないのでカメラのクォータニオンを入れる
+				CBullet::Create(pos, pCamera->GetQuaternion());
+
+				BulletDelay = 0;
+			}
 		}
 	}
 }

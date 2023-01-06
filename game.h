@@ -14,6 +14,7 @@ class CPlayer3D;
 class CMesh;
 class CPlayerManager;
 class CEnemy;
+class CCamera;
 //=========================================
 // クラス
 //=========================================
@@ -24,19 +25,19 @@ public:
 	~CGame();
 
 	virtual HRESULT Init(const D3DXVECTOR3 &pos) override;	//初期化処理
-	virtual void Uninit() override { Release(); }					//終了処理
-	virtual void Update() override;						//更新処理
-	virtual void Draw() override {};					//描画処理
+	virtual void Uninit() override;							//終了処理
+	virtual void Update() override;							//更新処理
+	virtual void Draw() override {};						//描画処理
 
 	void EnemyManage();
-
 	void DeleteEnemy(CEnemy* pEnemy);
-	static CMesh* GetMesh() { return m_pMesh; }
+
+	static CMesh *GetGround() { return m_pMesh[1]; }
 
 private:
-	static CMesh	*m_pMesh;
+	static CMesh		  *m_pMesh[3];
 	static CPlayerManager *pPlayerManager;
-	std::vector<CEnemy*> m_EnemyList;
+	std::vector<CEnemy*>  m_EnemyList;
 };
 
 #endif	// _GAME_H_

@@ -7,7 +7,6 @@
 #ifndef _SPHERE_H_		//このマクロ定義がされてなかったら
 #define _SPHERE_H_		//２重インクルード防止のマクロ定義
 
-#include "main.h"
 #include "object.h"
 #include "texture.h"
 

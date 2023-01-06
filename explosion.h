@@ -7,7 +7,6 @@
 #ifndef _EXPLOSION_H_		//このマクロ定義がされてなかったら
 #define _EXPLOSION_H_		//２重インクルード防止のマクロ定義
 
-#include "main.h"
 #include "billboard.h"
 
 class CExplosion :public CBillboard

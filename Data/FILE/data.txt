@@ -14,5 +14,6 @@ MODEL_FILENAME = Data/MODEL/06_legR.x		# [6]‰E‘Ú
 MODEL_FILENAME = Data/MODEL/07_footR.x		# [7]‰E‘«
 MODEL_FILENAME = Data/MODEL/08_legL.x		# [8]¶‘Ú
 MODEL_FILENAME = Data/MODEL/09_footL.x		# [9]¶‘«
-MODEL_FILENAME = Data/MODEL/thunder.x
+MODEL_FILENAME = Data/MODEL/thunder.x		# í“¬‹@
+MODEL_FILENAME = Data/MODEL/TANK.x			# íŽÔ
 MODEL_FILENAME = Data/MODEL/robot.x

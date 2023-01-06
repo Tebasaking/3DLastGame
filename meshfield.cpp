@@ -18,7 +18,6 @@ CMesh::CMesh()
 	m_pVtxBuff = nullptr;
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_texture = CTexture::TEXTURE_SEA;
 }
 
 //=========================================
@@ -35,6 +34,18 @@ CMesh::~CMesh()
 HRESULT CMesh::Init(const D3DXVECTOR3 &pos)
 {
 	LPDIRECT3DDEVICE9 pDevice = CApplication::GetRender()->GetDevice();
+
+	// タイプに対応したテクスチャの設定
+	switch (m_type)
+	{
+	case TYPE_SEA:
+		m_texture = CTexture::TEXTURE_SEA;
+		break;
+
+	case TYPE_GROUND:
+		m_texture = CTexture::TEXTURE_GROUND;
+		break;
+	}
 
 	//頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * MESH_VERTEX_NUM,	//確保するバッファのサイズ
@@ -59,25 +70,53 @@ HRESULT CMesh::Init(const D3DXVECTOR3 &pos)
 
 	m_pos = pos;
 
-	for (int nCntZ = 0; nCntZ <= MESH_Z_BLOCK; nCntZ++)
+	switch (m_type)
 	{
-		for (int nCntX = 0; nCntX <= MESH_X_BLOCK; nCntX++)
+	case TYPE_SEA:
+		for (int nCntZ = 0; nCntZ <= MESH_Z_BLOCK; nCntZ++)
 		{
-			//頂点座標の設定（ワールド座標ではなくローカル座標を指定する）
-			pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].pos = D3DXVECTOR3
-			(-(MESH_SIZE * MESH_X_BLOCK) / 2 + nCntX * MESH_SIZE,					// x
-				sinf(nCntX * D3DX_PI * 0.25f) * 10.0f,								// y
-				(MESH_SIZE * MESH_Z_BLOCK) / 2 - nCntZ * MESH_SIZE);				// z
+			for (int nCntX = 0; nCntX <= MESH_X_BLOCK; nCntX++)
+			{
+				//頂点座標の設定（ワールド座標ではなくローカル座標を指定する）
+				pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].pos = D3DXVECTOR3
+				(-(MESH_SIZE * MESH_X_BLOCK) / 2 + nCntX * MESH_SIZE,					// x
+					sinf(nCntX * D3DX_PI * 0.25f) * 10.0f,								// y
+					(MESH_SIZE * MESH_Z_BLOCK) / 2 - nCntZ * MESH_SIZE);				// z
 
-			//各頂点の法線の設定
-			pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+				//各頂点の法線の設定
+				pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 
-			//頂点カラーの設定
-			pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+				//頂点カラーの設定
+				pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 
-			//テクスチャの設定
-			pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].tex = D3DXVECTOR2((float)nCntX, (float)nCntZ);
+				//テクスチャの設定
+				pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].tex = D3DXVECTOR2((float)nCntX, (float)nCntZ);
+			}
 		}
+		break;
+
+	case TYPE_GROUND:
+		for (int nCntZ = 0; nCntZ <= MESH_Z_BLOCK; nCntZ++)
+		{
+			for (int nCntX = 0; nCntX <= MESH_X_BLOCK; nCntX++)
+			{
+				//頂点座標の設定（ワールド座標ではなくローカル座標を指定する）
+				pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].pos = D3DXVECTOR3
+				(-(MESH_SIZE * MESH_X_BLOCK) / 2 + nCntX * MESH_SIZE,					// x
+					sinf(nCntX * D3DX_PI * 0.25f) * 10.0f * (rand() % 100 + 1),			// y
+					(MESH_SIZE * MESH_Z_BLOCK) / 2 - nCntZ * MESH_SIZE);				// z
+
+																						//各頂点の法線の設定
+				pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+
+				//頂点カラーの設定
+				pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+
+				//テクスチャの設定
+				pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].tex = D3DXVECTOR2((float)nCntX, (float)nCntZ);
+			}
+		}
+		break;
 	}
 
 	// 頂点をアンロックする
@@ -209,7 +248,7 @@ void CMesh::Draw()
 //=========================================
 //オブジェクトのクリエイト
 //=========================================
-CMesh* CMesh::Create(const D3DXVECTOR3 &pos)
+CMesh* CMesh::Create(const D3DXVECTOR3 &pos, MeshType type)
 {
 	int nNumCreate = m_nNumAll;
 
@@ -219,6 +258,7 @@ CMesh* CMesh::Create(const D3DXVECTOR3 &pos)
 
 	if (pCMesh != nullptr)
 	{
+		pCMesh->SetType(type);
 		pCMesh->Init(pos);
 	}
 
@@ -288,87 +328,98 @@ void CMesh::SetAnim(const float Num, const int Pattern)
 //オブジェクトの判定処理
 //=========================================
 bool CMesh::Collision(D3DXVECTOR3 *pos)
-{// 当たり判定
+{
+	// 当たり判定
 	bool bCollison = false;
 
-	// 頂点情報の取得
-	VERTEX_3D *pVtx = NULL;
+	CApplication::MODE pMode = CApplication::GetMode();
 
-	// 頂点バッファをロック
-	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
-
-	// インデックスバッファをロック
-	WORD *pIdx;
-	m_pIdxVtxBuff->Lock(0, 0, (void**)&pIdx, 0);
-
-	// ターゲット情報の宣言
-	D3DXVECTOR3 posTarget = *pos;
-
-	for (int nCntPolygon = 0; nCntPolygon < MESH_PRIMITIVE_NUM; nCntPolygon++)
+	if (CApplication::GetMode() == CApplication::MODE_GAME)
 	{
-		// 変数宣言
-		D3DXVECTOR3 V1 = pVtx[pIdx[nCntPolygon]].pos;
-		D3DXVECTOR3 V2 = pVtx[pIdx[nCntPolygon + 1]].pos;
-		D3DXVECTOR3 V3 = pVtx[pIdx[nCntPolygon + 2]].pos;
+		// 頂点情報の取得
+		VERTEX_3D *pVtx = NULL;
 
-		V1 = WorldCastVtx(V1,m_pos,m_rot);
-		V2 = WorldCastVtx(V2, m_pos, m_rot);
-		V3 = WorldCastVtx(V3, m_pos, m_rot);
+		// 頂点バッファをロック
+		m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
-		if (V1 == V2
-			|| V1 == V3
-			|| V2 == V3)
-		{// 縮退ポリゴンの場合
-			continue;
+		// インデックスバッファをロック
+		WORD *pIdx;
+		m_pIdxVtxBuff->Lock(0, 0, (void**)&pIdx, 0);
+
+		// ターゲット情報の宣言
+		D3DXVECTOR3 posTarget = *pos;
+
+		for (int nCntPolygon = 0; nCntPolygon < MESH_PRIMITIVE_NUM; nCntPolygon++)
+		{
+			// 変数宣言
+			D3DXVECTOR3 V1 = pVtx[pIdx[nCntPolygon]].pos;
+			D3DXVECTOR3 V2 = pVtx[pIdx[nCntPolygon + 1]].pos;
+			D3DXVECTOR3 V3 = pVtx[pIdx[nCntPolygon + 2]].pos;
+
+			V1 = WorldCastVtx(V1, m_pos, m_rot);
+			V2 = WorldCastVtx(V2, m_pos, m_rot);
+			V3 = WorldCastVtx(V3, m_pos, m_rot);
+
+			if (V1 == V2
+				|| V1 == V3
+				|| V2 == V3)
+			{// 縮退ポリゴンの場合
+				continue;
+			}
+
+			// ポリゴンの辺ベクトル
+			D3DXVECTOR3 P1 = V2 - V1;
+			D3DXVECTOR3 P2 = V3 - V2;
+			D3DXVECTOR3 P3 = V1 - V3;
+
+			// 頂点とターゲットのベクトル
+			D3DXVECTOR3 VecA = posTarget - V1;
+			D3DXVECTOR3 VecB = posTarget - V2;
+			D3DXVECTOR3 VecC = posTarget - V3;
+
+			// 比較演算用の変数の定義と代入
+			float fA = (P1.x * VecA.z) - (P1.z * VecA.x);
+			float fB = (P2.x * VecB.z) - (P2.z * VecB.x);
+			float fC = (P3.x * VecC.z) - (P3.z * VecC.x);
+
+			if ((0.0f < fA && 0.0f < fB && 0.0f < fC)
+				|| (0.0f > fA && 0.0f > fB && 0.0f > fC))
+			{// 判定の設定
+				// 面法線ベクトル
+				D3DXVECTOR3 norVec = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+				// 面法線ベクトル
+				D3DXVec3Cross(&norVec, &P1, &P2);
+
+				//正規化
+				D3DXVec3Normalize(&norVec, &norVec);
+
+				// 位置の設定
+				float fCloss = V1.y - ((posTarget.x - V1.x) * norVec.x + (posTarget.z - V1.z) * norVec.z) / norVec.y;
+
+				if (fCloss >= pos->y)
+				{
+					bCollison = true;
+					pos->y = fCloss;
+				}
+
+				float randcolr = (rand() % 10) * 1.0f;
+				float randcolg = (rand() % 10) * 1.0f;
+				float randcolb = (rand() % 10) * 1.0f;
+				pVtx[pIdx[nCntPolygon]].col = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
+				pVtx[pIdx[nCntPolygon + 1]].col = D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f);
+				pVtx[pIdx[nCntPolygon + 2]].col = D3DXCOLOR(0.0f, 0.0f, 1.0f, 1.0f);
+				break;
+			}
 		}
 
-		// ポリゴンの辺ベクトル
-		D3DXVECTOR3 P1 = V2 - V1;
-		D3DXVECTOR3 P2 = V3 - V2;
-		D3DXVECTOR3 P3 = V1 - V3;
+		// インデックスバッファのアンロック
+		m_pIdxVtxBuff->Unlock();
 
-		// 頂点とターゲットのベクトル
-		D3DXVECTOR3 VecA = posTarget - V1;
-		D3DXVECTOR3 VecB = posTarget - V2;
-		D3DXVECTOR3 VecC = posTarget - V3;
+		// 頂点バッファのアンロック
+		m_pVtxBuff->Unlock();
 
-		// 比較演算用の変数の定義と代入
-		float fA = (P1.x * VecA.z) - (P1.z * VecA.x);
-		float fB = (P2.x * VecB.z) - (P2.z * VecB.x);
-		float fC = (P3.x * VecC.z) - (P3.z * VecC.x);
-
-		if ((0.0f < fA && 0.0f < fB && 0.0f < fC)
-			|| (0.0f > fA && 0.0f > fB && 0.0f > fC))
-		{// 判定の設定
-			bCollison = true;
-
-			// 面法線ベクトル
-			D3DXVECTOR3 norVec = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-
-			// 面法線ベクトル
-			D3DXVec3Cross(&norVec, &P1, &P2);
-
-			//正規化
-			D3DXVec3Normalize(&norVec, &norVec);
-
-			// 位置の設定
-			pos->y = V1.y - ((posTarget.x - V1.x) * norVec.x + (posTarget.z - V1.z) * norVec.z) / norVec.y;
-
-			float randcolr = (rand() % 10) * 1.0f;
-			float randcolg = (rand() % 10) * 1.0f;
-			float randcolb = (rand() % 10) * 1.0f;
-			pVtx[pIdx[nCntPolygon]].col = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
-			pVtx[pIdx[nCntPolygon + 1]].col = D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f);
-			pVtx[pIdx[nCntPolygon + 2]].col = D3DXCOLOR(0.0f, 0.0f, 1.0f, 1.0f);
-			break;
-		}
 	}
-
-	// インデックスバッファのアンロック
-	m_pIdxVtxBuff->Unlock();
-
-	// 頂点バッファのアンロック
-	m_pVtxBuff->Unlock();
 
 	return bCollison;
 }

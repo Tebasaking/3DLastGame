@@ -105,7 +105,10 @@ float4 PS(VS_OUTPUT In) : COLOR
 	// ‹à‘®‚ÌF
 	float4 ks = { 1.0f,1.0f,1.0f, 1.0f };
 
-	return (In.Color * tex2D(Samp, In.Tex))		// ŠgUŒõ{ŠÂ‹«Œõ
+	// ƒAƒ“ƒrƒGƒ“ƒg
+	float4 ambient = { 0.0f,0.0f,0.0f, 1.0f };
+
+	return ((In.Color + ambient) * tex2D(Samp, In.Tex))		// ŠgUŒõ{ŠÂ‹«Œõ
 		+ ks * max(0,F * D * G / NV);				// ‹¾–Ê”½ËŒõ
 }
 

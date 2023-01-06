@@ -347,15 +347,15 @@ void CModel3D::Draw()
 		// ƒ[ƒ‹ƒhƒ}ƒgƒŠƒbƒNƒX‚Ì‰Šú‰»
 		D3DXMatrixIdentity(&m_mtxWorld);											// s—ñ‰Šú‰»ŠÖ”
 
-																					// Œü‚«‚Ì”½‰f
+		// Œü‚«‚Ì”½‰f
 		D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);			// s—ñ‰ñ“]ŠÖ”
 		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);						// s—ñŠ|‚¯ŽZŠÖ” 
 
-																					// ƒNƒH[ƒ^ƒjƒIƒ“‚Ì”½‰f
+		// ƒNƒH[ƒ^ƒjƒIƒ“‚Ì”½‰f
 		D3DXMatrixRotationQuaternion(&mtxRot, &m_quaternion);						// ƒNƒI[ƒ^ƒjƒIƒ“‚É‚æ‚és—ñ‰ñ“]
 		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);						// s—ñŠ|‚¯ŽZŠÖ”(‘æ2ˆø”~‘æ3ˆø”‘æ‚ð‚Pˆø”‚ÉŠi”[)
 
-																					// ˆÊ’u‚ð”½‰f
+		// ˆÊ’u‚ð”½‰f
 		D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);				// s—ñˆÚ“®ŠÖ”
 		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);					// s—ñŠ|‚¯ŽZŠÖ”
 
@@ -365,11 +365,6 @@ void CModel3D::Draw()
 
 			// s—ñŠ|‚¯ŽZŠÖ”
 			D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxParent);
-		}
-
-		if (m_bShadow)
-		{// ‰e‚Ì¶¬
-			Shadow();
 		}
 
 		// ƒ[ƒ‹ƒhƒ}ƒgƒŠƒbƒNƒX‚ÌÝ’è
@@ -404,29 +399,29 @@ void CModel3D::Draw(D3DXMATRIX mtxParent)
 		// ƒ[ƒ‹ƒhƒ}ƒgƒŠƒbƒNƒX‚Ì‰Šú‰»
 		D3DXMatrixIdentity(&m_mtxWorld);											// s—ñ‰Šú‰»ŠÖ”
 
-																					// ƒTƒCƒY‚Ì”½‰f
+		// ƒTƒCƒY‚Ì”½‰f
 		D3DXMatrixScaling(&mtxScaling, m_size.x, m_size.y, m_size.z);
 		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxScaling);					// s—ñŠ|‚¯ŽZŠÖ”
 
-																					// ƒNƒH[ƒ^ƒjƒIƒ“‚Ì”½‰f
+		// ƒNƒH[ƒ^ƒjƒIƒ“‚Ì”½‰f
 		D3DXMatrixRotationQuaternion(&mtxRot, &m_quaternion);						// ƒNƒI[ƒ^ƒjƒIƒ“‚É‚æ‚és—ñ‰ñ“]
 		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);						// s—ñŠ|‚¯ŽZŠÖ”(‘æ2ˆø”~‘æ3ˆø”‘æ‚ð‚Pˆø”‚ÉŠi”[)
 
-																					// Œü‚«‚Ì”½‰f
+		// Œü‚«‚Ì”½‰f
 		D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);			// s—ñ‰ñ“]ŠÖ”
 		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);						// s—ñŠ|‚¯ŽZŠÖ” 
 
-																					// ˆÊ’u‚ð”½‰f
+		// ˆÊ’u‚ð”½‰f
 		D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);				// s—ñˆÚ“®ŠÖ”
 		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxTrans);					// s—ñŠ|‚¯ŽZŠÖ”
 
-																					// s—ñŠ|‚¯ŽZŠÖ”
+		// s—ñŠ|‚¯ŽZŠÖ”
 		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxParent);
 
-		if (m_bShadow)
-		{// ‰e‚Ì¶¬
-			Shadow();
-		}
+		//if (m_bShadow)
+		//{// ‰e‚Ì¶¬
+		//	Shadow();
+		//}
 
 		// ƒ[ƒ‹ƒhƒ}ƒgƒŠƒbƒNƒX‚ÌÝ’è
 		pDevice->SetTransform(D3DTS_WORLD, &m_mtxWorld);

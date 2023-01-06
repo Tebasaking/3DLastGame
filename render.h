@@ -27,11 +27,11 @@ public:
 
 private:
 	// Direct3Dオブジェクト
-	LPDIRECT3D9 m_pD3D = nullptr;
+	LPDIRECT3D9 m_pD3D;
 	// Deviceオブジェクト
-	LPDIRECT3DDEVICE9 m_pD3DDevice = nullptr;
+	LPDIRECT3DDEVICE9 m_pD3DDevice;
 	//頂点バッファの設定
-	LPDIRECT3DVERTEXBUFFER9 m_vtxBuffPolygon = nullptr;
+	LPDIRECT3DVERTEXBUFFER9 m_vtxBuffPolygon;
 	//回転
 	D3DXVECTOR3 m_rot = D3DXVECTOR3(1.0f, 1.0f, 1.0f);
 

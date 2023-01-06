@@ -20,8 +20,9 @@ const char* CTexture::s_FileName[] =
 	"Data\\TEXTURE\\bullet.png",	// íe
 	"Data\\TEXTURE\\number001.png",						// ÉiÉìÉoÅ[
 	"Data\\TEXTURE\\explosion000.png",
-	"Data\\sky.jpg",
-	"Data\\sea.jpg",
+	"Data\\TEXTURE\\sky.jpg",
+	"Data\\TEXTURE\\sea.jpg",
+	"Data\\TEXTURE\\ground.jpg",
 	"Data\\F16_Thuderbirds4.bmp",
 	"Data\\TEXTURE\\targeting.png",
 	"Data\\TEXTURE\\ÇΩÇ¢Ç∆ÇÈ.jpg",
