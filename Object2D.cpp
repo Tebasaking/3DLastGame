@@ -186,9 +186,9 @@ void CObject2D::SetTexture(CTexture::TEXTURE texture)
 //=========================================
 //サイズの設定
 //=========================================
-void CObject2D::SetScale(const float size)
+void CObject2D::SetScale(const D3DXVECTOR3 Size)
 {
-	m_scale = size;
+	m_scale = Size;
 
 	VtxUpdate();
 }
@@ -229,10 +229,10 @@ void CObject2D::VtxUpdate()
 		m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 		//頂点座標の設定
-		pVtx[0].pos = D3DXVECTOR3(m_pos.x - m_scale, m_pos.y - m_scale, 0.0f);
-		pVtx[1].pos = D3DXVECTOR3(m_pos.x + m_scale, m_pos.y - m_scale, 0.0f);
-		pVtx[2].pos = D3DXVECTOR3(m_pos.x - m_scale, m_pos.y + m_scale, 0.0f);
-		pVtx[3].pos = D3DXVECTOR3(m_pos.x + m_scale, m_pos.y + m_scale, 0.0f);
+		pVtx[0].pos = D3DXVECTOR3(m_pos.x - m_scale.x, m_pos.y - m_scale.y, 0.0f);
+		pVtx[1].pos = D3DXVECTOR3(m_pos.x + m_scale.x, m_pos.y - m_scale.y, 0.0f);
+		pVtx[2].pos = D3DXVECTOR3(m_pos.x - m_scale.x, m_pos.y + m_scale.y, 0.0f);
+		pVtx[3].pos = D3DXVECTOR3(m_pos.x + m_scale.x, m_pos.y + m_scale.y, 0.0f);
 
 		//頂点カラーの更新
 		pVtx[0].col = m_col;

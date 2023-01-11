@@ -14,7 +14,7 @@
 class CObject2D :public CObject
 {
 public:
-	explicit CObject2D(int nPriority = 3);
+	explicit CObject2D(int nPriority = 1);
 	virtual ~CObject2D();			//デストラクタ
 
 	//初期化処理
@@ -34,16 +34,16 @@ public:
 	void SetColor(const D3DXCOLOR &col);
 	void SetPosition(const D3DXVECTOR3& pos);
 	void SetAnim(const float Num,const int Pattern);
-	void SetScale(const float Size);
+	void SetScale(const D3DXVECTOR3 Size);
 
 private:
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;		//バッファ
 	D3DXVECTOR3 m_pos;						//座標
 	CTexture::TEXTURE m_texture;			// テクスチャの列挙型
 	D3DXVECTOR3 m_size;						// 大きさ
-	float		m_scale;					// 拡大率
+	D3DXVECTOR3	m_scale;					// 拡大率
 	D3DXVECTOR3 m_rot;
-	D3DXCOLOR m_col;							// 色
+	D3DXCOLOR m_col;						// 色
 };
 
 #endif

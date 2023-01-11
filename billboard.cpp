@@ -61,10 +61,10 @@ HRESULT CBillboard::Init(const D3DXVECTOR3 &pos)
 	pVtx[3].nor = D3DXVECTOR3(0.0f, 1.0f,0.0f);
 
 	// 頂点カラーの設定
-	pVtx[0].col = D3DCOLOR_RGBA(255, 255, 255, 255);
-	pVtx[1].col = D3DCOLOR_RGBA(255, 255, 255, 255);
-	pVtx[2].col = D3DCOLOR_RGBA(255, 255, 255, 255);
-	pVtx[3].col = D3DCOLOR_RGBA(255, 255, 255, 255);
+	pVtx[0].col = D3DXCOLOR(1.0f,1.0f,1.0f,1.0f);
+	pVtx[1].col = D3DXCOLOR(1.0f,1.0f,1.0f,1.0f);
+	pVtx[2].col = D3DXCOLOR(1.0f,1.0f,1.0f,1.0f);
+	pVtx[3].col = D3DXCOLOR(1.0f,1.0f,1.0f,1.0f);
 
 	//texの設定
 	pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
@@ -78,6 +78,7 @@ HRESULT CBillboard::Init(const D3DXVECTOR3 &pos)
 	SetSize(10.0f);
 
 	Draw();
+
 	return S_OK;
 }
 
@@ -86,7 +87,23 @@ HRESULT CBillboard::Init(const D3DXVECTOR3 &pos)
 //=========================================
 void CBillboard::Update()
 {
+	if (m_pVtxBuff != nullptr)
+	{
+		//頂点情報へのポインタ
+		VERTEX_3D *pVtx;
 
+		//頂点バッファをロックし、頂点情報へのポインタを取得
+		m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+		//頂点カラーの更新
+		pVtx[0].col = m_col;
+		pVtx[1].col = m_col;
+		pVtx[2].col = m_col;
+		pVtx[3].col = m_col;
+
+		//頂点バッファをアンロックする
+		m_pVtxBuff->Unlock();
+	}
 }
 
 //=========================================
@@ -244,13 +261,21 @@ void CBillboard::SetSize(const float size)
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	//頂点座標の設定
-	pVtx[0].pos = D3DXVECTOR3(-m_scale, m_scale, 0.0f);
-	pVtx[1].pos = D3DXVECTOR3(m_scale, m_scale, 0.0f);
-	pVtx[2].pos = D3DXVECTOR3(-m_scale,-m_scale, 0.0f);
-	pVtx[3].pos = D3DXVECTOR3(m_scale,-m_scale, 0.0f);
+	pVtx[0].pos = D3DXVECTOR3(-m_scale, m_scale * 0.5f, 0.0f);
+	pVtx[1].pos = D3DXVECTOR3(m_scale, m_scale * 0.5f, 0.0f);
+	pVtx[2].pos = D3DXVECTOR3(-m_scale,-m_scale * 0.5f, 0.0f);
+	pVtx[3].pos = D3DXVECTOR3(m_scale,-m_scale * 0.5f, 0.0f);
 
 	// 頂点をアンロックする
 	m_pVtxBuff->Unlock();
+}
+
+//=========================================
+//サイズの設定
+//=========================================
+void CBillboard::SetColor(const D3DXCOLOR &col)
+{
+	m_col = col;
 }
 //=========================================
 //テクスチャの設定

@@ -29,7 +29,7 @@ public:
 		TYPE_GROUND,
 	};
 
-	CMesh();			//コンストラクタ
+	explicit CMesh(int nPriority = 1);	//コンストラクタ
 	virtual ~CMesh();			//デストラクタ
 
 	//初期化処理

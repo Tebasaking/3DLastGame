@@ -34,7 +34,7 @@ void CFade::Init(CApplication::MODE modeNext)
 {
 	CObject2D::Init(D3DXVECTOR3(0.0f,0.0f,0.0f));
 	SetPosition(D3DXVECTOR3(SCREEN_WIDTH / 2.0f, SCREEN_HEIGHT / 2.0f, 0.0f));
-	SetScale(1980.0f);
+	SetScale(D3DXVECTOR3(1980.0f,1980.0f,0.0f));
 	SetColor(m_Color);
 
 	//èâä˙âª

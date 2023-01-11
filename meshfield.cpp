@@ -13,8 +13,9 @@ int nLineVtx = (MESH_X_BLOCK + 1);
 //=========================================
 //コンストラクタ
 //=========================================
-CMesh::CMesh()
+CMesh::CMesh(int nPriority)
 {
+	SetObjectType(OBJECT_MESH);
 	m_pVtxBuff = nullptr;
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -254,7 +255,7 @@ CMesh* CMesh::Create(const D3DXVECTOR3 &pos, MeshType type)
 
 	CMesh* pCMesh = nullptr;
 
-	pCMesh = new CMesh;
+	pCMesh = new CMesh[1];
 
 	if (pCMesh != nullptr)
 	{

@@ -77,7 +77,7 @@ HRESULT CEnemy::Init(const D3DXVECTOR3 &pos)
 	m_Radar = nullptr;
 
 	// エネミーをレーダー上に表示させる
-	m_Radar = CRadar::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), GetObjectinfo());
+	m_Radar = CRadar::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), GetObjectinfo(),CRadar::RADAR_ENEMY);
 
 	return S_OK;
 }

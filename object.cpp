@@ -128,15 +128,15 @@ void CObject::DrawAll(Object_mode mode)
 
 			while (pBox != nullptr)
 			{
-				//if (pBox->m_type != OBJECT_RADAR/* && mode == NORMAL_MODE*/)
-				//{
+				if (pBox->m_type != OBJECT_RADAR && pCamera->GetObjType() == NORMAL_MODE)
+				{
 					//•`‰æˆ—
 					pBox->Draw();
-				/*}
-				else if (pBox->m_type == OBJECT_RADAR && mode == RADAR_MODE)
-				{
+				}
+				else if (pBox->m_type == OBJECT_RADAR && pCamera->GetObjType() == RADAR_MODE)
+				{// ƒŒ[ƒ_[‚Ì•`‰æ
 					pBox->Draw();
-				}*/
+				}
 				pBox = pBox->m_pNext;
 			}
 		}

@@ -13,7 +13,7 @@
 class CBillboard :public CObject
 {
 public:
-	explicit CBillboard(int nPriority = 0);	//コンストラクタ
+	explicit CBillboard(int nPriority = 2);	//コンストラクタ
 	virtual ~CBillboard();			//デストラクタ
 
 	//初期化処理
@@ -32,6 +32,9 @@ public:
 	void SetPosition(const D3DXVECTOR3& pos);
 	void SetAnim(const float Num, const int Pattern);
 	void SetSize(const float Size);
+	void SetColor(const D3DXCOLOR &col);
+
+	D3DXCOLOR GetColor() { return m_col; }
 
 private:
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;		//バッファ
@@ -40,6 +43,7 @@ private:
 	CTexture::TEXTURE		m_texture;		// テクスチャの列挙型
 	D3DXVECTOR3				m_size;			// 大きさ
 	float					m_scale;		// 拡大率
+	D3DXCOLOR m_col;						// 色
 	D3DXVECTOR3 m_rot;
 };
 

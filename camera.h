@@ -63,15 +63,16 @@ public:
 	//--------------------------------------------------------------------
 	// メンバ関数
 	//--------------------------------------------------------------------
-	HRESULT Init();						// 初期化
+	HRESULT Init();													// 初期化
 	void Uninit(void);												// 終了
 	void Update(void);												// 更新
 	void UpdateNormal(void);										// 通常処理
 	void UpdateRadar(void);											// レーダーの処理
 	void Set();														// 設定
 	void SetViewType(VIEW_TYPE type) { m_viewType = type; }			// タイプの設定
-	void SetViewSize(DWORD X, DWORD Y, int fWidth, int fHeight);	//ビューポートの大きさ設定
-	void AddViewSize(DWORD X, DWORD Y, int fWidth, int fHeight);	//ビューポートの拡縮
+	void SetViewSize(DWORD X, DWORD Y, int fWidth, int fHeight);	// ビューポートの大きさ設定
+	void AddViewSize(DWORD X, DWORD Y, int fWidth, int fHeight);	// ビューポートの拡縮
+
 	// オブジェクトのモードの設定
 	void SetObjMode(CObject::Object_mode mode) { m_Objectmode = mode; }
 	
@@ -116,6 +117,7 @@ private:
 	D3DXVECTOR3			m_rot;				// 向き
 	D3DXVECTOR3			m_rotMove;			// 移動方向
 	D3DXVECTOR3			m_VecGet;			// マウスのベクトル
+	D3DXVECTOR3			m_Dest;				// マウスのDest
 	VIEW_TYPE			m_viewType;			// 投影の種別
 	CAMERA_TYPE			m_mode;				// カメラのモード
 	D3DVIEWPORT9		m_viewport;			// ビューポート

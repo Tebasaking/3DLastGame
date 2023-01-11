@@ -330,13 +330,14 @@ void CModel3D::Draw()
 	if (m_nModelID >= 0
 		&& m_nModelID < m_nMaxModel)
 	{
-		CCamera *pCamera = CApplication::GetCamera();
-
-		D3DMATRIX viewMatrix = pCamera->GetView();
-		D3DMATRIX projMatrix = pCamera->GetProjection();
-
 		// デバイスの取得
 		LPDIRECT3DDEVICE9 pDevice = CApplication::GetRender()->GetDevice();
+
+		D3DMATRIX viewMatrix;
+		D3DMATRIX projMatrix;
+
+		pDevice->GetTransform(D3DTS_VIEW, &viewMatrix);
+		pDevice->GetTransform(D3DTS_PROJECTION, &projMatrix);
 
 		// 親のワールドマトリックス
 		D3DXMATRIX mtxParent = {};
@@ -382,16 +383,17 @@ void CModel3D::Draw()
 //=============================================================================
 void CModel3D::Draw(D3DXMATRIX mtxParent)
 {
-	CCamera *pCamera = CApplication::GetCamera();
-
-	D3DMATRIX viewMatrix = pCamera->GetView();
-	D3DMATRIX projMatrix = pCamera->GetProjection();
-
 	if (m_nModelID >= 0
 		&& m_nModelID < m_nMaxModel)
 	{
 		// デバイスの取得
 		LPDIRECT3DDEVICE9 pDevice = CApplication::GetRender()->GetDevice();
+
+		D3DMATRIX viewMatrix;
+		D3DMATRIX projMatrix;
+
+		pDevice->GetTransform(D3DTS_VIEW, &viewMatrix);
+		pDevice->GetTransform(D3DTS_PROJECTION, &projMatrix);
 
 		// 計算用マトリックス
 		D3DXMATRIX mtxRot, mtxTrans, mtxScaling;
@@ -446,7 +448,18 @@ void CModel3D::DrawMaterial()
 	// マテリアルデータへのポインタ
 	D3DXMATERIAL *pMat;
 
-	CCamera *pCamera = CApplication::GetCamera();
+	CCamera *pCamera = nullptr;
+
+	switch (CApplication::GetRender()->GetCheck())
+	{
+	case false:
+		pCamera = CApplication::GetCamera();
+		break;
+
+	case true:
+		pCamera = CApplication::GetRader();
+		break;
+	}
 
 	D3DMATRIX viewMatrix = pCamera->GetView();
 	D3DMATRIX projMatrix = pCamera->GetProjection();
@@ -667,6 +680,9 @@ void CModel3D::Shadow()
 			m_material[m_nModelID].pMesh->DrawSubset(nCntMat);
 		}
 	}
+
+	// Ｚバッファのクリア
+	pDevice->Clear(0, NULL, (D3DCLEAR_ZBUFFER), D3DCOLOR_RGBA(0, 0, 0, 0), 1.0f, 0);
 
 	// 保持していたマテリアルを戻す
 	pDevice->SetMaterial(&matDef);

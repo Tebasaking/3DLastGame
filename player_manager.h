@@ -33,12 +33,13 @@ public:
 	void Uninit(void);
 	// モードの取得
 	static PLAYER_MODE GetMode() { return m_mode; }
+	static CPlayer3D* GetPlayer() { return m_pFly; }
 	// クリエイト処理
 	static CPlayerManager* Create(const D3DXVECTOR3 &pos);
 
 private:
-	CPlayer3D* m_pFly;				// 飛行形態の処理
-	CPlayer3D* m_pRobot;			// ロボット形態の処理
+	static CPlayer3D* m_pFly;				// 飛行形態の処理
+	static CPlayer3D* m_pRobot;				// ロボット形態の処理
 
 	static PLAYER_MODE m_mode;		// プレイヤーの状態を管理する
 };

@@ -25,7 +25,11 @@ public:
 	void DrawFPS();
 	LPDIRECT3DDEVICE9 GetDevice() { return m_pD3DDevice; };
 
+	bool GetCheck() { return bCheck; }
+
 private:
+	// 現在のDrawの管理
+	bool bCheck;
 	// Direct3Dオブジェクト
 	LPDIRECT3D9 m_pD3D;
 	// Deviceオブジェクト

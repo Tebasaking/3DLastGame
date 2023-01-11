@@ -40,6 +40,7 @@ HRESULT CRender::Init(HWND hWnd, bool bWindow)
 	D3DPRESENT_PARAMETERS d3dpp;
 	D3DDISPLAYMODE d3ddm;
 
+	bCheck = false;
 	m_Wire = false;
 
 	// Direct3Dオブジェクトの作成
@@ -177,10 +178,12 @@ void CRender::Draw()
 		if (CApplication::GetMode() == CApplication::MODE_GAME)
 		{
 			//描画処理
+			bCheck = true;
 			CObject::DrawAll(CObject::RADAR_MODE);
 		}
 
 		//描画処理
+		bCheck = false;
 		CObject::DrawAll(CObject::NORMAL_MODE);
 
 		// Direct3Dによる描画の終了

@@ -122,7 +122,7 @@ HRESULT CApplication::Init(HINSTANCE hInstance,HWND hWnd)
 		// カメラの初期化設定2
 		m_pRader->SetObjMode(CObject::RADAR_MODE);
 		m_pRader->Init();
-		m_pRader->SetViewSize(0, 0, SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f);
+		m_pRader->SetViewSize(0, 0, SCREEN_WIDTH * 0.25f, SCREEN_HEIGHT * 0.5f);
 	}
 
 	// ゲームスタート時の初期設定
@@ -160,6 +160,7 @@ void CApplication::Update()
 
 	// レーダーの更新処理
 	m_pRader->Update();
+
 	// レンダーの更新処理
 	m_pRender->Update();
 

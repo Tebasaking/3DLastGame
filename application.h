@@ -42,6 +42,7 @@ public:
 	void Uninit();
 	void Update();
 	void Draw();
+	void SetViewPort();
 
 	//クリエイト処理
 	static void SetNextMode(MODE mode);
@@ -79,6 +80,7 @@ private:
 	static CMode			*m_pMode;
 	static CTexture3D		*m_pTexture3D;
 	static CJoypad			*m_pJoy;
+	bool					 m_bCheckViewport;
 };
 
 #endif

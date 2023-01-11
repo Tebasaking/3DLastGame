@@ -22,10 +22,12 @@
 #include "move.h"
 #include "calculation.h"
 #include "player_manager.h"
+#include "debug_proc.h"
 #include "game.h"
 #include "meshfield.h"
 #include "object.h"
 #include "joypad.h"
+#include "player3D.h"
 
 //*****************************************************************************
 // 定数定義
@@ -84,12 +86,13 @@ HRESULT CCamera::Init()
 		break;
 
 	case CObject::RADAR_MODE:
-		m_posV = D3DXVECTOR3(0.0f, 300.0f, -150.0f);
+		m_posV = D3DXVECTOR3(0.0f, 5000.0f, -150.0f);
 		m_posR = D3DXVECTOR3(0.0f, 5000.0f, 0.0f);
 		m_vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);			// 固定
-		m_rot = D3DXVECTOR3(0.0f, D3DX_PI, 0.0f);
+		m_rot = D3DXVECTOR3(D3DX_PI * 0.5f, 0.0f, 0.0f);
 		m_viewport.MinZ = 0.0f;
 		m_viewport.MaxZ = 1.0f;
+		m_viewType = TYPE_PARALLEL;
 
 		break;
 	}
@@ -133,18 +136,23 @@ void CCamera::Uninit(void)
 //=============================================================================
 void CCamera::Update(void)
 {
-	UpdateNormal();
+	D3DXVECTOR3 Result = m_Dest - m_rotMove;
+	m_rotMove += Result / 5;
 
 	// カメラのモードごとの処理
 	switch (m_Objectmode)
 	{
 	case CObject::NORMAL_MODE:
+		UpdateNormal();
 		break;
 
 	case CObject::RADAR_MODE:
 		UpdateRadar();
 		break;
 	}
+
+	CDebugProc::Print("カメラの座標 : (%f,%f,%f) \n", m_posV.x, m_posV.y, m_posV.z);
+	CDebugProc::Print("カメラの回転 : (%f,%f,%f,%f) \n",m_quaternion.x,m_quaternion.y,m_quaternion.z,m_quaternion.w);
 }
 
 //=============================================================================
@@ -194,8 +202,8 @@ void CCamera::Set()
 	case TYPE_PARALLEL:
 		// プロジェクションマトリックスの作成(平行投影)
 		D3DXMatrixOrthoLH(&m_mtxProj,						// プロジェクションマトリックス
-			(float)SCREEN_WIDTH,							// 幅
-			(float)SCREEN_HEIGHT,							// 高さ
+			(float)SCREEN_WIDTH * 5,							// 幅
+			(float)SCREEN_HEIGHT * 5,							// 高さ
 			CAMERA_NEAR,									// ニア
 			CAMERA_FUR);									// ファー
 		break;
@@ -309,7 +317,7 @@ void CCamera::Rotate()
 
 			D3DXQuaternionRotationAxis(&quaternion, &axis, 0.03f);	// 回転軸と回転角度を指定
 
-																	// クオータニオンのノーマライズ
+			// クオータニオンのノーマライズ
 			D3DXQuaternionNormalize(&quaternion, &quaternion);
 
 			// クオータニオンを適用
@@ -506,23 +514,22 @@ void CCamera::MouseMove(void)
 	CMouse *pMouse = CApplication::GetMouse();
 
 	// 回転のベクトルを設定。
-	m_rotMove = D3DXVECTOR3(pMouse->GetMouseMove().y, pMouse->GetMouseMove().x, pMouse->GetMouseMove().z);
+	m_Dest = D3DXVECTOR3(pMouse->GetMouseMove().y, pMouse->GetMouseMove().x, pMouse->GetMouseMove().z);
 
 	// クリックの情報を保管
 	bool hasLeftClick = pMouse->GetPress(CMouse::MOUSE_KEY_LEFT);
 	bool hasRightClick = pMouse->GetPress(CMouse::MOUSE_KEY_RIGHT);
 
-	if (hasLeftClick)
-	{
-	/*左クリックしている最中回転する*/
-		Rotate();
-		RPosRotate();
-	}
-
 	if (hasRightClick)
 	{
 		Rotate();
 		VPosRotate();
+	}
+	if (hasLeftClick)
+	{
+		/*左クリックしている最中回転する*/
+		Rotate();
+		RPosRotate();
 	}
 }
 
@@ -538,13 +545,13 @@ void CCamera::JoyPadMove(void)
 	if (pJoypad->GetUseJoyPad() >= 1)
 	{
 		// 回転のベクトルを設定。
-		m_rotMove.x = pJoypad->GetStickAngle(CJoypad::JOYKEY_LEFT_STICK, 0) * pJoypad->GetStick(CJoypad::JOYKEY_LEFT_STICK, 0).y * 100.0f;
+		m_Dest.x = pJoypad->GetStickAngle(CJoypad::JOYKEY_LEFT_STICK, 0) * pJoypad->GetStick(CJoypad::JOYKEY_LEFT_STICK, 0).y * 100.0f;
 
 		if ((pJoypad->GetStickAngle(CJoypad::JOYKEY_LEFT_STICK, 0) >= D3DX_PI * 0.25f && pJoypad->GetStickAngle(CJoypad::JOYKEY_LEFT_STICK, 0) <= D3DX_PI * 0.75f) ||
 			(pJoypad->GetStickAngle(CJoypad::JOYKEY_LEFT_STICK, 0) >= -D3DX_PI * 0.75f && pJoypad->GetStickAngle(CJoypad::JOYKEY_LEFT_STICK, 0) <= -D3DX_PI * 0.25f))
 		{
 			// 回転のベクトルを設定。
-			m_rotMove.y = pJoypad->GetStick(CJoypad::JOYKEY_LEFT_STICK, 0).x * 100.0f;
+			m_Dest.y = pJoypad->GetStick(CJoypad::JOYKEY_LEFT_STICK, 0).x * 100.0f;
 		}
 	
 	Rotate();
@@ -683,5 +690,24 @@ void CCamera::UpdateNormal()
 //=========================================
 void CCamera::UpdateRadar()
 {
+	CPlayer3D *pPlayer = CPlayerManager::GetPlayer();
 
+	CMouse *pMouse = CApplication::GetMouse();
+
+	// クリックの情報を保管
+	bool hasLeftClick = pMouse->GetPress(CMouse::MOUSE_KEY_LEFT);
+	bool hasRightClick = pMouse->GetPress(CMouse::MOUSE_KEY_RIGHT);
+
+	if (pPlayer != nullptr)
+	{
+		m_quaternion = D3DXQUATERNION(m_quaternion.x, m_quaternion.y, m_quaternion.z, m_quaternion.w);
+
+		Rotate();
+		RPosRotate();
+
+		D3DXVECTOR3 PlayerPos = pPlayer->GetPosition();
+
+		m_posV = D3DXVECTOR3(PlayerPos.x, m_posV.y, PlayerPos.z);
+		m_posR = D3DXVECTOR3(PlayerPos.x, m_posR.y, PlayerPos.z);
+	}
 }

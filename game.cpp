@@ -13,6 +13,7 @@
 #include "fade.h"
 #include "enemy.h"
 #include "camera.h"
+#include "radar.h"
 
 CMesh* CGame::m_pMesh[3] = {};
 CPlayerManager* CGame::pPlayerManager = nullptr;
@@ -35,16 +36,16 @@ CGame::~CGame()
 //=========================================
 HRESULT CGame::Init(const D3DXVECTOR3 &pos)
 {
+	// 海
+	m_pMesh[0] = CMesh::Create(D3DXVECTOR3(0.0f, -350.0f, 0.0f), CMesh::TYPE_SEA);
+
 	pPlayerManager = CPlayerManager::Create(D3DXVECTOR3(0.0f, 1000.0f, 5.0f));
 
 	CSphere *pSphere = CSphere::Create(D3DXVECTOR3(0.0f, -0.0f, 0.0f));
 	//CScore *pScore = CScore::Create(D3DXVECTOR3(20.0f, 20.0f, 0.0f));
-	
-	// 海
-	m_pMesh[0] = CMesh::Create(D3DXVECTOR3(0.0f, -350.0f, 0.0f), CMesh::TYPE_SEA);
 
-	//// 陸
-	//m_pMesh[1] = CMesh::Create(D3DXVECTOR3(0.0f, -400.0f, 0.0f), CMesh::TYPE_GROUND);
+	// 陸
+	m_pMesh[1] = CMesh::Create(D3DXVECTOR3(0.0f, -400.0f, 0.0f), CMesh::TYPE_GROUND);
 
 	// 戦闘機
 	CEnemy *pEnemy = CEnemy::Create(D3DXVECTOR3(0.0f, 1000.0, 100.0f));
@@ -55,6 +56,9 @@ HRESULT CGame::Init(const D3DXVECTOR3 &pos)
 	CEnemy *pTank = CEnemy::Create(D3DXVECTOR3(100.0f,0.0f,1000.0f));
 	pTank->SetType(CEnemy::ENEMY_GROUND);
 	pTank->SetMotion("data/MOTION/tank.txt");
+
+	m_pRadar = nullptr;
+	m_pRadar = CRadar::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), GetObjectinfo(), CRadar::RADAR_MAP);
 
 	// エネミー
 	m_EnemyList.emplace_back(pEnemy);

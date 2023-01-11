@@ -22,6 +22,7 @@ public:
 		OBJECT_ENEMY,		// エネミー
 		OBJECT_BULLET,		// 弾の種類
 		OBJECT_RADAR,		// レーダーのオブジェクト
+		OBJECT_MESH,
 		OBJECT_EMPTY,		// 設定されていない
 		OBJECT_FADE,
 		OBJECT_MAX

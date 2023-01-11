@@ -18,6 +18,7 @@
 #include "bullet.h"
 #include "model3D.h"
 #include "player_manager.h"
+#include "radar.h"
 
 int BulletDelay = 0;
 
@@ -55,6 +56,10 @@ HRESULT CPlayer3D::Init(const D3DXVECTOR3 &pos)
 
 	//大きさの設定
 	m_size = m_apModel[0]->GetSize();
+
+	m_Radar = nullptr;
+	// プレイヤーをレーダー上に表示させる
+	m_Radar = CRadar::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), GetObjectinfo(), CRadar::RADAR_PLAYER);
 
 	//=========================================
 	// 人型モデルの読み込み
@@ -240,7 +245,6 @@ void CPlayer3D::UpdateFly()
 
 	m_posDest.y -= 20.0f;
 	D3DXVECTOR3 m_posResult = m_posDest - m_pos;
-	D3DXVECTOR3 posDiss = m_pos - pCamera->GetPosV();
 
 	m_pos.x += m_posResult.x / 5;
 	m_pos.z += m_posResult.z / 5;

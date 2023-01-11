@@ -13,6 +13,7 @@
 #include "motion_model3D.h"
 
 class CModel3D;
+class CRadar;
 class CPlayer3D : public CMotionModel3D
 {
 public:
@@ -67,6 +68,7 @@ private:
 	D3DXMATRIX				m_WorldMtx;					// ワールドマトリックス
 	D3DXVECTOR3				m_MouseMove;				// マウスの移動処理
 	PLAYER_MODE				m_mode;						// モード
+	CRadar*					m_Radar;					// レーダー
 };
 
 #endif

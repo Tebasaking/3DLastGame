@@ -30,6 +30,10 @@ public: /* 定義 */
 		TEXTURE_TARGET,		// ターゲット
 		TEXTURE_TITLE,		// タイトル
 		TEXTURE_RESULT,		// リザルト
+		TEXTURE_RADAR_MAP,	// レーダーマップ
+		TEXTURE_FRAME,		// レーダーのフレーム
+		TEXTURE_ENEMY_TANK,	// タンク
+		TEXTURE_ENEMY_FLY,	// 戦闘機
 		TEXTURE_MAX,
 		TEXTURE_NONE,	// 使用しない
 	};

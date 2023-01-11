@@ -10,6 +10,8 @@
 #include "inputkeyboard.h"
 
 CPlayerManager::PLAYER_MODE CPlayerManager::m_mode = MODE_FLY;
+CPlayer3D *CPlayerManager::m_pFly = nullptr;
+CPlayer3D *CPlayerManager::m_pRobot = nullptr;
 //=========================================
 //コンストラクタ
 //=========================================

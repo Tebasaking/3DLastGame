@@ -38,7 +38,7 @@ HRESULT CTarget::Init(const D3DXVECTOR3 &pos)
 	CObject2D::SetTexture(CTexture::TEXTURE_TARGET);
 
 	//サイズの設定
-	CObject2D::SetScale(0.0f);
+	CObject2D::SetScale(D3DXVECTOR3(0.0f,0.0f,0.0f));
 
 	return S_OK;
 }
@@ -116,7 +116,7 @@ void CTarget::Update()
 		}
 
 		//サイズの設定
-		CObject2D::SetScale(Size);
+		CObject2D::SetScale(D3DXVECTOR3(Size,Size,0.0f));
 
 		//スクリーン座標に設定する
 		SetPosition(m_TargetPos);
@@ -124,7 +124,7 @@ void CTarget::Update()
 	else
 	{
 		//サイズの設定
-		CObject2D::SetScale(0.0f);
+		CObject2D::SetScale(D3DXVECTOR3(0.0f,0.0f,0.0f));
 	}
 }
 

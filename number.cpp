@@ -31,7 +31,7 @@ HRESULT CNumber::Init(const D3DXVECTOR3 &pos)
 	CObject2D::Init(pos);
 
 	//サイズの設定
-	CObject2D::SetScale(50.0f);
+	CObject2D::SetScale(D3DXVECTOR3(50.0f,50.0f,0.0f));
 
 	// テクスチャの設定
 	CObject2D::SetTexture(CTexture::TEXTURE_NUMBER);

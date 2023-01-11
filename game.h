@@ -14,6 +14,7 @@ class CPlayer3D;
 class CMesh;
 class CPlayerManager;
 class CEnemy;
+class CRadar;
 class CCamera;
 //=========================================
 // ƒNƒ‰ƒX
@@ -38,6 +39,7 @@ private:
 	static CMesh		  *m_pMesh[3];
 	static CPlayerManager *pPlayerManager;
 	std::vector<CEnemy*>  m_EnemyList;
+	CRadar*				  m_pRadar;
 };
 
 #endif	// _GAME_H_

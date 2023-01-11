@@ -10,11 +10,19 @@
 #include "billboard.h"
 #include "camera.h"
 
+class CObject2D;
 class CCamera;
 class CRadar :public CBillboard
 {
 public:
-	CRadar();			//コンストラクタ
+	enum RADAR_TYPE
+	{
+		RADAR_MAP,
+		RADAR_PLAYER,
+		RADAR_ENEMY
+	};
+
+	explicit CRadar(int nPriority = LAYER_TOW);			//コンストラクタ
 	virtual ~CRadar() override;			//デストラクタ
 
 											//初期化処理
@@ -28,10 +36,12 @@ public:
 	//ロックオン処理
 	D3DXVECTOR3 LockOn(D3DXMATRIX *mtxWorld);
 	//クリエイト処理
-	static CRadar* Create(const D3DXVECTOR3 &pos, CObject *object);
+	static CRadar* Create(const D3DXVECTOR3 &pos, CObject *object, RADAR_TYPE type);
 
 	// 追尾するオブジェクトの設定
 	void SetObject(CObject *pObj) { m_pObject = pObj; }
+	// タイプの設定
+	void SetType(RADAR_TYPE type) { m_type = type; }
 
 private:
 	D3DXVECTOR3 m_pos;				// 座標
@@ -40,6 +50,8 @@ private:
 	D3DXQUATERNION m_quaternion;	// クォータニオン
 	CObject *m_pObject;
 	CCamera::CAMERA_TYPE Camera_Type;
+	RADAR_TYPE m_type;				// レーダーのタイプ
+	CObject2D *m_pBackGround;		// レーダーの背景
 };
 
 #endif
