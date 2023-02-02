@@ -24,6 +24,7 @@ class CMode;
 class CFade;
 class CTexture3D;
 class CJoypad;
+class CSound;
 class CApplication
 {
 public:
@@ -65,6 +66,8 @@ public:
 	static CMode *GetModeObject() { return m_pMode; }
 	static CTexture3D *GetTexture3D() { return m_pTexture3D; }
 	static CJoypad *GetJoy() { return m_pJoy; }
+	static CSound *GetSound() { return m_pSound; }
+	static LPD3DXEFFECT GetShader() { return m_pEffect; }
 
 private:
 	static CDebugProc		*m_pDebug;
@@ -80,7 +83,9 @@ private:
 	static CMode			*m_pMode;
 	static CTexture3D		*m_pTexture3D;
 	static CJoypad			*m_pJoy;
-	bool					 m_bCheckViewport;
+	static CSound			*m_pSound;
+	static LPD3DXEFFECT		m_pEffect;			// シェーダー
+	bool					m_bCheckViewport;
 };
 
 #endif

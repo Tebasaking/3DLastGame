@@ -34,6 +34,8 @@ public: /* 定義 */
 		TEXTURE_FRAME,		// レーダーのフレーム
 		TEXTURE_ENEMY_TANK,	// タンク
 		TEXTURE_ENEMY_FLY,	// 戦闘機
+		TEXTURE_ARROW,		// 矢印
+		TEXTURE_WAVE,		// 波
 		TEXTURE_MAX,
 		TEXTURE_NONE,	// 使用しない
 	};

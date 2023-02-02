@@ -24,7 +24,7 @@ public:
 	{
 		ENEMY_IDOL,			// エネミーの待機状態
 		ENEMY_WARNNING,		// エネミーがプレイヤーを発見した状態
-							//見失った状態とかも作りたいけど余裕があれば。
+		//見失った状態とかも作りたいけど余裕があれば。
 	};
 
 	// エネミーの種類
@@ -48,6 +48,8 @@ public:
 	void Uninit(void) override;
 	//死亡処理
 	void Death(void);
+	//エネミー同士の当たり判定
+	void EnemyCollision(void);
 	//クリエイト処理
 	static CEnemy* Create(const D3DXVECTOR3 &pos);
 
@@ -56,8 +58,12 @@ public:
 	//番号取得処理
 	int GetNumber() { return m_Number; }
 
+	// ステートの設定
+	void SetState(EnemyState state) { m_state = state; }
 	// タイプの設定
 	void SetType(EnemyType type) { m_type = type; }
+	// 弾の発射
+	void Bullet(CObject *obj);
 
 	CModel3D *GetModel() { return m_apModel[0]; }
 
@@ -65,11 +71,17 @@ private:
 	CTarget*				m_Target;					// 自身につけるターゲット
 	CRadar*					m_Radar;					// レーダー
 	float					m_scale;					// 大きさ
+	bool					m_bColision;				// 当たっているかどうか
+
+	int						m_AttackCount;				// 攻撃間隔
 
 	EnemyType				m_type;						// タイプの設定
 	CModel3D*				m_apModel[MAX_PARTS];		// モデルの最大数
 	EnemyState				m_state;					// 状態
 	D3DXMATRIX				m_WorldMtx;					// ワールドマトリックス
+	D3DXVECTOR3				m_size;						// サイズ設定
+	D3DXVECTOR3				m_posOld;
+	D3DXVECTOR3				m_DestMove;					// デスト
 };
 
 #endif

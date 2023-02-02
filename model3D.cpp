@@ -11,6 +11,7 @@
 #include "model3D.h"
 #include "render.h"
 #include "application.h"
+#include "game.h"
 #include "texture3D.h"
 #include "light.h"
 #include "camera.h"
@@ -284,16 +285,13 @@ void CModel3D::LoadModel(const char *pFileName)
 HRESULT CModel3D::Init()
 {
 	// メンバ変数の初期化
-	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);					// 位置
-	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);					// 向き
 	m_size = D3DXVECTOR3(1.0f, 1.0f, 1.0f);					// 大きさ
 	m_nModelID = -1;										// モデルID
 
 	LPDIRECT3DDEVICE9 pDevice = CApplication::GetRender()->GetDevice();
 
-	D3DXCreateEffectFromFile(
-		pDevice, "Effect.fx", NULL, NULL,
-		0, NULL, &pEffect, nullptr);
+	// エフェクトファイルの取得
+	pEffect = CApplication::GetShader();
 
 	m_hTechnique = pEffect->GetTechniqueByName("Diffuse");				//エフェクト
 	m_hTexture = pEffect->GetParameterByName(NULL, "Tex");				//テクスチャ
@@ -319,7 +317,7 @@ void CModel3D::Uninit()
 //=============================================================================
 void CModel3D::Update()
 {
-
+	
 }
 
 //=============================================================================
@@ -481,7 +479,6 @@ void CModel3D::DrawMaterial()
 		//-------------------------------------------------
 		pEffect->SetTechnique(m_hTechnique);
 		pEffect->Begin(NULL, 0);
-		pEffect->BeginPass(0);
 		pDevice->SetFVF(FVF_VERTEX_3D);
 
 		pDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
@@ -552,12 +549,15 @@ void CModel3D::DrawMaterial()
 			// テクスチャの設定
 			pEffect->SetTexture(m_hTexture, pTex0);
 
+			pEffect->BeginPass(0);
+
 			//モデルパーツの描画
 			m_material[m_nModelID].pMesh->DrawSubset(nCntMat);
 			pMtrl++;
+
+			pEffect->EndPass();
 		}
 
-		pEffect->EndPass();
 		pEffect->End();
 	}
 

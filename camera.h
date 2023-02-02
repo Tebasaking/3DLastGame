@@ -54,6 +54,12 @@ public:
 		MAX_CAMERA_TYPE,			// カメラタイプの最大数
 	};
 
+	enum EVENT
+	{
+		EVENT_NORMAL,
+		EVENT_FLY,					// イベント中のカメラ設定
+	};
+
 	//--------------------------------------------------------------------
 	// コンストラクタとデストラクタ
 	//--------------------------------------------------------------------
@@ -68,10 +74,17 @@ public:
 	void Update(void);												// 更新
 	void UpdateNormal(void);										// 通常処理
 	void UpdateRadar(void);											// レーダーの処理
+	void Up(void);													// 上に上昇する
 	void Set();														// 設定
 	void SetViewType(VIEW_TYPE type) { m_viewType = type; }			// タイプの設定
 	void SetViewSize(DWORD X, DWORD Y, int fWidth, int fHeight);	// ビューポートの大きさ設定
 	void AddViewSize(DWORD X, DWORD Y, int fWidth, int fHeight);	// ビューポートの拡縮
+	void SetUp(bool check) { m_bUp = check; }
+
+	// floatを利用したカメラの制限(結構無理やり)
+	bool Limit_Used_Mouse();
+	// 設定した目標地点に視点を移動させる処理
+	void CameraWork(D3DXQUATERNION que);
 
 	// オブジェクトのモードの設定
 	void SetObjMode(CObject::Object_mode mode) { m_Objectmode = mode; }
@@ -101,6 +114,7 @@ private:
 	void ShoulderMove(void);		// 肩越し時の移動 
 	void MouseMove(void);			// マウス移動を回転に代入
 	void JoyPadMove(void);			// ジョイパッド移動を回転に代入
+	void FlightEvent();				// フライトイベント
 
 //--------------------------------------------------------------------
 // メンバ変数
@@ -118,18 +132,26 @@ private:
 	D3DXVECTOR3			m_rotMove;			// 移動方向
 	D3DXVECTOR3			m_VecGet;			// マウスのベクトル
 	D3DXVECTOR3			m_Dest;				// マウスのDest
+	D3DXVECTOR3			m_axisVec;			// 回転方向のベクトル
 	VIEW_TYPE			m_viewType;			// 投影の種別
 	CAMERA_TYPE			m_mode;				// カメラのモード
 	D3DVIEWPORT9		m_viewport;			// ビューポート
+	EVENT				m_event;			// イベント管理
 	CObject::Object_mode m_Objectmode;		// オブジェクトのモード
+
 	float				m_fDistance;		// 視点から注視点までの距離
 	float				m_fRotMove;			// 移動方向
-
+	float				m_MouseMove;		// 中心から移動したマウスの量
 	float				CAMERA_MOVE_SPEED = 0.5f;
 	float				MOVE_SPEED = 5.0f;
+	float				m_Gravity;			// 重力
 
-	D3DXVECTOR3			m_axisVec;			// 回転方向のベクトル
-	int nRotateType = -1;
+	bool				m_bWork;			// カメラワークが終了したかしていないか
+	bool				m_bUp;				// 上昇しているかしていないか
+
+	int					m_nCntFly;			// 飛行
+	int					m_nCntCameraWork;	// カメラワークの終了までの時間
+	int					nRotateType = -1;
 };
 
 #endif

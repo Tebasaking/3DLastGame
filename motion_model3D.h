@@ -45,11 +45,6 @@ public:
 	void Update() override;															// 更新
 	void Draw() override;															// 描画
 
-	void SetPosOld(const D3DXVECTOR3 &posOld) { m_posOld = posOld; }				// 過去位置のセッター
-
-
-	D3DXVECTOR3 GetPosOld() { return m_posOld; }									// 過去位置のゲッター
-
 	void SetMotion(const char *pName);												// モーション情報の設定
 	void SetMotion(const char *pName, const int nNumMotion);						// モーション情報の設定(オーバーロード)
 	CMotion *GetMotion() { return m_pMotion; }										// モーション情報の取得

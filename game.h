@@ -15,6 +15,7 @@ class CMesh;
 class CPlayerManager;
 class CEnemy;
 class CRadar;
+class CScore;
 class CCamera;
 //=========================================
 // ƒNƒ‰ƒX
@@ -34,10 +35,16 @@ public:
 	void DeleteEnemy(CEnemy* pEnemy);
 
 	static CMesh *GetGround() { return m_pMesh[1]; }
+	static bool GetFinish() { return m_bFinish; }
+	static void Finish() { m_bFinish = true; }
+	static CScore *GetScore() { return m_pScore; }
+	static void Add(int Score);
 
 private:
 	static CMesh		  *m_pMesh[3];
 	static CPlayerManager *pPlayerManager;
+	static CScore *m_pScore;
+	static bool m_bFinish;
 	std::vector<CEnemy*>  m_EnemyList;
 	CRadar*				  m_pRadar;
 };

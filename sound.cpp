@@ -1,50 +1,54 @@
-//=============================================================================
+//===================================================
 //
-// サウンド処理 [sound.h]
-// Author : AKIRA TANAKA
+// サウンド処理
+// Author : Sato Teruto
 //
-//=============================================================================
+//===================================================
 
-//*****************************************************************************
+//------------------------
 // インクルード
-//*****************************************************************************
+//------------------------
 #include "sound.h"
 
-//=========================================
+//------------------------
+// 各音素材のパラメータ
+//------------------------
+CSound::SOUNDPARAM g_aParam[CSound::SOUND_LABEL_MAX] =
+{
+	{ "Data/BGM/bgm000.wav", -1 },		// Title
+	{ "Data/SE/Attack.wav",0 },			// 近接攻撃した時のSE
+	{ "Data/SE/Explosion.wav",0 },		// 爆発した時の音
+	{ "Data/SE/footstep.wav",0 },		// 足音
+};
+
+//------------------------
+// 静的メンバ変数宣言
+//------------------------
+IXAudio2				*CSound::m_pXAudio2 = nullptr;
+IXAudio2MasteringVoice	*CSound::m_pMasteringVoice = nullptr;
+IXAudio2SourceVoice		*CSound::m_apSourceVoice[SOUND_LABEL_MAX] = {};
+BYTE					*CSound::m_apDataAudio[SOUND_LABEL_MAX] = {};
+DWORD					CSound::m_aSizeAudio[SOUND_LABEL_MAX] = {};
+
+//===========================
 // コンストラクタ
-//=========================================
+//===========================
 CSound::CSound()
 {
-	m_pXAudio2 = nullptr;				// XAudio2オブジェクトへのインターフェイス
-	m_pMasteringVoice = nullptr;		// マスターボイス
 
-	SOUNDPARAM g_aParam[SOUND_LABEL_MAX] =
-	{
-		{ "Data/BGM/bgm000.wav", -1 },		// Title
-	};
-
-	for (int nCntSound = 0; nCntSound < SOUND_LABEL_MAX; nCntSound++)
-	{
-		m_apSourceVoice[nCntSound] = nullptr;			// ソースボイス
-		m_apDataAudio[nCntSound] = nullptr;				// オーディオデータ
-		m_aSizeAudio[nCntSound] = NULL;					// オーディオデータサイズ
-	}
-
-	// 各音素材のパラメータ
-	memset(&m_aParam[0], 0, sizeof(m_aParam));
 }
 
-//=========================================
+//===========================
 // デストラクタ
-//=========================================
+//===========================
 CSound::~CSound()
 {
 
 }
 
-//=========================================
+//=============================================================================
 // 初期化処理
-//=========================================
+//=============================================================================
 HRESULT CSound::Init(HWND hWnd)
 {
 	HRESULT hr;
@@ -98,7 +102,7 @@ HRESULT CSound::Init(HWND hWnd)
 		memset(&buffer, 0, sizeof(XAUDIO2_BUFFER));
 
 		// サウンドデータファイルの生成
-		hFile = CreateFile(m_aParam[nCntSound].pFilename, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
+		hFile = CreateFile(g_aParam[nCntSound].pFilename, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL);
 		if (hFile == INVALID_HANDLE_VALUE)
 		{
 			MessageBox(hWnd, "サウンドデータファイルの生成に失敗！(1)", "警告！", MB_ICONWARNING);
@@ -171,7 +175,7 @@ HRESULT CSound::Init(HWND hWnd)
 		buffer.AudioBytes = m_aSizeAudio[nCntSound];
 		buffer.pAudioData = m_apDataAudio[nCntSound];
 		buffer.Flags = XAUDIO2_END_OF_STREAM;
-		buffer.LoopCount = m_aParam[nCntSound].nCntLoop;
+		buffer.LoopCount = g_aParam[nCntSound].nCntLoop;
 
 		// オーディオバッファの登録
 		m_apSourceVoice[nCntSound]->SubmitSourceBuffer(&buffer);
@@ -183,9 +187,9 @@ HRESULT CSound::Init(HWND hWnd)
 	return S_OK;
 }
 
-//=========================================
+//=============================================================================
 // 終了処理
-//=========================================
+//=============================================================================
 void CSound::Uninit(void)
 {
 	// 一時停止
@@ -221,9 +225,9 @@ void CSound::Uninit(void)
 	CoUninitialize();
 }
 
-//=========================================
+//=============================================================================
 // セグメント再生(再生中なら停止)
-//=========================================
+//=============================================================================
 HRESULT CSound::PlaySound(SOUND_LABEL label)
 {
 	XAUDIO2_VOICE_STATE xa2state;
@@ -234,7 +238,7 @@ HRESULT CSound::PlaySound(SOUND_LABEL label)
 	buffer.AudioBytes = m_aSizeAudio[label];
 	buffer.pAudioData = m_apDataAudio[label];
 	buffer.Flags = XAUDIO2_END_OF_STREAM;
-	buffer.LoopCount = m_aParam[label].nCntLoop;
+	buffer.LoopCount = g_aParam[label].nCntLoop;
 
 	// 状態取得
 	m_apSourceVoice[label]->GetState(&xa2state);
@@ -256,9 +260,9 @@ HRESULT CSound::PlaySound(SOUND_LABEL label)
 	return S_OK;
 }
 
-//=========================================
+//=============================================================================
 // セグメント停止(ラベル指定)
-//=========================================
+//=============================================================================
 void CSound::StopSound(SOUND_LABEL label)
 {
 	XAUDIO2_VOICE_STATE xa2state;
@@ -275,9 +279,9 @@ void CSound::StopSound(SOUND_LABEL label)
 	}
 }
 
-//=========================================
+//=============================================================================
 // セグメント停止(全て)
-//=========================================
+//=============================================================================
 void CSound::StopSound(void)
 {
 	// 一時停止
@@ -291,10 +295,10 @@ void CSound::StopSound(void)
 	}
 }
 
-//=========================================
+//=============================================================================
 // チャンクのチェック
-//=========================================
-HRESULT CSound::CheckChunk(HANDLE hFile, DWORD format, DWORD * pChunkSize, DWORD * pChunkDataPosition)
+//=============================================================================
+HRESULT CSound::CheckChunk(HANDLE hFile, DWORD format, DWORD *pChunkSize, DWORD *pChunkDataPosition)
 {
 	HRESULT hr = S_OK;
 	DWORD dwRead;
@@ -359,10 +363,10 @@ HRESULT CSound::CheckChunk(HANDLE hFile, DWORD format, DWORD * pChunkSize, DWORD
 	return S_OK;
 }
 
-//=========================================
+//=============================================================================
 // チャンクデータの読み込み
-//=========================================
-HRESULT CSound::ReadChunkData(HANDLE hFile, void * pBuffer, DWORD dwBuffersize, DWORD dwBufferoffset)
+//=============================================================================
+HRESULT CSound::ReadChunkData(HANDLE hFile, void *pBuffer, DWORD dwBuffersize, DWORD dwBufferoffset)
 {
 	DWORD dwRead;
 

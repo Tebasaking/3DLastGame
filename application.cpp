@@ -41,6 +41,7 @@ CMode* CApplication::m_pMode = nullptr;
 CJoypad *CApplication::m_pJoy = {};	
 CGame* CApplication::m_pGame = nullptr;
 CTexture3D* CApplication::m_pTexture3D = nullptr;
+CSound*	CApplication::m_pSound = nullptr;		//サウンド
 
 CCamera* CApplication::m_pRader = nullptr;
 CCamera* CApplication::m_pCamera = nullptr;
@@ -48,6 +49,8 @@ CCamera* CApplication::m_pCamera = nullptr;
 CSound *pSound = nullptr;
 CApplication::MODE CApplication::m_NextMode = MODE_MAX;
 CApplication::MODE CApplication::m_mode = MODE_MAX;
+
+LPD3DXEFFECT CApplication::m_pEffect = nullptr;
 
 //=========================================
 // コンストラクタ
@@ -109,6 +112,12 @@ HRESULT CApplication::Init(HINSTANCE hInstance,HWND hWnd)
 		return E_FAIL;
 	}
 
+	//----------------------------
+	// サウンドの生成と初期化
+	//----------------------------
+	m_pSound = new CSound;
+	m_pSound->Init(hWnd);
+
 	// カメラの初期化設定
 	if (m_pCamera != nullptr)
 	{
@@ -134,6 +143,13 @@ HRESULT CApplication::Init(HINSTANCE hInstance,HWND hWnd)
 
 	//モードの設定
 	CFade::Create(m_NextMode);
+
+	// デバイスの取得
+	LPDIRECT3DDEVICE9 pDevice = GetRender()->GetDevice();
+
+	D3DXCreateEffectFromFile(
+		pDevice, "Effect.fx", NULL, NULL,
+		0, NULL, &m_pEffect, nullptr);
 
 	return S_OK;
 }
@@ -213,6 +229,13 @@ void CApplication::Uninit()
 
 	// デバックの終了処理
 	m_pDebug->Uninit();
+
+	if (m_pSound != nullptr)
+	{
+		m_pSound->Uninit();
+		delete m_pSound;
+		m_pSound = nullptr;
+	}
 
 	if (m_pRender != nullptr)
 	{

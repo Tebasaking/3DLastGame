@@ -91,7 +91,8 @@ void CMotionModel3D::Uninit()
 		m_pMotion->Uninit();
 
 		// メモリの解放
-		delete m_pMotion;
+		
+		m_pMotion;
 		m_pMotion = nullptr;
 	}
 
@@ -133,13 +134,13 @@ void CMotionModel3D::Draw()
 		// ワールドマトリックスの初期化
 		D3DXMatrixIdentity(&mtxWorld);											// 行列初期化関数
 
-		// クォータニオンの反映
-		D3DXMatrixRotationQuaternion(&mtxRot, &m_quaternion);						// クオータニオンによる行列回転
-		D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);						// 行列掛け算関数(第2引数×第3引数第を１引数に格納)
-
 		// 向きの反映
 		D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);			// 行列回転関数
 		D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);						// 行列掛け算関数 
+
+		// クォータニオンの反映
+		D3DXMatrixRotationQuaternion(&mtxRot, &m_quaternion);						// クオータニオンによる行列回転
+		D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);						// 行列掛け算関数(第2引数×第3引数第を１引数に格納)
 
 		// 位置を反映
 		D3DXMatrixTranslation(&mtxTrans, m_pos.x, m_pos.y, m_pos.z);				// 行列移動関数

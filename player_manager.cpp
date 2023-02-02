@@ -35,13 +35,13 @@ HRESULT CPlayerManager::Init(const D3DXVECTOR3 &pos)
 	m_pFly = new CPlayer3D;
 	m_pRobot = new CPlayer3D;
 
-	// 初期化処理
-	m_pFly->Init(pos); 
-	m_pRobot->Init(pos);
-
 	// モードの設定
 	m_pFly->SetMode((CPlayer3D::PLAYER_MODE)MODE_FLY);
 	m_pRobot->SetMode((CPlayer3D::PLAYER_MODE)MODE_ROBOT);
+
+	// 初期化処理
+	m_pFly->Init(pos); 
+	m_pRobot->Init(pos);
 
 	// モーションの設定
 	m_pFly->SetMotion("data/MOTION/fly_motion.txt");

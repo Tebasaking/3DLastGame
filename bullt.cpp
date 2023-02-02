@@ -74,49 +74,37 @@ void CBullet::Update()
 
 	int Size = GetScale();
 
-	CObject *object = CObject::GetObjectTop();
+	CObject *object = m_pTargetObj;
 
-	//=========================================
-	// ’e‚ÆƒGƒlƒ~[‚Ì“–‚½‚è”»’è
-	//=========================================
-	while(object)
+	if (m_pTargetObj != nullptr)
 	{
-		if (object != nullptr)
+		D3DXVECTOR3 posTarget = object->GetPosition();
+		D3DXMATRIX	*TargetMatrix = object->GetMtxWorld();
+		D3DXVECTOR3 SizeTarget = object->GetSize();
+
+		switch (Camera_Type)
 		{
-			EObjType ObjType = object->GetObjectType();
-			D3DXVECTOR3 size = GetSize();
+		case CCamera::TYPE_FREE:
+			// ’e‚ÌˆÚ“®
+			m_pos = WorldCastVtx(D3DXVECTOR3(0.0f, 0.0f, 50.0f), m_pos, m_quaternion);
+			break;
 
-			if (ObjType == OBJECT_ENEMY)
-			{
-				D3DXVECTOR3 posTarget = object->GetPosition();
-				D3DXMATRIX	*TargetMatrix = object->GetMtxWorld();
-				D3DXVECTOR3 SizeTarget = object->GetSize();
+		case CCamera::TYPE_SHOULDER:
+			// ’e‚ÌˆÚ“®
+			m_TargetPos = object->GetPosition();
+			m_pos += LockOn(TargetMatrix);
+			break;
+		}
 
-				switch (Camera_Type)
-				{
-				case CCamera::TYPE_FREE:
-					// ’e‚ÌˆÚ“®
-					m_pos = WorldCastVtx(D3DXVECTOR3(0.0f, 0.0f, 50.0f), m_pos, m_quaternion);
-					break;
+		// “–‚½‚è”»’è
+		bool bCollision = Collision(object,false);
 
-				case CCamera::TYPE_SHOULDER:
-					// ’e‚ÌˆÚ“®
-					m_pos += LockOn(TargetMatrix);
-					break;
-				}
-
-				bool bCollision = Collision(m_pos, m_posOld, posTarget, D3DXVECTOR3(1.0f,1.0f,1.0f), D3DXVECTOR3(100.0f,100.0f,100.0f), false);
-				
-				if (bCollision)
-				{
-					// ’e‚ÌI—¹
-					CBullet::Uninit();
-					CExplosion::Create(m_pos,m_quaternion);
-					object->ManageHP(-1);
-					break;
-				}
-			}
-			object = object->GetObjectNext();
+		if (bCollision)
+		{
+			// ’e‚ÌI—¹
+			CBullet::Uninit();
+			CExplosion::Create(m_pos, m_quaternion);
+			object->ManageHP(-1);
 		}
 	}
 }
@@ -152,15 +140,15 @@ D3DXVECTOR3 CBullet::LockOn(D3DXMATRIX *mtxWorld)
 	// “G‚Ì‚¢‚éŒü‚«
 	D3DXVECTOR3 sub = D3DXVECTOR3(0.0f, 0.0f, 0.f);
 	D3DXVECTOR3 distance = posTarget - BulletPos;
-	
+
+	// ŽO•½•û‚Å“G‚Ì•ûŒü‚ðo‚·
 	float fDistanceXZ = sqrtf((distance.x * distance.x) + (distance.z * distance.z));
 	float fFellowRotY = atan2f(distance.x, distance.z);
 	float fFellowRotX = atan2f(fDistanceXZ, distance.y);
 
-	// ’Ž‹“_‚ÌŽZo
 	sub.z = sinf(fFellowRotX) * cosf(fFellowRotY) * 100.0f;
 	sub.x = sinf(fFellowRotX) * sinf(fFellowRotY) * 100.0f;
-	sub.y = cosf(fFellowRotX) * 100.0f;
+	sub.y = cosf(atan2f(distance.y, distance.y))  * 100.0f;
 
 	return sub;
 }
@@ -168,9 +156,8 @@ D3DXVECTOR3 CBullet::LockOn(D3DXMATRIX *mtxWorld)
 //=========================================
 //ƒIƒuƒWƒFƒNƒg‚ÌƒNƒŠƒGƒCƒg
 //=========================================
-CBullet* CBullet::Create(const D3DXVECTOR3 &pos, const D3DXQUATERNION &quaternion)
+CBullet* CBullet::Create(const D3DXVECTOR3 &pos, const D3DXQUATERNION &quaternion, CObject *object)
 {
-
 	CBullet* pCBullet = nullptr;
 
 	pCBullet = new CBullet;
@@ -179,6 +166,7 @@ CBullet* CBullet::Create(const D3DXVECTOR3 &pos, const D3DXQUATERNION &quaternio
 	{
 		pCBullet->Init(pos);
 		pCBullet->m_quaternion = quaternion;
+		pCBullet->SetTargetObj(object);
 	}
 
 	return pCBullet;

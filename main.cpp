@@ -152,7 +152,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpC
 				pCApplication->Update();
 
 				// デバック
-				CDebugProc::Print("FSP : %d",g_nCountFPS);
+				CDebugProc::Print("FSP : %d", g_nCountFPS);
 
 				// 描画処理
 				pCApplication->Draw();

@@ -52,6 +52,12 @@
     <Filter Include="ソース ファイル\ゲーム\3D\motion">
       <UniqueIdentifier>{cceb547f-d799-4172-ad01-2325ed4fe8b3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\ゲーム\2D\Score">
+      <UniqueIdentifier>{f7a7ed52-5890-48d8-aa45-ae758c33f7cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\ゲーム\3D\Player">
+      <UniqueIdentifier>{8b2ce853-b745-4672-bc5e-15e67151d20d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="application.cpp">
@@ -84,9 +90,6 @@
     <ClCompile Include="Object3D.cpp">
       <Filter>ソース ファイル\ゲーム\3D</Filter>
     </ClCompile>
-    <ClCompile Include="player3D.cpp">
-      <Filter>ソース ファイル\ゲーム\3D</Filter>
-    </ClCompile>
     <ClCompile Include="Object2D.cpp">
       <Filter>ソース ファイル\ゲーム\2D</Filter>
     </ClCompile>
@@ -116,9 +119,6 @@
     </ClCompile>
     <ClCompile Include="mode.cpp">
       <Filter>ソース ファイル\システム\モード</Filter>
-    </ClCompile>
-    <ClCompile Include="score.cpp">
-      <Filter>ソース ファイル\ゲーム\2D</Filter>
     </ClCompile>
     <ClCompile Include="number.cpp">
       <Filter>ソース ファイル\ゲーム\2D</Filter>
@@ -162,9 +162,6 @@
     <ClCompile Include="texture3D.cpp">
       <Filter>ソース ファイル\ゲーム\3D</Filter>
     </ClCompile>
-    <ClCompile Include="player_manager.cpp">
-      <Filter>ソース ファイル\ゲーム\3D</Filter>
-    </ClCompile>
     <ClCompile Include="joypad.cpp">
       <Filter>ソース ファイル\システム</Filter>
     </ClCompile>
@@ -176,6 +173,24 @@
     </ClCompile>
     <ClCompile Include="target.cpp">
       <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
+    </ClCompile>
+    <ClCompile Include="bullet3D.cpp">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="missile_alert.cpp">
+      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
+    </ClCompile>
+    <ClCompile Include="score.cpp">
+      <Filter>ソース ファイル\ゲーム\2D\Score</Filter>
+    </ClCompile>
+    <ClCompile Include="time.cpp">
+      <Filter>ソース ファイル\ゲーム\2D\Score</Filter>
+    </ClCompile>
+    <ClCompile Include="player_manager.cpp">
+      <Filter>ソース ファイル\ゲーム\3D\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="player3D.cpp">
+      <Filter>ソース ファイル\ゲーム\3D\Player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -192,9 +207,6 @@
       <Filter>ソース ファイル\ゲーム\3D</Filter>
     </ClInclude>
     <ClInclude Include="Object3D.h">
-      <Filter>ソース ファイル\ゲーム\3D</Filter>
-    </ClInclude>
-    <ClInclude Include="player3D.h">
       <Filter>ソース ファイル\ゲーム\3D</Filter>
     </ClInclude>
     <ClInclude Include="billboard.h">
@@ -263,9 +275,6 @@
     <ClInclude Include="fade.h">
       <Filter>ソース ファイル\ゲーム\2D</Filter>
     </ClInclude>
-    <ClInclude Include="score.h">
-      <Filter>ソース ファイル\ゲーム\2D</Filter>
-    </ClInclude>
     <ClInclude Include="enemy.h">
       <Filter>ソース ファイル\ゲーム\3D</Filter>
     </ClInclude>
@@ -278,16 +287,10 @@
     <ClInclude Include="motion_model3D.h">
       <Filter>ソース ファイル\ゲーム\3D\motion</Filter>
     </ClInclude>
-    <ClInclude Include="parts.h">
-      <Filter>ソース ファイル\ゲーム\3D\motion</Filter>
-    </ClInclude>
     <ClInclude Include="model3D.h">
       <Filter>ソース ファイル\ゲーム\3D</Filter>
     </ClInclude>
     <ClInclude Include="texture3D.h">
-      <Filter>ソース ファイル\ゲーム\3D</Filter>
-    </ClInclude>
-    <ClInclude Include="player_manager.h">
       <Filter>ソース ファイル\ゲーム\3D</Filter>
     </ClInclude>
     <ClInclude Include="joypad.h">
@@ -301,6 +304,27 @@
     </ClInclude>
     <ClInclude Include="target.h">
       <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
+    </ClInclude>
+    <ClInclude Include="bullet3D.h">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="parts.h">
+      <Filter>ソース ファイル\ゲーム\3D\motion</Filter>
+    </ClInclude>
+    <ClInclude Include="missile_alert.h">
+      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
+    </ClInclude>
+    <ClInclude Include="score.h">
+      <Filter>ソース ファイル\ゲーム\2D\Score</Filter>
+    </ClInclude>
+    <ClInclude Include="time.h">
+      <Filter>ソース ファイル\ゲーム\2D\Score</Filter>
+    </ClInclude>
+    <ClInclude Include="player_manager.h">
+      <Filter>ソース ファイル\ゲーム\3D\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="player3D.h">
+      <Filter>ソース ファイル\ゲーム\3D\Player</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

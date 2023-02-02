@@ -9,7 +9,6 @@
 #include "texture.h"
 #include "calculation.h"
 
-int nLineVtx = (MESH_X_BLOCK + 1);
 //=========================================
 //コンストラクタ
 //=========================================
@@ -19,6 +18,7 @@ CMesh::CMesh(int nPriority)
 	m_pVtxBuff = nullptr;
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_MeshSize = 0;
 }
 
 //=========================================
@@ -40,13 +40,34 @@ HRESULT CMesh::Init(const D3DXVECTOR3 &pos)
 	switch (m_type)
 	{
 	case TYPE_SEA:
+		m_texture = CTexture::TEXTURE_WAVE;
+		SetMeshSize(10000.0f);
+		SetBlock(2.0f, 2.0f);
+		break;
+
+	case TYPE_WAVE:
 		m_texture = CTexture::TEXTURE_SEA;
+		SetMeshSize(500.0f);
+		SetBlock(40.0f, 40.0f);
 		break;
 
 	case TYPE_GROUND:
 		m_texture = CTexture::TEXTURE_GROUND;
+		SetMeshSize(1000.0f);
+		SetBlock(20.0f, 20.0f);
 		break;
 	}
+
+	// ブロック数
+	int MESH_X_BLOCK = m_BlockX;
+	int MESH_Z_BLOCK = m_BlockZ;
+
+	MESH_VERTEX_NUM = ((MESH_X_BLOCK + 1) * (MESH_Z_BLOCK + 1));
+	MESH_INDEX_NUM = (((MESH_X_BLOCK + 1) * 2) * (MESH_Z_BLOCK  *(MESH_Z_BLOCK - 1)) * MESH_Z_BLOCK * 2);
+	MESH_PRIMITIVE_NUM = (MESH_X_BLOCK * MESH_Z_BLOCK * 2 + 4 * (MESH_Z_BLOCK - 1));
+
+	// 頂点数の分m_fVtxHeightを取得
+	m_fVtxHeight.resize(MESH_VERTEX_NUM);
 
 	//頂点バッファの生成
 	pDevice->CreateVertexBuffer(sizeof(VERTEX_3D) * MESH_VERTEX_NUM,	//確保するバッファのサイズ
@@ -80,15 +101,41 @@ HRESULT CMesh::Init(const D3DXVECTOR3 &pos)
 			{
 				//頂点座標の設定（ワールド座標ではなくローカル座標を指定する）
 				pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].pos = D3DXVECTOR3
-				(-(MESH_SIZE * MESH_X_BLOCK) / 2 + nCntX * MESH_SIZE,					// x
+				(-(m_MeshSize * MESH_X_BLOCK) / 2 + nCntX * m_MeshSize,					// x
 					sinf(nCntX * D3DX_PI * 0.25f) * 10.0f,								// y
-					(MESH_SIZE * MESH_Z_BLOCK) / 2 - nCntZ * MESH_SIZE);				// z
+					(m_MeshSize * MESH_Z_BLOCK) / 2 - nCntZ * m_MeshSize);				// z
 
 				//各頂点の法線の設定
 				pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 
 				//頂点カラーの設定
 				pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
+
+				//テクスチャの設定
+				pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].tex = D3DXVECTOR2((float)nCntX, (float)nCntZ);
+			}
+		}
+		break;
+
+	case TYPE_WAVE:
+		for (int nCntZ = 0; nCntZ <= MESH_Z_BLOCK; nCntZ++)
+		{
+			for (int nCntX = 0; nCntX <= MESH_X_BLOCK; nCntX++)
+			{
+				//頂点座標の設定（ワールド座標ではなくローカル座標を指定する）
+				pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].pos = D3DXVECTOR3
+				(-(m_MeshSize * MESH_X_BLOCK) / 2 + nCntX * m_MeshSize,					// x
+					sinf(nCntX * nCntZ) * 100.0f ,										// y
+					(m_MeshSize * MESH_Z_BLOCK) / 2 - nCntZ * m_MeshSize);				// z
+
+				// 頂点の高さ
+				m_fVtxHeight[nCntX + (MESH_X_BLOCK + 1) * nCntZ] = pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].pos.y;
+
+				//各頂点の法線の設定
+				pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
+
+				//頂点カラーの設定
+				pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.1f);
 
 				//テクスチャの設定
 				pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].tex = D3DXVECTOR2((float)nCntX, (float)nCntZ);
@@ -103,11 +150,11 @@ HRESULT CMesh::Init(const D3DXVECTOR3 &pos)
 			{
 				//頂点座標の設定（ワールド座標ではなくローカル座標を指定する）
 				pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].pos = D3DXVECTOR3
-				(-(MESH_SIZE * MESH_X_BLOCK) / 2 + nCntX * MESH_SIZE,					// x
-					sinf(nCntX * D3DX_PI * 0.25f) * 10.0f * (rand() % 100 + 1),			// y
-					(MESH_SIZE * MESH_Z_BLOCK) / 2 - nCntZ * MESH_SIZE);				// z
+				(-(m_MeshSize * MESH_X_BLOCK) / 2 + nCntX * m_MeshSize,					// x
+					sinf(nCntX * D3DX_PI * 0.25f) * 5.0f * (rand() % 100 + 1),			// y
+					(m_MeshSize * MESH_Z_BLOCK) / 2 - nCntZ * m_MeshSize);				// z
 
-																						//各頂点の法線の設定
+				//各頂点の法線の設定
 				pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].nor = D3DXVECTOR3(0.0f, 1.0f, 0.0f);
 
 				//頂点カラーの設定
@@ -126,6 +173,8 @@ HRESULT CMesh::Init(const D3DXVECTOR3 &pos)
 	//インデックスバッファをロック
 	WORD* pIdx;
 	m_pIdxVtxBuff->Lock(0, 0, (void**)&pIdx, 0);
+
+	int nLineVtx = (m_BlockX + 1);
 
 	//縦の頂点の数
 	for (int nCntZ = 0; nCntZ < MESH_Z_BLOCK; nCntZ++)
@@ -162,6 +211,57 @@ HRESULT CMesh::Init(const D3DXVECTOR3 &pos)
 void CMesh::Update()
 {
 	NorCreate();
+
+	int MESH_X_BLOCK = m_BlockX;
+	int MESH_Z_BLOCK = m_BlockZ;
+
+	VERTEX_3D *pVtx;	// 頂点情報へのポインタ
+
+	static float aaa = 0.0f;
+
+	aaa += 0.1f;
+
+	// 頂点バッファをロックし、頂点情報へのポインタを取得
+	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+	if (m_type == TYPE_WAVE)
+	{
+		for (int nCntZ = 0; nCntZ <= MESH_Z_BLOCK; nCntZ++)
+		{
+			for (int nCntX = 0; nCntX <= MESH_X_BLOCK; nCntX++)
+			{
+				float fAddWave = 5.0f * D3DX_PI / 180.0f;
+
+				m_fVtxHeight[nCntX + (MESH_X_BLOCK + 1) * nCntZ] += sinf(fAddWave);
+
+				//頂点座標の設定（ワールド座標ではなくローカル座標を指定する）
+				pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].pos.y = sinf(m_fVtxHeight[nCntX + (MESH_X_BLOCK + 1) * nCntZ]) * 30.0f;
+
+				//テクスチャの設定
+				pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].tex.y += 0.01f;
+
+				//頂点カラーの設定
+				pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.5f);
+			}
+		}
+	}
+
+	if (m_type == TYPE_GROUND)
+	{
+		for (int nCntZ = 0; nCntZ <= MESH_Z_BLOCK; nCntZ++)
+		{
+			for (int nCntX = 0; nCntX <= MESH_X_BLOCK; nCntX++)
+			{
+				if (pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].pos.y >= 200.0f)
+				{
+					//頂点カラーの設定
+					pVtx[nCntX + (MESH_X_BLOCK + 1) * nCntZ].col = D3DXCOLOR(1.0f, 1.0f, 0.0f, 1.0f);
+				}
+			}
+		}
+	}
+	// 頂点をアンロックする
+	m_pVtxBuff->Unlock();
 }
 
 //=========================================
@@ -255,7 +355,7 @@ CMesh* CMesh::Create(const D3DXVECTOR3 &pos, MeshType type)
 
 	CMesh* pCMesh = nullptr;
 
-	pCMesh = new CMesh[1];
+	pCMesh = new CMesh;
 
 	if (pCMesh != nullptr)
 	{
@@ -303,6 +403,7 @@ void CMesh::SetSize(const float size)
 	// 頂点をアンロックする
 	m_pVtxBuff->Unlock();
 }
+
 //=========================================
 //テクスチャの設定
 //=========================================
@@ -335,7 +436,7 @@ bool CMesh::Collision(D3DXVECTOR3 *pos)
 
 	CApplication::MODE pMode = CApplication::GetMode();
 
-	if (CApplication::GetMode() == CApplication::MODE_GAME)
+	if (CApplication::GetMode() == CApplication::MODE_GAME && m_pVtxBuff != nullptr)
 	{
 		// 頂点情報の取得
 		VERTEX_3D *pVtx = NULL;

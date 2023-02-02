@@ -123,7 +123,7 @@ private:
 	bool				m_bLighting;		// ライトの使用状況
 	D3DXQUATERNION		m_quaternion;		//クォータニオン
 	LPD3DXEFFECT		pEffect;			// シェーダー
-	IDirect3DTexture9	*pTex0 = NULL;				// テクスチャ保存用
+	IDirect3DTexture9	*pTex0 = NULL;		// テクスチャ保存用
 
 	//=========================================
 	//ハンドル一覧

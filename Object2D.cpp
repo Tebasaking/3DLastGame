@@ -220,6 +220,11 @@ void CObject2D::SetAnim(const float Num,const int Pattern)
 //=============================================================================
 void CObject2D::VtxUpdate()
 {
+	{
+		m_fLength = sqrtf(m_scale.x * m_scale.x + m_scale.y * m_scale.y);
+		m_fAngle = atan2f(m_scale.x, m_scale.y);
+	}
+
 	if (m_pVtxBuff != nullptr)
 	{
 		//頂点情報へのポインタ
@@ -228,11 +233,21 @@ void CObject2D::VtxUpdate()
 		//頂点バッファをロックし、頂点情報へのポインタを取得
 		m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
-		//頂点座標の設定
-		pVtx[0].pos = D3DXVECTOR3(m_pos.x - m_scale.x, m_pos.y - m_scale.y, 0.0f);
-		pVtx[1].pos = D3DXVECTOR3(m_pos.x + m_scale.x, m_pos.y - m_scale.y, 0.0f);
-		pVtx[2].pos = D3DXVECTOR3(m_pos.x - m_scale.x, m_pos.y + m_scale.y, 0.0f);
-		pVtx[3].pos = D3DXVECTOR3(m_pos.x + m_scale.x, m_pos.y + m_scale.y, 0.0f);
+		pVtx[0].pos.x = m_pos.x + sinf(m_rot.y + m_fAngle + -D3DX_PI) * m_fLength;
+		pVtx[0].pos.y = m_pos.y + cosf(m_rot.y + m_fAngle + -D3DX_PI) * m_fLength;
+		pVtx[0].pos.z = 0.0f;
+
+		pVtx[1].pos.x = m_pos.x + sinf(m_rot.y + -m_fAngle + D3DX_PI) * m_fLength;
+		pVtx[1].pos.y = m_pos.y + cosf(m_rot.y + -m_fAngle + D3DX_PI) * m_fLength;
+		pVtx[1].pos.z = 0.0f;
+
+		pVtx[2].pos.x = m_pos.x + sinf(m_rot.y + m_fAngle * -1.0f) * m_fLength;
+		pVtx[2].pos.y = m_pos.y + cosf(m_rot.y + m_fAngle * -1.0f) * m_fLength;
+		pVtx[2].pos.z = 0.0f;
+
+		pVtx[3].pos.x = m_pos.x + sinf(m_rot.y + m_fAngle) * m_fLength;
+		pVtx[3].pos.y = m_pos.y + cosf(m_rot.y + m_fAngle) * m_fLength;
+		pVtx[3].pos.z = 0.0f;
 
 		//頂点カラーの更新
 		pVtx[0].col = m_col;

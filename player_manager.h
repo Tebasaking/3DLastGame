@@ -34,6 +34,7 @@ public:
 	// モードの取得
 	static PLAYER_MODE GetMode() { return m_mode; }
 	static CPlayer3D* GetPlayer() { return m_pFly; }
+	static CPlayer3D* GetRobot() { return m_pRobot; }
 	// クリエイト処理
 	static CPlayerManager* Create(const D3DXVECTOR3 &pos);
 

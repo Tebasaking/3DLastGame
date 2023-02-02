@@ -194,6 +194,31 @@ void CRender::Draw()
 	m_pD3DDevice->Present(NULL, NULL, NULL, NULL);
 }
 
+//=============================================================================
+// フォグ設定処理
+//=============================================================================
+void CRender::SetFog(bool bFlag, D3DXCOLOR col)
+{
+	// フォグの有効設定
+	m_pD3DDevice->SetRenderState(D3DRS_FOGENABLE, bFlag);
+
+	// フォグカラーの設定
+	m_pD3DDevice->SetRenderState(D3DRS_FOGCOLOR, col);
+
+	// フォグモード 第二引数(範囲指定 : D3DFOG_LINEAR, 密度指定 : D3DFOG_EXP)
+	m_pD3DDevice->SetRenderState(D3DRS_FOGTABLEMODE, D3DFOG_LINEAR);
+
+	// 範囲指定(※LINEAR時に指定)
+	float fFogStartPos = 100;
+	float fFogEndPos = 1000000;
+	m_pD3DDevice->SetRenderState(D3DRS_FOGSTART, *(DWORD*)(&fFogStartPos));
+	m_pD3DDevice->SetRenderState(D3DRS_FOGEND, *(DWORD*)(&fFogEndPos));
+
+	// 密度指定(※EXP時に指定)
+	float fFogDensity = 0.00001f;
+
+	m_pD3DDevice->SetRenderState(D3DRS_FOGDENSITY, *(DWORD*)(&fFogDensity));
+}
 
 #ifdef _DEBUG
 //=============================================================================

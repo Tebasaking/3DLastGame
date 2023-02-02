@@ -1,69 +1,70 @@
-//=============================================================================
+//===================================================
 //
-// サウンド処理 [sound.h]
-// Author : AKIRA TANAKA
+// サウンドヘッダー
+// Author : Sato Teruto
 //
-//=============================================================================
+//===================================================
 #ifndef _SOUND_H_
-#define _SOUND_H_
+#define _SOUND_H_	
 
-//*****************************************************************************
-// ライブラリーリンク
-//*****************************************************************************
-#pragma comment(lib,"dxguid.lib")		// DirectXのコンポネート(部品)の使用に必要
-
-//*****************************************************************************
+//--------------------------------
 // インクルード
-//*****************************************************************************
-#include "xaudio2.h"			// サウンド処理に必要
+//--------------------------------
+#include <d3dx9.h>
+#include <xaudio2.h>
 
-//=============================================================================
-// テクスチャクラス
-// Author : 唐﨑結斗
-// 概要 : テクスチャ設定を行うクラス
-//=============================================================================
+//================================
+// サウンドクラスの定義
+//================================
 class CSound
 {
 public:
-	//=========================================
-	//音声のリスト
-	//=========================================
-	enum SOUND_LABEL
-	{
-		SOUND_LABEL_BGM000 = 0,		// BGM0
-		SOUND_LABEL_MAX
-	};
-
+	//*****************************************************************************
+	// パラメータ構造体定義
+	//*****************************************************************************
 	typedef struct
 	{
 		char *pFilename;	// ファイル名
 		int nCntLoop;		// ループカウント
 	} SOUNDPARAM;
 
-	CSound();
-	~CSound();
+	//*****************************************************************************
+	// サウンドファイル
+	//*****************************************************************************
+	typedef enum
+	{
+		SOUND_LABEL_BGM000 = 0,		// ゲーム中のBGM
+		SOUND_SE_MARSHALL_ATTACK,	// 近接攻撃
+		SOUND_SE_EXPLOSION,			// 爆発
+		SOUND_SE_STEP,				// 足音
+		SOUND_LABEL_MAX
+	} SOUND_LABEL;
 
-	//--------------------------------------------------------------------
+	CSound();	//コンストラクタ
+	~CSound();	//デストラクタ
+
+	//------------------
 	// メンバ関数
-	//--------------------------------------------------------------------
-	HRESULT Init(HWND hWnd);																			// 初期化
-	void Uninit(void);																					// 終了
-	HRESULT PlaySound(SOUND_LABEL label);																// セグメント再生(再生中なら停止)
-	void StopSound(SOUND_LABEL label);																	// セグメント停止(ラベル指定)
-	void StopSound(void);																				// セグメント停止(全て)
-	HRESULT CheckChunk(HANDLE hFile, DWORD format, DWORD *pChunkSize, DWORD *pChunkDataPosition);		// チャンクのチェック
-	HRESULT ReadChunkData(HANDLE hFile, void *pBuffer, DWORD dwBuffersize, DWORD dwBufferoffset);		// チャンクデータの読み込み
+	//------------------
+	HRESULT Init(HWND hWnd);
+	void Uninit(void);
+
+	static HRESULT PlaySound(SOUND_LABEL label);
+	static void StopSound(SOUND_LABEL label);
+	static void StopSound(void);
+
+	static HRESULT CheckChunk(HANDLE hFile, DWORD format, DWORD *pChunkSize, DWORD *pChunkDataPosition);
+	static HRESULT ReadChunkData(HANDLE hFile, void *pBuffer, DWORD dwBuffersize, DWORD dwBufferoffset);
 
 private:
-	//--------------------------------------------------------------------
-	// メンバ変数
-	//--------------------------------------------------------------------
-	IXAudio2					*m_pXAudio2;								// XAudio2オブジェクトへのインターフェイス
-	IXAudio2MasteringVoice		*m_pMasteringVoice;							// マスターボイス
-	IXAudio2SourceVoice			*m_apSourceVoice[SOUND_LABEL_MAX];			// ソースボイス
-	BYTE						*m_apDataAudio[SOUND_LABEL_MAX];			// オーディオデータ
-	DWORD						m_aSizeAudio[SOUND_LABEL_MAX];				// オーディオデータサイズ
-	SOUNDPARAM					m_aParam[SOUND_LABEL_MAX];					// 各音素材のパラメータ
+	//------------------
+	// 静的メンバ変数
+	//------------------
+	static IXAudio2 *m_pXAudio2;									// XAudio2オブジェクトへのインターフェイス
+	static IXAudio2MasteringVoice *m_pMasteringVoice;				// マスターボイス
+	static IXAudio2SourceVoice *m_apSourceVoice[SOUND_LABEL_MAX];	// ソースボイス
+	static BYTE *m_apDataAudio[SOUND_LABEL_MAX];					// オーディオデータ
+	static DWORD m_aSizeAudio[SOUND_LABEL_MAX];						// オーディオデータサイズ
 };
 
-#endif
+#endif // !_SOUND_H_

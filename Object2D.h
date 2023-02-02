@@ -14,7 +14,7 @@
 class CObject2D :public CObject
 {
 public:
-	explicit CObject2D(int nPriority = 1);
+	explicit CObject2D(int nPriority = 0);
 	virtual ~CObject2D();			//デストラクタ
 
 	//初期化処理
@@ -33,8 +33,12 @@ public:
 	void VtxUpdate();
 	void SetColor(const D3DXCOLOR &col);
 	void SetPosition(const D3DXVECTOR3& pos);
+	void SetRotation(const D3DXVECTOR3& rot) { m_rot = rot; }
 	void SetAnim(const float Num,const int Pattern);
 	void SetScale(const D3DXVECTOR3 Size);
+
+	D3DXVECTOR3 GetRotation() { return m_rot; }
+	D3DXVECTOR3 GetTest(){ return m_pos; };
 
 private:
 	LPDIRECT3DVERTEXBUFFER9 m_pVtxBuff;		//バッファ
@@ -44,6 +48,8 @@ private:
 	D3DXVECTOR3	m_scale;					// 拡大率
 	D3DXVECTOR3 m_rot;
 	D3DXCOLOR m_col;						// 色
+	float m_fLength;						// 長さ
+	float m_fAngle;							// 対角線
 };
 
 #endif

@@ -155,6 +155,7 @@
     <ClCompile Include="application.cpp" />
     <ClCompile Include="ball.cpp" />
     <ClCompile Include="billboard.cpp" />
+    <ClCompile Include="bullet3D.cpp" />
     <ClCompile Include="bullt.cpp" />
     <ClCompile Include="calculation.cpp" />
     <ClCompile Include="camera.cpp" />
@@ -169,6 +170,7 @@
     <ClCompile Include="light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="meshfield.cpp" />
+    <ClCompile Include="missile_alert.cpp" />
     <ClCompile Include="mode.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="model3D.cpp" />
@@ -192,6 +194,7 @@
     <ClCompile Include="target.cpp" />
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="texture3D.cpp" />
+    <ClCompile Include="time.cpp" />
     <ClCompile Include="title.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -199,6 +202,7 @@
     <ClInclude Include="ball.h" />
     <ClInclude Include="billboard.h" />
     <ClInclude Include="bullet.h" />
+    <ClInclude Include="bullet3D.h" />
     <ClInclude Include="calculation.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="debug_proc.h" />
@@ -212,6 +216,7 @@
     <ClInclude Include="light.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="meshfield.h" />
+    <ClInclude Include="missile_alert.h" />
     <ClInclude Include="mode.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="model3D.h" />
@@ -235,6 +240,7 @@
     <ClInclude Include="target.h" />
     <ClInclude Include="texture.h" />
     <ClInclude Include="texture3D.h" />
+    <ClInclude Include="time.h" />
     <ClInclude Include="title.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -16,6 +16,7 @@
 #include "debug_proc.h"
 #include "meshfield.h"
 #include "radar.h"
+#include "bullet3D.h"
 
 //=========================================
 //グローバル変数
@@ -29,7 +30,7 @@ CEnemy::CEnemy()
 {
 	SetObjectType(OBJECT_ENEMY);
 	m_state = ENEMY_IDOL;
-	SetHP(100);
+	SetHP(10);
 	m_type = ENEMY_MAX;
 }
 
@@ -59,11 +60,17 @@ HRESULT CEnemy::Init(const D3DXVECTOR3 &pos)
 	// 座標の設定
 	SetPosition(pos);
 
+	// 古い座標の設定
+	SetPosOld(m_pos);
+	
+	// サイズの設定
+	m_size = m_apModel[0]->GetMaterial()->size;
+
 	//大きさの設定
-	SetSize(m_apModel[0]->GetSize());
+	SetSize(m_size);
 
 	m_scale = 1.0f;
-	
+
 	// モーションの初期化処理
 	CMotionModel3D::Init(pos);
 
@@ -87,8 +94,16 @@ HRESULT CEnemy::Init(const D3DXVECTOR3 &pos)
 //=========================================
 void CEnemy::Update()
 {
+	// 古い座標の設定
+	SetPosOld(m_pos);
+
 	D3DXVECTOR3 PlayerPos;
 	D3DXVECTOR3 PlayerRot;
+
+	// グラウンドの取得
+	CMesh *pGround = CGame::GetGround();
+
+	bool bCollision;
 
 	// 死亡処理
 	Death();
@@ -116,67 +131,131 @@ void CEnemy::Update()
 		object = object->GetObjectNext();
 	}
 
-	//=========================================
-	//待機状態のエネミーの行動処理
-	//=========================================
-	/*if (m_state == ENEMY_IDOL)
-	{*/
-	float EnemySpeed = 3.0f;
+	if (SearchEye(PlayerPos, m_pos, D3DX_PI * 0.5f, 100.0f, m_rot.y))
+	{
+		m_state = ENEMY_WARNNING;
+	}
+
+	// 移動量用
 	D3DXVECTOR3 move;
 
-	if(m_type == ENEMY_FLY)
-	{ 
-		// 移動量
-		move = D3DXVECTOR3(sinf(m_rot.y) * EnemySpeed,
-			-(m_rot.x * EnemySpeed),
-			cosf(m_rot.y) * EnemySpeed);
-	}
-
-	if (m_type == ENEMY_GROUND)
-	{
-		// 移動量
-		move = D3DXVECTOR3(sinf(m_rot.y) * EnemySpeed,
-			-10.0f,
-			cosf(m_rot.y) * EnemySpeed);
-	}
-
-	m_rot.y += 0.01f;
+	float EnemySpeed = 3.0f;
 
 	//=========================================
-	//// 戦闘状態のエネミーの行動処理
-	////=========================================
-	//if (m_state == ENEMY_WARNNING)
-	//{
-	//	// プレイヤーとエネミーの距離
-	//	D3DXVECTOR3 posDiss = PlayerPos - pos;
-	//	D3DXVECTOR3 rotDest = D3DXVECTOR3
-	//	(atan2f(posDiss.x, posDiss.z),
-	//		atan2f(posDiss.y, sqrtf((posDiss.x * posDiss.x) + (posDiss.z * posDiss.z))),
-	//		0.0f);
+	// エネミーの現在の状態
+	//=========================================
+	//=========================================
+	// 非戦闘状態の敵の行動処理
+	//=========================================
+	if (m_state == ENEMY_IDOL)
+	{
+		m_rot.y += 0.01f;
 
-	//	//エネミーの角度調節、プレイヤーの方向を見る
-	//	rot.y += m_apModel[0]->NormalizeRot(rotDest.x - rot.y) * 0.01f;
-	//	rot.z = m_apModel[0]->LimitedRot(-rot.y, 0.25f);
-	//	rot.x = 0.1f * (-posDiss.y * 0.3f);
-	//}
+		if (m_type == ENEMY_FLY)
+		{
+			// 移動量
+			move = D3DXVECTOR3(sinf(m_rot.y) * EnemySpeed,
+				-(m_rot.x * EnemySpeed),
+				cosf(m_rot.y) * EnemySpeed);
+		}
 
-	//エネミーの移動
+		if (m_type == ENEMY_GROUND)
+		{
+			D3DXVECTOR3 CollisionCheck = m_pos;
+
+			if (!pGround->Collision(&CollisionCheck))
+			{
+				move = D3DXVECTOR3(sinf(m_rot.y) * EnemySpeed,
+					-10.0f,
+					cosf(m_rot.y) * EnemySpeed);
+			}
+			else
+			{
+				move = D3DXVECTOR3(sinf(m_rot.y) * EnemySpeed,
+					-0.0f,
+					cosf(m_rot.y) * EnemySpeed);
+			}
+		}
+	}
+
+	//=========================================
+	// 戦闘状態のエネミーの行動処理
+	//=========================================
+	if (m_state == ENEMY_WARNNING)
+	{
+		//情報の取得
+		D3DXVECTOR3 Pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		D3DXVECTOR3 posTarget = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		
+		Pos = GetPosition();
+		posTarget = PlayerPos;
+
+		// 敵のいる向き
+		D3DXVECTOR3 sub = D3DXVECTOR3(0.0f, 0.0f, 0.f);
+		// ターゲットと現在地の距離
+		D3DXVECTOR3 distance = posTarget - Pos;
+
+		D3DXVECTOR3 FellowRot = AtanRot(posTarget, Pos);
+	
+		sub.z = sinf(FellowRot.x) * cosf(FellowRot.y) * EnemySpeed;
+		sub.x = sinf(FellowRot.x) * sinf(FellowRot.y) * EnemySpeed;
+		sub.y = cosf(atan2f(Pos.y, distance.y))  * EnemySpeed;
+
+		D3DXVECTOR3 rotDest = (D3DXVECTOR3(FellowRot.x - D3DX_PI * 0.5f, FellowRot.y, m_rot.z));
+		D3DXVECTOR3 rotResult = rotDest - m_rot;
+
+		rotResult = NormalizeRotXYZ(rotResult);
+		
+		// 回転の加算
+		m_rot += rotResult * 0.01f;
+
+		m_rot = NormalizeRotXYZ(m_rot);
+
+		move = D3DXVECTOR3(sinf(m_rot.y) * EnemySpeed,
+			-0.0f,
+			cosf(m_rot.y) * EnemySpeed);
+
+		// アタックカウントを進める
+		m_AttackCount++;
+
+		// アタックカウントが300以上の時
+		if (object != nullptr && m_AttackCount >= 300)
+		{
+			// プレイヤーに対してミサイルを発射する
+			Bullet(object);
+		}
+	}
+
+	// 移動量を加算する
 	m_pos += move;
-
-	// グラウンドの取得
-	CMesh *pGround = CGame::GetGround();
 
 	if (pGround != nullptr)
 	{
-		// 陸の当たり判定
-		bool bCollision = pGround->Collision(&m_pos);
-	}
+		D3DXVECTOR3 GroundPos = m_pos;
 
-	// エネミーの回転の設定
-	m_apModel[0]->SetRot(m_rot);
+		if (m_type == ENEMY_FLY)
+		{
+			GroundPos.y -= 100.0f;
+			// 陸の当たり判定
+			pGround->Collision(&GroundPos);
+			m_pos.y = GroundPos.y + 100.0f;
+		}
+		else if (m_type == ENEMY_GROUND)
+		{
+			// 陸の当たり判定
+			pGround->Collision(&GroundPos);
+			m_pos.y = GroundPos.y;
+		}
+	}
 
 	// 座標の設定
 	SetPosition(m_pos);
+
+	// エネミーの当たり判定
+	EnemyCollision();
+
+	// エネミーの回転の設定
+	m_apModel[0]->SetRot(m_rot);
 
 	// 回転の設定
 	SetRotation(m_rot);
@@ -199,6 +278,7 @@ void CEnemy::Uninit()
 	// モーションの終了処理
 	CMotionModel3D::Uninit();
 
+	// オブジェクトの解放
 	CObject::Release();
 }
 
@@ -252,6 +332,8 @@ void CEnemy::Death()
 		// エネミーの総数
 		((CGame*)CApplication::GetModeObject())->DeleteEnemy(this);
 
+		CGame::Add(100);
+
 		// 初期化
 		CEnemy::Uninit();
 	}
@@ -277,4 +359,40 @@ CEnemy* CEnemy::Create(const D3DXVECTOR3 &pos)
 	}
 
 	return pCEnemy;
+}
+
+//=========================================
+// エネミーの弾発射処理
+//=========================================
+void CEnemy::Bullet(CObject *obj)
+{
+	// 両翼から弾を発射する
+	CBullet3D::Create(D3DXVECTOR3(50.0f, 0.0f, 0.0f), m_quaternion, obj, this,60);
+	CBullet3D::Create(D3DXVECTOR3(-50.0f, 0.0f, 0.0f), m_quaternion, obj, this,60);
+
+	m_AttackCount = 0;
+}
+
+//=========================================
+// エネミー同士の当たり判定
+//=========================================
+void CEnemy::EnemyCollision()
+{
+	// オブジェクトの取得
+	CObject *object = CObject::GetObjectTop();
+
+	//プレイヤーの座標を取得
+	while (object)
+	{
+		if (object != nullptr)
+		{
+			EObjType ObjType = object->GetObjectType();
+
+			if (ObjType == OBJECT_ENEMY && object != this)
+			{
+				SetCollision(Collision(object, true));
+			}
+		}
+		object = object->GetObjectNext();
+	}
 }

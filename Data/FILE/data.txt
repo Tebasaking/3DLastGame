@@ -1,5 +1,5 @@
 // モデルの最大数
-MAX_TYPE = 12
+MAX_TYPE = 15
 
 //***************************
 // Xファイル名の読み込み
@@ -14,6 +14,8 @@ MODEL_FILENAME = Data/MODEL/06_legR.x		# [6]右腿
 MODEL_FILENAME = Data/MODEL/07_footR.x		# [7]右足
 MODEL_FILENAME = Data/MODEL/08_legL.x		# [8]左腿
 MODEL_FILENAME = Data/MODEL/09_footL.x		# [9]左足
-MODEL_FILENAME = Data/MODEL/thunder.x		# 戦闘機
-MODEL_FILENAME = Data/MODEL/TANK.x			# 戦車
-MODEL_FILENAME = Data/MODEL/robot.x
+MODEL_FILENAME = Data/MODEL/thunder.x		# [10]戦闘機
+MODEL_FILENAME = Data/MODEL/TANK.x			# [11]戦車
+MODEL_FILENAME = Data/MODEL/robot.x			# [12]人型
+MODEL_FILENAME = Data/MODEL/missile2.x		# [13]ミサイル
+MODEL_FILENAME = Data/MODEL/10_weapon.x		# [14]武器

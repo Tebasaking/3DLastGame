@@ -22,7 +22,8 @@ public:
 		OBJECT_ENEMY,		// エネミー
 		OBJECT_BULLET,		// 弾の種類
 		OBJECT_RADAR,		// レーダーのオブジェクト
-		OBJECT_MESH,
+		OBJECT_MESH,		// メッシュフィールド
+		OBJECT_TARGET,		// ターゲット
 		OBJECT_EMPTY,		// 設定されていない
 		OBJECT_FADE,
 		OBJECT_MAX
@@ -57,6 +58,13 @@ public:
 	static void DrawAll(Object_mode mode);
 	static void UninitAll();
 
+	// 角度の正規化
+	D3DXVECTOR3 NormalizeRotXYZ(D3DXVECTOR3 Rot);
+	float NormalizeRot(float fRot);
+
+	// クォータニオンの設定
+	void SetQuaternion(const D3DXQUATERNION quaternion) { m_quaternion = quaternion; }
+
 	const D3DXVECTOR3& GetPosition() const { return m_pos; }
 	const D3DXVECTOR3& GetRot() const { return m_rot; }
 	const float& GetScale() const { return m_scale; }
@@ -79,6 +87,10 @@ public:
 	void SetObjectType(EObjType type) { m_type = type; }
 	void SetSize(D3DXVECTOR3 size) { m_size = size; }
 	void SetCollision(bool bCollision) { m_Collision = bCollision; }
+	void SetPosOld(D3DXVECTOR3 pos) { m_posOld = pos; }
+	D3DXQUATERNION& GetQuaternion() { return m_quaternion; }
+
+	D3DXVECTOR3 GetPosOld() { return m_posOld; }
 
 	// マトリックス
 	void SetMtxWorld(D3DXMATRIX mtxWorld) { m_mtxWorld = mtxWorld; }				// ワールドマトリックスのセッター
@@ -86,9 +98,15 @@ public:
 
 	void Release();
 	void DFlagDelete();
+
+	// 2点から角度を求める
+	D3DXVECTOR3 AtanRot(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2);
 	int ManageHP(int Value);
 
-	bool Collision(D3DXVECTOR3 pos, D3DXVECTOR3 posOld, D3DXVECTOR3 posTarget, D3DXVECTOR3 size, D3DXVECTOR3 SizeTarget, bool bExtrude);
+	// 引数 : ずらす座標の大きさ、クォータニオン、目標座標
+	D3DXVECTOR3 MtxPos(D3DXVECTOR3 pos, D3DXQUATERNION qua, D3DXVECTOR3 TargetPos);
+	// 引数 : 座標、古い座標、目標座標、サイズ、目標サイズ、押し返すか返さないか
+	bool Collision(CObject *Target, bool bExtrude);
 	// 引数: 目標の座標 、 扇の中心 、 範囲(角度) 、長さ , 方向(角度)
 	bool SearchEye(D3DXVECTOR3 Vec1, D3DXVECTOR3 Vec2, float rangeRadian, float length, float directionDegree);
 
@@ -111,7 +129,9 @@ private:
 	D3DXVECTOR3 m_pos;							// 座標設定
 	D3DXVECTOR3 m_size;							// 大きさ設定
 	D3DXVECTOR3 m_rot;							// 回転設定
+	D3DXVECTOR3 m_posOld;						// 古い座標
 	D3DXMATRIX	m_mtxWorld;						// ワールドマトリックス
+	D3DXQUATERNION		m_quaternion;			//クォータニオン
 	Object_mode m_objmode;						// オブジェクトの描画モード
 	float		m_scale;						// 拡大率設定
 	int			m_HP;							// 体力

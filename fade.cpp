@@ -49,7 +49,7 @@ void CFade::Init(CApplication::MODE modeNext)
 void CFade::Uninit(void)
 {
 	//‰ğ•úˆ—
-	CObject2D::Release();
+	CObject2D::Uninit();
 }
 
 //======================================================

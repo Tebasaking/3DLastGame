@@ -32,7 +32,7 @@
 //*****************************************************************************
 // 定数定義
 //*****************************************************************************
-const float CCamera::CAMERA_NEAR = 1.0f;		// ニア
+const float CCamera::CAMERA_NEAR = 30.0f;		// ニア
 const float CCamera::CAMERA_FUR = 100000000.0f;	// ファー
 
 //=============================================================================
@@ -48,7 +48,9 @@ CCamera::CCamera() :
 	m_rotMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),			 	// 移動方向
 	m_quaternion(D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f)),	// クオータニオン
 	m_viewType(TYPE_CLAIRVOYANCE),							// 投影方法の種別
+	m_event(EVENT_NORMAL),
 	m_fDistance(0.0f),										// 視点から注視点までの距離
+	m_nCntFly(0.0f),
 	m_fRotMove(0.0f)										// 移動方向
 {
 	m_mtxWorld = {};	// ワールドマトリックス
@@ -136,23 +138,31 @@ void CCamera::Uninit(void)
 //=============================================================================
 void CCamera::Update(void)
 {
-	D3DXVECTOR3 Result = m_Dest - m_rotMove;
-	m_rotMove += Result / 5;
-
-	// カメラのモードごとの処理
-	switch (m_Objectmode)
+	if (m_event == EVENT_NORMAL)
 	{
-	case CObject::NORMAL_MODE:
-		UpdateNormal();
-		break;
+		// カメラのモードごとの処理
+		switch (m_Objectmode)
+		{
+		case CObject::NORMAL_MODE:
+			UpdateNormal();
+			break;
 
-	case CObject::RADAR_MODE:
-		UpdateRadar();
-		break;
+		case CObject::RADAR_MODE:
+			UpdateRadar();
+
+			break;
+		}
+
+		D3DXVECTOR3 Result = m_Dest - m_rotMove;
+		m_rotMove += Result * 0.25f;
+	}
+	else
+	{
+		FlightEvent();
 	}
 
 	CDebugProc::Print("カメラの座標 : (%f,%f,%f) \n", m_posV.x, m_posV.y, m_posV.z);
-	CDebugProc::Print("カメラの回転 : (%f,%f,%f,%f) \n",m_quaternion.x,m_quaternion.y,m_quaternion.z,m_quaternion.w);
+	CDebugProc::Print("カメラの回転 : (%f,%f,%f,%f) \n", m_quaternion.x, m_quaternion.y, m_quaternion.z, m_quaternion.w);
 }
 
 //=============================================================================
@@ -226,7 +236,7 @@ void CCamera::Set()
 void CCamera::Rotate()
 {
 	// 入力情報の取得
-	static const float MIN_MOUSE_MOVED = 3.0f;		// この値以上動かさないと反応しない
+	static const float MIN_MOUSE_MOVED = 2.0f;		// この値以上動かさないと反応しない
 
 	if (!(D3DXVec3Length(&m_rotMove) > MIN_MOUSE_MOVED) && !(D3DXVec3Length(&m_rotMove) < -MIN_MOUSE_MOVED))
 	{
@@ -252,6 +262,11 @@ void CCamera::Rotate()
 
 	//m_pRoll->Moving(rollDir);
 
+	if (m_mode == TYPE_SHOULDER && Limit_Used_Mouse())
+	{
+		rollDir.x = 0.0f;
+	}
+
 	// マウスのベクトル軸取得
 	m_axisVec.y = rollDir.x;
 	m_axisVec.x = -rollDir.y;
@@ -266,34 +281,81 @@ void CCamera::Rotate()
 	{
 		if (inverseVec.y != 0.0f)
 		{
-			// クオータニオンによる行列回転
-			D3DXMATRIX mtxRot, mtxVec;
-			D3DXMatrixTranslation(&mtxVec, inverseVec.x, inverseVec.y, inverseVec.z);		// 行列移動関数
-			D3DXMatrixRotationQuaternion(&mtxRot, &m_quaternion);			// クオータニオンを回転行列に変換
-			D3DXMatrixMultiply(&mtxVec, &mtxVec, &mtxRot);					// 行列掛け算関数
+			if (m_Objectmode != CObject::RADAR_MODE)
+			{
+				// クオータニオンによる行列回転
+				D3DXMATRIX mtxRot, mtxVec;
+				D3DXMatrixTranslation(&mtxVec, inverseVec.x, inverseVec.y, inverseVec.z);		// 行列移動関数
 
-			D3DXVECTOR3 axis;
-			D3DXVECTOR3 vec = D3DXVECTOR3(0.0f, mtxVec._42, 0.0f);
-			D3DXVECTOR3 vecY = m_posR - m_posV;		// 視点から注視点の距離ベクトル
-			D3DXVec3Normalize(&vecY, &vecY);		// 回転軸
+				D3DXMatrixRotationQuaternion(&mtxRot, &m_quaternion);							// クオータニオンを回転行列に変換
 
-			D3DXVec3Cross(&axis, &vec, &vecY);	// 外積で回転軸を算出。
+				D3DXVECTOR3 axis;
+				D3DXVECTOR3 vecX;
 
-			// クオータニオンの計算
-			D3DXQUATERNION quaternion;
-			//D3DXQuaternionRotationAxis(&quaternion, &axis, D3DXVec3Length(&m_pRoll->GetMove()));	// 回転軸と回転角度を指定
+				if (inverseVec.y >= 0.0f)
+				{
+					vecX = D3DXVECTOR3(1, 0, 0);
+				}
+				else if (inverseVec.y <= 0.0f)
+				{
+					vecX = D3DXVECTOR3(-1, 0, 0);
+				}
 
-			D3DXQuaternionRotationAxis(&quaternion, &axis, 0.03f);	// 回転軸と回転角度を指定
+				D3DXVec3TransformCoord(&axis, &vecX, &mtxRot);
 
-			// クオータニオンのノーマライズ
-			D3DXQuaternionNormalize(&quaternion, &quaternion);
+				// クオータニオンの計算
+				D3DXQUATERNION quaternion;
+				//D3DXQuaternionRotationAxis(&quaternion, &axis, D3DXVec3Length(&m_pRoll->GetMove()));	// 回転軸と回転角度を指定
 
-			// クオータニオンを適用
-			m_quaternion *= quaternion;
+				D3DXQuaternionRotationAxis(&quaternion, &axis, 0.03f);	// 回転軸と回転角度を指定
+
+				// クオータニオンのノーマライズ
+				D3DXQuaternionNormalize(&quaternion, &quaternion);
+
+				// クオータニオンを適用
+				m_quaternion *= quaternion;
+			}
+			else
+			{
+				if (m_mode == TYPE_SHOULDER)
+				{
+					D3DXVECTOR3 axis;
+
+					if (inverseVec.x < 0.0f)
+					{
+						D3DXVECTOR3 xAxis = D3DXVECTOR3(inverseVec.x, 0.0f, 0.0f);
+						D3DXVECTOR3 zAxis = D3DXVECTOR3(0.0f, -inverseVec.x, 0.0f);
+						D3DXVec3Cross(&axis, &xAxis, &zAxis);	// 外積で回転軸を算出。
+					}
+					else
+					{
+						D3DXVECTOR3 xAxis = D3DXVECTOR3(inverseVec.x, 0.0f, 0.0f);
+						D3DXVECTOR3 zAxis = D3DXVECTOR3(0.0f, inverseVec.x, 0.0f);
+						D3DXVec3Cross(&axis, &xAxis, &zAxis);	// 外積で回転軸を算出。
+					}
+
+					if (inverseVec.x != 0.0f)
+					{
+						// クオータニオンの計算
+						D3DXQUATERNION quaternion;
+
+						D3DXQuaternionRotationAxis(&quaternion, &axis, 0.03f);	// 回転軸と回転角度を指定
+
+						// クオータニオンのノーマライズ
+						D3DXQuaternionNormalize(&quaternion, &quaternion);
+
+						// クオータニオンを適用
+						m_quaternion *= quaternion;
+					}
+				}
+			}
 		}
 	}
 
-	// Y軸の回転
+	switch (m_mode)
+	{
+	case TYPE_SHOULDER:
+		// Y軸の回転
 	{
 		D3DXVECTOR3 axis;
 
@@ -323,6 +385,45 @@ void CCamera::Rotate()
 			// クオータニオンを適用
 			m_quaternion *= quaternion;
 		}
+	}
+	break;
+
+	case TYPE_FREE:
+		// Z軸の回転
+	{
+		if (m_Objectmode != CObject::RADAR_MODE)
+		{
+			D3DXVECTOR3 axis;
+
+			if (inverseVec.x < 0.0f)
+			{
+				D3DXVECTOR3 xAxis = D3DXVECTOR3(inverseVec.x, 0.0f, 0.0f);
+				D3DXVECTOR3 zAxis = D3DXVECTOR3(0.0f, inverseVec.x, 0.0f);
+				D3DXVec3Cross(&axis, &xAxis, &zAxis);	// 外積で回転軸を算出。
+			}
+			else
+			{
+				D3DXVECTOR3 xAxis = D3DXVECTOR3(inverseVec.x, 0.0f, 0.0f);
+				D3DXVECTOR3 zAxis = D3DXVECTOR3(0.0f, -inverseVec.x, 0.0f);
+				D3DXVec3Cross(&axis, &xAxis, &zAxis);	// 外積で回転軸を算出。
+			}
+
+			if (inverseVec.x != 0.0f)
+			{
+				// クオータニオンの計算
+				D3DXQUATERNION quaternion;
+
+				D3DXQuaternionRotationAxis(&quaternion, &axis, 0.03f);	// 回転軸と回転角度を指定
+
+				// クオータニオンのノーマライズ
+				D3DXQuaternionNormalize(&quaternion, &quaternion);
+
+				// クオータニオンを適用
+				m_quaternion *= quaternion;
+			}
+		}
+	}
+	break;
 	}
 
 	// クオータニオンのノーマライズ
@@ -411,11 +512,14 @@ void CCamera::FreeMove(void)
 
 	if (pGround != nullptr)
 	{// 陸の当たり判定
-		D3DXVECTOR3 FlyPos = D3DXVECTOR3(m_posV.x, m_posV.y + 50.0f, m_posV.z);
-		if (pGround->Collision(&FlyPos))
+		CPlayer3D *pPlayer = CPlayerManager::GetPlayer();
+
+		if (pPlayer->GetCollision())
 		{
-			m_posV = FlyPos;
-			m_posV.y += 50.0f;
+			m_posV.y = pPlayer->GetPosition().y + 50.0f;
+
+			pGround->Collision(&m_posV);
+			m_posR.y = pPlayer->GetPosition().y;
 		}
 	}
 }
@@ -428,6 +532,11 @@ void CCamera::ShoulderMove()
 {
 	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
 	D3DXVECTOR3 move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+	if (m_bUp)
+	{// 上昇処理
+		Up();
+	}
 
 	/* 移動キーが押された*/
 	if (pKeyboard->GetPress(DIK_W))
@@ -460,6 +569,7 @@ void CCamera::ShoulderMove()
 		move.z += Pythagoras.z;
 	}
 
+
 	if (MOVE_SPEED >= 10.0f)
 	{
 		MOVE_SPEED = 10.0f;
@@ -485,20 +595,37 @@ void CCamera::ShoulderMove()
 		m_posV = m_posV + move * CAMERA_MOVE_SPEED;
 		m_posR = m_posR + move * CAMERA_MOVE_SPEED;
 	}
-
-	// カメラを下降させる
-	m_posV.y -= 5.0f;
-	VPosRotate();
-	m_posR.y -= 5.0f;
-
+	CPlayer3D *pPlayer = CPlayerManager::GetRobot();
 	// グラウンドの取得
 	CMesh *pGround = CGame::GetGround();
 
+	D3DXVECTOR3 Result = {};
+
 	if (pGround != nullptr)
-	{// 陸の当たり判定
-		if (pGround->Collision(&m_posV))
-		{
-			m_posV.y += 50.0f;
+	{
+		if (!m_bUp)
+		{// 陸の当たり判定
+			if (pPlayer->GetCollision())
+			{
+				Result.y = (pPlayer->GetPosition().y + 110.0f) - m_posV.y;
+
+				m_posV.y += Result.y;
+
+				m_Gravity = 0;
+				pGround->Collision(&m_posV);
+				m_posR.y = pPlayer->GetPosition().y;
+			}
+			else
+			{// 重力の適応
+			m_Gravity += 0.3f;
+
+			// カメラを下降させる
+			m_posV.y -= m_Gravity;
+			VPosRotate();
+			m_posR.y -= m_Gravity;
+
+			pGround->Collision(&m_posV);
+			}
 		}
 	}
 }
@@ -507,7 +634,6 @@ void CCamera::ShoulderMove()
 // マウスの移動
 // Author : 唐﨑結斗
 // Author : YudaKaito
-// 概要	  :  
 //=========================================
 void CCamera::MouseMove(void)
 {
@@ -615,7 +741,9 @@ void CCamera::AddViewSize(DWORD X, DWORD Y, int fWidth, int fHeight)
 //=========================================
 void CCamera::UpdateNormal()
 {
-	MouseMove();	// マウス移動
+	// キーボードの取得
+	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
+
 	JoyPadMove();	// ジョイパッド移動
 
 	m_mode = (CCamera::CAMERA_TYPE)CPlayerManager::GetMode();
@@ -624,15 +752,25 @@ void CCamera::UpdateNormal()
 	switch (m_mode)
 	{
 	case TYPE_FREE:
-		FreeMove();		// 移動
+		MouseMove();		// マウス移動
+		FreeMove();			// 移動
 		break;
+
 	case TYPE_SHOULDER:
+		if (m_bWork)
+		{// マウスの移動を可能にする
+			MouseMove();
+		}
+
 		ShoulderMove();	// 肩越しモード
+
+		if (!m_bWork)
+		{// カメラワーク
+			CameraWork(D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f));
+		}
+
 		break;
 	}
-
-	// キーボードの取得
-	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
 
 	//==================================================================================
 
@@ -671,12 +809,17 @@ void CCamera::UpdateNormal()
 				break;
 
 			case TYPE_SHOULDER:
+				m_bWork = false;
+
 				m_mode = TYPE_FREE;
 
 				// 1.0f浮かせる処理
 				m_posV.y += 100.0f;
 				VPosRotate();
 				m_posR.y += 100.0f;
+
+				// 飛行イベント開始
+				m_event = EVENT_FLY;
 
 				break;
 			}
@@ -698,16 +841,134 @@ void CCamera::UpdateRadar()
 	bool hasLeftClick = pMouse->GetPress(CMouse::MOUSE_KEY_LEFT);
 	bool hasRightClick = pMouse->GetPress(CMouse::MOUSE_KEY_RIGHT);
 
+	// 回転のベクトルを設定。
+	m_Dest = D3DXVECTOR3(pMouse->GetMouseMove().y, pMouse->GetMouseMove().x, pMouse->GetMouseMove().z);
+
 	if (pPlayer != nullptr)
+	{
+		D3DXVECTOR3 PlayerPos = pPlayer->GetPosition();
+
+		m_posV = D3DXVECTOR3(PlayerPos.x, m_posV.y, PlayerPos.z);
+		m_posR = D3DXVECTOR3(PlayerPos.x, m_posR.y, PlayerPos.z);
+	}
+
+	if (hasRightClick)
 	{
 		m_quaternion = D3DXQUATERNION(m_quaternion.x, m_quaternion.y, m_quaternion.z, m_quaternion.w);
 
 		Rotate();
 		RPosRotate();
+	}
+}
 
-		D3DXVECTOR3 PlayerPos = pPlayer->GetPosition();
+//=========================================
+//	飛行イベントの処理
+//	Author : 冨所知生
+//=========================================
+void CCamera::FlightEvent()
+{
+	// 飛行をカウント
+	m_nCntFly++;
 
-		m_posV = D3DXVECTOR3(PlayerPos.x, m_posV.y, PlayerPos.z);
-		m_posR = D3DXVECTOR3(PlayerPos.x, m_posR.y, PlayerPos.z);
+	// カメラを上昇させる
+	m_posV.y += 5.0f;
+	VPosRotate();
+	m_posR.y += 5.0f;
+
+	D3DXQUATERNION Dest = D3DXQUATERNION(0.0f,0.0f,0.0f,1.0f) - m_quaternion;
+	m_quaternion += Dest * 0.02f;
+
+	if (m_nCntFly >= 120)
+	{
+		m_nCntFly = 0;
+		m_event = EVENT_NORMAL;
+	}
+}
+
+//=========================================
+// マウスを利用したカメラの制限
+// Author : 冨所知生
+//=========================================
+bool CCamera::Limit_Used_Mouse()
+{
+	CMouse *pMouse = CApplication::GetMouse();
+	D3DXVECTOR3 axis = {};
+
+	// クリックの情報を保管
+	bool hasLeftClick = pMouse->GetPress(CMouse::MOUSE_KEY_LEFT);
+	bool hasRightClick = pMouse->GetPress(CMouse::MOUSE_KEY_RIGHT);
+
+	if (hasRightClick)
+	{
+		if (m_rotMove.x > 0.0f)
+		{
+			m_MouseMove++;
+		}
+		else if (m_rotMove.x < 0.0f)
+		{
+			m_MouseMove--;
+		}
+
+		// 下方向の上限、上方向の上限
+		if (m_MouseMove >= 5.0f || m_MouseMove <= -10.0f)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+//=========================================
+// カメラワークの処理
+// Author : 冨所知生
+//=========================================
+void CCamera::CameraWork(D3DXQUATERNION que)
+{
+	if (m_quaternion == D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f))
+	{
+		return;
+	}
+
+	m_quaternion = GetQuaternion();
+
+	// クォータニオンのデスト
+	D3DXQUATERNION Result = m_quaternion - que;
+
+	D3DXQuaternionNormalize(&Result, &Result);
+
+	m_quaternion += Result * 0.1f;
+
+	// クオータニオンのノーマライズ
+	D3DXQuaternionNormalize(&m_quaternion, &m_quaternion);
+
+	MouseMove();
+
+	m_nCntCameraWork++;
+
+	if (m_nCntCameraWork >= 120)
+	{
+		m_bWork = true;
+		m_nCntCameraWork = 0;
+	}
+}
+
+//=========================================
+// 上昇処理
+// Author : 冨所知生
+//=========================================
+void CCamera::Up()
+{
+	m_nCntCameraWork++;
+
+	// カメラを上昇させる
+	m_posV.y += 10.0f;
+	VPosRotate();
+	m_posR.y += 10.0f;
+
+	if (m_nCntCameraWork >= 60)
+	{
+		m_bUp = false;
+		m_nCntCameraWork = 0;
 	}
 }

@@ -44,8 +44,8 @@ HRESULT CNumber::Init(const D3DXVECTOR3 &pos)
 //=========================================
 void CNumber::Update()
 {
-	D3DXVECTOR3 pos;
-	pos = GetPosition();
+	//D3DXVECTOR3 pos;
+	//pos = GetPosition();
 }
 
 //=========================================
@@ -53,6 +53,7 @@ void CNumber::Update()
 //=========================================
 void CNumber::Uninit()
 {
+	//âï˙èàóù
 	CObject2D::Uninit();
 }
 

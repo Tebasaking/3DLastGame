@@ -335,10 +335,31 @@ int CObject::ManageHP(int Value)
 
 //===========================================================================
 // オブジェクトの当たり判定
-// 引数 : 座標、古い座標、目標座標、サイズ、目標サイズ、押し返すか返さないか
+// 引数 : ターゲットのオブジェクト情報、押し返すか返さないか
 //===========================================================================
-bool CObject::Collision(D3DXVECTOR3 pos, D3DXVECTOR3 posOld,D3DXVECTOR3 posTarget,D3DXVECTOR3 size,D3DXVECTOR3 SizeTarget,bool bExtrude)
+bool CObject::Collision(CObject *Target, bool bExtrude)
 {
+	D3DXVECTOR3 pos = GetPosition();
+	D3DXVECTOR3 posOld = GetPosOld();
+	D3DXVECTOR3 size = GetSize();
+	
+	D3DXVECTOR3 posTarget = Target->GetPosition();
+	D3DXVECTOR3 SizeTarget = Target->GetSize();
+
+	// 当たった
+	if ((pos.z - size.z) < (posTarget.z + SizeTarget.z)
+		&& (pos.z + size.z) > (posTarget.z - SizeTarget.z)
+		&& (pos.x - size.x) < (posTarget.x + SizeTarget.x)
+		&& (pos.x + size.x) > (posTarget.x - SizeTarget.x)
+		&& (pos.y - size.y) < (posTarget.y + SizeTarget.y)
+		&& (pos.y + size.y) > (posTarget.y - SizeTarget.y))
+	{
+		bCollision = true;
+	}
+
+	// 生まれてしまう僅かなズレを解決する値
+	float fCollision = 1.0f;
+
 	if ((pos.z - size.z) < (posTarget.z + SizeTarget.z)
 		&& (pos.z + size.z) > (posTarget.z - SizeTarget.z)
 		&& (pos.x - size.x) < (posTarget.x + SizeTarget.x)
@@ -347,41 +368,33 @@ bool CObject::Collision(D3DXVECTOR3 pos, D3DXVECTOR3 posOld,D3DXVECTOR3 posTarge
 		if ((posOld.y + size.y) <= (posTarget.y - SizeTarget.y)
 			&& (pos.y + size.y) > (posTarget.y - SizeTarget.y))
 		{
-			bCollision = true;
-
 			if (bExtrude)
 			{
-				pos.y = posTarget.y - SizeTarget.y - size.y;
+				pos.y = posTarget.y - SizeTarget.y - size.y - fCollision;
 			}
 		}
 		if ((posOld.y - size.y) >= (posTarget.y + SizeTarget.y)
 			&& (pos.y - size.y) < (posTarget.y + SizeTarget.y))
 		{
-			bCollision = true;
-
 			if (bExtrude)
 			{
-				pos.y = posTarget.y + SizeTarget.y + size.y;
+				pos.y = posTarget.y + SizeTarget.y + size.y + fCollision;
 			}
 		}
 	}
 
 	if ((pos.y - size.y) < (posTarget.y + SizeTarget.y)
 		&& (pos.y + size.y) > (posTarget.y - SizeTarget.y))
-	{// モデル内にいる(Y軸)
-		bool bCollisionX = false;
-		bool bCollisionZ = false;
-
+	{
 		if ((pos.z - size.z) < (posTarget.z + SizeTarget.z)
 			&& (pos.z + size.z) > (posTarget.z - SizeTarget.z))
 		{// モデル内にいる(Z軸)
-			bCollisionZ = true;
 			if ((posOld.x + size.z) <= (posTarget.x - SizeTarget.x)
 				&& (pos.x + size.z) > (posTarget.x - SizeTarget.x))
 			{
 				if (bExtrude)
 				{
-					pos.x = posTarget.x - SizeTarget.x - size.z;
+					pos.x = posTarget.x - SizeTarget.x - size.z - fCollision;
 				}
 			}
 			if ((posOld.x - size.z) >= (posTarget.x + SizeTarget.x)
@@ -389,21 +402,19 @@ bool CObject::Collision(D3DXVECTOR3 pos, D3DXVECTOR3 posOld,D3DXVECTOR3 posTarge
 			{
 				if (bExtrude)
 				{
-					pos.x = posTarget.x + SizeTarget.x + size.z;
+					pos.x = posTarget.x + SizeTarget.x + size.z + fCollision;
 				}
 			}
 		}
 		if ((pos.x - size.x) < (posTarget.x + SizeTarget.x)
 			&& (pos.x + size.x) > (posTarget.x - SizeTarget.x))
 		{// モデル内にいる(X軸)
-			bCollisionX = true;
-
 			if ((posOld.z + size.z) <= (posTarget.z - SizeTarget.z)
 				&& (pos.z + size.z) > (posTarget.z - SizeTarget.z))
 			{
 				if (bExtrude)
 				{
-					pos.z = posTarget.z - SizeTarget.z - size.z;
+					pos.z = posTarget.z - SizeTarget.z - size.z - fCollision;
 				}
 			}
 			if ((posOld.z - size.z) >= (posTarget.z + SizeTarget.z)
@@ -411,17 +422,92 @@ bool CObject::Collision(D3DXVECTOR3 pos, D3DXVECTOR3 posOld,D3DXVECTOR3 posTarge
 			{
 				if (bExtrude)
 				{
-					pos.z = posTarget.z + SizeTarget.z + size.z;
+					pos.z = posTarget.z + SizeTarget.z + size.z + fCollision;
 				}
 			}
 		}
-
-		if (bCollisionX
-			&& bCollisionZ)
-		{
-			bCollision = true;
-		}
 	}
 
+	SetPosition(pos);
+
 	return bCollision;
+}
+
+//=========================================
+// 2点から角度を求める
+//=========================================
+D3DXVECTOR3 CObject::AtanRot(D3DXVECTOR3 pos1, D3DXVECTOR3 pos2)
+{
+	D3DXVECTOR3 distance = pos1 - pos2;
+	D3DXVECTOR3 AtanRot = {};
+
+	// 三平方で敵の方向を出す
+	AtanRot.z = sqrtf((distance.x * distance.x) + (distance.z * distance.z));
+	AtanRot.y = atan2f(distance.x, distance.z);
+	AtanRot.x = atan2f(AtanRot.z, distance.y);
+
+	return AtanRot;
+}
+
+//=========================================
+// 角度の正規化処理
+// 引数 : 正規化したい角度
+//=========================================
+D3DXVECTOR3 CObject::NormalizeRotXYZ(D3DXVECTOR3 Rot)
+{
+	D3DXVECTOR3 NormRot;
+
+	NormRot.x = NormalizeRot(Rot.x);
+	NormRot.y = NormalizeRot(Rot.y);
+	NormRot.z = NormalizeRot(Rot.z);
+
+	return NormRot;
+}
+
+float CObject::NormalizeRot(float fRot)
+{
+	if (fRot < -D3DX_PI)
+	{
+		fRot += D3DX_PI * 2;
+	}
+	else if (fRot > D3DX_PI)
+	{
+		fRot -= D3DX_PI * 2;
+	}
+	return fRot;
+}
+
+//===========================================================
+// 行列変換する処理
+// 概要 : 受け取ったposとmtxで行列計算する処理
+// 主な使用 : 座標を受け取った時
+// 引数 : ずらす座標の大きさ、クォータニオン、目標座標
+//============================================================
+D3DXVECTOR3 CObject::MtxPos(D3DXVECTOR3 pos, D3DXQUATERNION qua, D3DXVECTOR3 TargetPos)
+{
+	// もしかして必要？ワールドマトリックス
+	D3DXMATRIX WorldMtx;
+
+	// 計算用マトリックス
+	D3DXMATRIX mtxBullet, mtxTrans, mtxQua;
+
+	// ワールドマトリックスの初期化
+	D3DXMatrixIdentity(&WorldMtx);
+
+	// 弾の座標を書き換える
+	D3DXMatrixTranslation(&mtxBullet, pos.x, pos.y, pos.z);			// 行列移動関数
+	D3DXMatrixMultiply(&WorldMtx, &WorldMtx, &mtxBullet);			// 行列掛け算関数
+
+																	// クォータニオン(回転)の反映
+	D3DXMatrixRotationQuaternion(&mtxQua, &qua);					// クオータニオンによる行列回転
+	D3DXMatrixMultiply(&WorldMtx, &WorldMtx, &mtxQua);				// 行列掛け算関数(第2引数×第3引数第を１引数に格納)
+
+																	// 位置を反映
+	D3DXMatrixTranslation(&mtxTrans, TargetPos.x, TargetPos.y, TargetPos.z);		// 行列移動関数
+	D3DXMatrixMultiply(&WorldMtx, &WorldMtx, &mtxTrans);							// 行列掛け算関数
+
+																					// 行列から座標を取り出す
+	D3DXVECTOR3 MtxPos = D3DXVECTOR3(WorldMtx._41, WorldMtx._42, WorldMtx._43);
+
+	return MtxPos;
 }

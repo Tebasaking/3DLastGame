@@ -40,6 +40,9 @@ HRESULT CTarget::Init(const D3DXVECTOR3 &pos)
 	//サイズの設定
 	CObject2D::SetScale(D3DXVECTOR3(0.0f,0.0f,0.0f));
 
+	// タイプ設定
+	SetObjectType(OBJECT_TARGET);
+
 	return S_OK;
 }
 
@@ -102,30 +105,46 @@ void CTarget::Update()
 		float Conversion = ((1.0f / PtoE_Distance));
 
 		//距離に応じてサイズを決める
-		float Size = 10000.0f * (Conversion);
+		m_Size = 10000.0f * (Conversion);
 
 		//最大サイズ
-		if (Size >= 200.0f)
+		if (m_Size >= 200.0f)
 		{
-			Size = 200.0f;
+			m_Size = 200.0f;
 		}
 		//最小サイズ
-		else if (Size <= 0)
+		else if (m_Size <= 0)
 		{
-			Size = 1.0f;
+			m_Size = 1.0f;
 		}
 
-		//サイズの設定
-		CObject2D::SetScale(D3DXVECTOR3(Size,Size,0.0f));
+		D3DXVECTOR3 pos = GetPosition();
 
-		//スクリーン座標に設定する
+		//サイズの設定
+		CObject2D::SetScale(D3DXVECTOR3(m_Size,m_Size,0.0f));
+
+		// スクリーン座標に設定する
 		SetPosition(m_TargetPos);
 	}
 	else
 	{
+		m_Size = 0;
+
 		//サイズの設定
 		CObject2D::SetScale(D3DXVECTOR3(0.0f,0.0f,0.0f));
 	}
+
+	// オブジェクトが死亡していた時
+	if (pObject == nullptr)
+	{
+		Uninit();
+	}
+
+	EObjType obj = GetObjectType();
+	CTarget *pTagert = this;
+
+	// カメラの視点
+	CDebugProc::Print("ターゲットのサイズ %f \n", m_Size);
 }
 
 //=========================================
@@ -159,6 +178,7 @@ void CTarget::Draw()
 	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
 
 	{
+		// 2Dオブジェクトの描画処理
 		CObject2D::Draw();
 	}
 
@@ -185,6 +205,7 @@ CTarget* CTarget::Create(const D3DXVECTOR3 &pos, CObject *object)
 		pCTarget->Init(pos);
 	}
 	
+	// ターゲットを設定するオブジェクトを取得
 	pCTarget->SetObject(object);
 
 	return pCTarget;

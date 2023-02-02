@@ -23,6 +23,7 @@ public:
 	void Update();
 	void Draw();
 	void DrawFPS();
+	void SetFog(bool bFlag, D3DXCOLOR col);
 	LPDIRECT3DDEVICE9 GetDevice() { return m_pD3DDevice; };
 
 	bool GetCheck() { return bCheck; }
