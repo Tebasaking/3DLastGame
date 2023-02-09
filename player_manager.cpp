@@ -7,11 +7,13 @@
 #include "player3D.h"
 #include "player_manager.h"
 #include "application.h"
+#include "sound.h"
 #include "inputkeyboard.h"
 
 CPlayerManager::PLAYER_MODE CPlayerManager::m_mode = MODE_FLY;
 CPlayer3D *CPlayerManager::m_pFly = nullptr;
 CPlayer3D *CPlayerManager::m_pRobot = nullptr;
+bool	  CPlayerManager::m_bTransform = false;
 //=========================================
 //コンストラクタ
 //=========================================
@@ -61,6 +63,8 @@ void CPlayerManager::Update()
 	// エンターキーが押された
 	if (pKeyboard->GetTrigger(DIK_RETURN))
 	{
+		CSound::PlaySound(CSound::SOUND_SE_TRANSFORM);
+
 		// m_modeがFLYの時はROBOTに、ROBOTの時はFLYにする
 		m_mode = (m_mode == MODE_FLY) ? MODE_ROBOT : MODE_FLY;
 	}

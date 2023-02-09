@@ -18,7 +18,10 @@ CBillboard::CBillboard(int nPriority)
 	m_pVtxBuff = nullptr;
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	SetObjectType(OBJECT_EFFECT);
 	m_texture = CTexture::TEXTURE_NONE;
+	m_zFunc = D3DCMP_LESS;							// Zテストの優先度
+	m_nAlphaValue = 0;								// アルファテストの透過率
 }
 
 //=========================================
@@ -60,12 +63,6 @@ HRESULT CBillboard::Init(const D3DXVECTOR3 &pos)
 	pVtx[2].nor = D3DXVECTOR3(0.0f, 1.0f,0.0f);
 	pVtx[3].nor = D3DXVECTOR3(0.0f, 1.0f,0.0f);
 
-	// 頂点カラーの設定
-	pVtx[0].col = D3DXCOLOR(1.0f,1.0f,1.0f,1.0f);
-	pVtx[1].col = D3DXCOLOR(1.0f,1.0f,1.0f,1.0f);
-	pVtx[2].col = D3DXCOLOR(1.0f,1.0f,1.0f,1.0f);
-	pVtx[3].col = D3DXCOLOR(1.0f,1.0f,1.0f,1.0f);
-
 	//texの設定
 	pVtx[0].tex = D3DXVECTOR2(0.0f, 0.0f);
 	pVtx[1].tex = D3DXVECTOR2(1.0f, 0.0f);
@@ -75,7 +72,10 @@ HRESULT CBillboard::Init(const D3DXVECTOR3 &pos)
 	// 頂点をアンロックする
 	m_pVtxBuff->Unlock();
 
-	SetSize(10.0f);
+	// 頂点カラーの設定
+	SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+
+	SetSize(D3DXVECTOR3(10.0f,10.0f,0.0f));
 
 	Draw();
 
@@ -87,23 +87,7 @@ HRESULT CBillboard::Init(const D3DXVECTOR3 &pos)
 //=========================================
 void CBillboard::Update()
 {
-	if (m_pVtxBuff != nullptr)
-	{
-		//頂点情報へのポインタ
-		VERTEX_3D *pVtx;
-
-		//頂点バッファをロックし、頂点情報へのポインタを取得
-		m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
-
-		//頂点カラーの更新
-		pVtx[0].col = m_col;
-		pVtx[1].col = m_col;
-		pVtx[2].col = m_col;
-		pVtx[3].col = m_col;
-
-		//頂点バッファをアンロックする
-		m_pVtxBuff->Unlock();
-	}
+	SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
 }
 
 //=========================================
@@ -125,17 +109,10 @@ void CBillboard::Uninit()
 //=========================================
 void CBillboard::Draw()
 {	
+//	m_texture = CTexture::TEXTURE_NONE;
+
 	LPDIRECT3DDEVICE9 pDevice = CApplication::GetRender()->GetDevice();
 	CTexture* pTexture = CApplication::GetTexture();
-
-	// 頂点バッファをデータストリームに設定
-	pDevice->SetStreamSource(0, m_pVtxBuff, 0, sizeof(VERTEX_3D));
-
-	// 頂点フォーマットの設定
-	pDevice->SetFVF(FVF_VERTEX_3D);
-
-	// テクスチャの設定
-	pDevice->SetTexture(0, pTexture->GetTexture(m_texture));
 
 	// 頂点バッファをデバイスのデータストリームに設定
 	pDevice->SetStreamSource(0, m_pVtxBuff, 0, sizeof(VERTEX_3D));
@@ -147,26 +124,30 @@ void CBillboard::Draw()
 	pDevice->SetTexture(0, pTexture->GetTexture(m_texture));
 
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);				// カリングの設定
-
+	
+	pDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+	pDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+	pDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+	
 	// Zテストを使用する
 	pDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
 
 	// Zテストの設定
-	pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESS);
+	pDevice->SetRenderState(D3DRS_ZFUNC, m_zFunc);
 
 	// αテストを使用する
 	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
 
 	// αテストの設定
-	pDevice->SetRenderState(D3DRS_ALPHAREF, 100);
+	pDevice->SetRenderState(D3DRS_ALPHAREF, m_nAlphaValue);
 	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
 
 	// ライトを無効
 	pDevice->SetRenderState(D3DRS_LIGHTING, FALSE);
 
 	// 計算用マトリックス
-	D3DXMATRIX	mtxRot, mtxTrans, mtxView;
+	D3DXMATRIX mtxRot, mtxTrans, mtxView;
 
 	// ワールドマトリックスの初期化
 	// 行列初期化関数(第一引数の[行列]を[単位行列]に初期化)
@@ -206,11 +187,22 @@ void CBillboard::Draw()
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);				// カリングの設定
 	// ライトを有効	
 	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
+	
+	// Zテストの終了
+	pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
+
+	// αテストの終了
+	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
 
 	// テクスチャの設定
 	pDevice->SetTexture(0, nullptr);
 
 	SetMtxWorld(m_mtxWorld);
+
+	// 元に戻す
+	pDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+	pDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+	pDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
 }
 
 //=========================================
@@ -251,7 +243,7 @@ void CBillboard::SetTexture(CTexture::TEXTURE texture)
 //=========================================
 //サイズの設定
 //=========================================
-void CBillboard::SetSize(const float size)
+void CBillboard::SetSize(const D3DXVECTOR3 size)
 {
 	VERTEX_3D *pVtx;	// 頂点情報へのポインタ
 
@@ -261,10 +253,10 @@ void CBillboard::SetSize(const float size)
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	//頂点座標の設定
-	pVtx[0].pos = D3DXVECTOR3(-m_scale, m_scale * 0.5f, 0.0f);
-	pVtx[1].pos = D3DXVECTOR3(m_scale, m_scale * 0.5f, 0.0f);
-	pVtx[2].pos = D3DXVECTOR3(-m_scale,-m_scale * 0.5f, 0.0f);
-	pVtx[3].pos = D3DXVECTOR3(m_scale,-m_scale * 0.5f, 0.0f);
+	pVtx[0].pos = D3DXVECTOR3(-m_scale.x, m_scale.y * 0.5f, 0.0f);
+	pVtx[1].pos = D3DXVECTOR3(m_scale.x, m_scale.y * 0.5f, 0.0f);
+	pVtx[2].pos = D3DXVECTOR3(-m_scale.x,-m_scale.y * 0.5f, 0.0f);
+	pVtx[3].pos = D3DXVECTOR3(m_scale.x,-m_scale.y * 0.5f, 0.0f);
 
 	// 頂点をアンロックする
 	m_pVtxBuff->Unlock();
@@ -275,7 +267,28 @@ void CBillboard::SetSize(const float size)
 //=========================================
 void CBillboard::SetColor(const D3DXCOLOR &col)
 {
+	if (m_pVtxBuff == nullptr)
+	{
+		return;
+	}
+
+	// 色の設定
 	m_col = col;
+
+	// 頂点情報へのポインタ
+	VERTEX_3D *pVtx;
+
+	// 頂点バッファをロックし、頂点情報へのポインタを取得
+	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
+
+	//頂点カラーの更新
+	pVtx[0].col = m_col;
+	pVtx[1].col = m_col;
+	pVtx[2].col = m_col;
+	pVtx[3].col = m_col;
+
+	// 頂点をアンロックする
+	m_pVtxBuff->Unlock();
 }
 //=========================================
 //テクスチャの設定

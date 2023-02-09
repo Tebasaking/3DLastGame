@@ -33,6 +33,8 @@ public:
 	void BulletMove(void);
 	// ロックオン処理
 	D3DXVECTOR3 LockOn();
+	// 追従処理
+	void Follow();
 
 	// 探索カウントの目標を設定
 	void SetSearchValue(int val) { m_SearchValue = val; }
@@ -69,6 +71,7 @@ private:
 	int						m_SearchCnt;				// 探索カウント
 	int						m_SearchValue;				// 探索カウントの目標値
 	int						m_MissileCnt;				// ミサイルカウント
+	int						m_LocusCnt;					// 爆発を表示するカウント
 };
 
 #endif

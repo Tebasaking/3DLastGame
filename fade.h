@@ -25,7 +25,7 @@ public:
 		FADE_MAX
 	};
 
-	explicit CFade(int nPriority = 4);	//コンストラクタ
+	explicit CFade(int nPriority = LAYER_FIVE);	//コンストラクタ
 	~CFade();									//デストラクタ
 
 	void Init(CApplication::MODE modeNext);		//フェードの初期化

@@ -10,10 +10,12 @@
 #include "game.h"
 #include "meshfield.h"
 #include "application.h"
+#include "sound.h"
 #include "enemy.h"
 #include "debug_proc.h"
 #include "camera.h"
 #include "calculation.h"
+#include "missile_locus.h"
 
 //=========================================
 //コンストラクタ
@@ -59,7 +61,7 @@ HRESULT CBullet3D::Init(const D3DXVECTOR3 &pos)
 
 	//==========================================================
 
-	//ミサイルアラートの生成====================================l
+	//ミサイルアラートの生成====================================
 
 	if (m_TargetObj->GetObjectType() == OBJECT_PLAYER)
 	{// 狙われたターゲットがプレイヤーだった場合のみ生成する
@@ -127,6 +129,15 @@ void CBullet3D::Update()
 			Uninit();
 			CExplosion::Create(m_pos, m_quaternion);
 		}
+	}
+
+	// 軌跡を生成するタイミング
+	m_LocusCnt++;
+
+	if (m_LocusCnt % 1 == 0)
+	{
+		// ミサイルの軌跡の生成
+		CMissile_Locus::Create(m_pos, m_TargetObj);
 	}
 
 	//=========================================
@@ -205,6 +216,7 @@ CBullet3D* CBullet3D::Create(const D3DXVECTOR3 &pos ,const D3DXQUATERNION &quate
 		pCBullet3D->SetRot(pShooter->GetRot());
 		pCBullet3D->SetQue(pShooter->GetQuaternion());
 		pCBullet3D->SetSearchValue(val);
+		CSound::PlaySound(CSound::SOUND_SE_MISSILE);
 	}
 
 	return pCBullet3D;
@@ -260,6 +272,7 @@ void CBullet3D::BulletMove()
 {
 	if (m_TargetObj != nullptr)
 	{
+		//m_MissileSpeed = 30.0f;
 		// 徐々にミサイルのスピードを速くする
 		if (m_MissileSpeed <= 0.3f)
 		{
@@ -277,12 +290,12 @@ void CBullet3D::BulletMove()
 		m_TargetPos = m_TargetObj->GetPosition();
 
 		m_FrontMoveCnt++;
+		
+		D3DXVECTOR3 MoveRot;
+		D3DXVECTOR3 Pos;
 
-		if (m_FrontMoveCnt <= 60)
+		if (m_FrontMoveCnt <= 30)
 		{
-			D3DXVECTOR3 MoveRot;
-			D3DXVECTOR3 Pos;
-
 			if (m_quaternion != D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f))
 			{
 				// クォータニオンを使用した移動の適応
@@ -309,31 +322,39 @@ void CBullet3D::BulletMove()
 		}
 		else
 		{
-			if (m_MissileSpeed <= m_length && m_MissileSpeed <= 100)
-			{// 目標とposの距離がSpeed以上ならLockOnする
-			 // ロックオンで出した値を加算する
-				D3DXVECTOR3 Result;
-				D3DXVECTOR3 Sub = LockOn();
-				D3DXVECTOR3 EnemyPos = m_TargetObj->GetPosition();
+			D3DXVECTOR3 EnemyVec = m_TargetObj->GetPosition() - GetPosition();
 
-				m_length = D3DXVec3Length(&(m_pos - EnemyPos));
-				
-				if (m_length <= 500.0f)
-				{// 一定の距離になった時、確実に当たるようにする(下の追従だと当たらないため)
-					// エネミーへの方向ベクトル
-					D3DXVECTOR3 VecEnemy = EnemyPos - m_pos;
+			// ベクトルを算出
+			D3DXVECTOR3 MoveVec = {};
 
-					// 正規化
-					D3DXVec3Normalize(&VecEnemy, &VecEnemy);
+			D3DXVec3Normalize(&MoveVec, &m_move);
+			D3DXVec3Normalize(&EnemyVec, &EnemyVec);
 
-					m_move = VecEnemy * m_MissileSpeed;
-				}
-				else
-				{
-					Result = Sub - m_move;
-					m_move += Result * 0.03f;
-					m_pos += m_move;
-				}
+			// 進行方向ベクトルから出した現在地から見たエネミーへの角度
+			float AdvanceRot = acos((MoveVec.x * EnemyVec.x) + (MoveVec.y * EnemyVec.z) + (MoveVec.z * EnemyVec.z));
+
+			if (AdvanceRot <= D3DX_PI * 0.25f)
+			{
+				AdvanceRot = AdvanceRot * (180 * D3DX_PI);
+
+				D3DXVECTOR3 Vec = EnemyVec / AdvanceRot;
+
+				// 1フレームに動く角度を設定する
+				float OneRadian = (1 * (180 / D3DX_PI));
+
+				D3DXVec3Normalize(&Vec, &Vec);
+
+				D3DXVECTOR3 A = Vec;
+
+				D3DXVECTOR3 AB = Vec *  OneRadian;
+				D3DXVec3Normalize(&AB, &AB);
+
+				//m_move = AB * m_MissileSpeed;
+
+				m_move = AB * m_MissileSpeed;
+
+				// 角度の設定
+				m_FllowRot = AtanRot(m_pos + m_move, m_pos);
 			}
 		}
 
@@ -380,4 +401,23 @@ D3DXVECTOR3 CBullet3D::QuaternionChange()
 	ChangeRot.x = -atanf(x3);
 
 	return ChangeRot;
+}
+
+//=========================================
+//　ミサイルの追従処理
+//=========================================
+void CBullet3D::Follow()
+{
+	if (m_TargetObj != nullptr)
+	{
+		D3DXVECTOR3 EnemyVec = m_TargetObj->GetPosition() - GetPosition();
+
+		// ベクトルを算出
+		D3DXVECTOR3 MoveVec = {};
+
+		D3DXVec3Normalize(&MoveVec, &m_move);
+		D3DXVec3Normalize(&EnemyVec, &EnemyVec);
+
+		float AdvanceRot = acos((MoveVec.x * EnemyVec.x) + (MoveVec.y * EnemyVec.z) + (MoveVec.z * EnemyVec.z));
+	}
 }

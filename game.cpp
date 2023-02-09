@@ -50,7 +50,7 @@ HRESULT CGame::Init(const D3DXVECTOR3 &pos)
 
 	//タイマーの生成
 	CTime *pTime = CTime::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f - 200.0f, 50.0f, 0.0f));
-	pTime->SetAlarm(3,0);
+	pTime->SetAlarm(1,0);
 
 	// スコアの生成
 	m_pScore = CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 300.0f, 50.0f, 0.0f));
@@ -78,7 +78,7 @@ HRESULT CGame::Init(const D3DXVECTOR3 &pos)
 	}
 
 	// タンク
-	pEnemy[2] = CEnemy::Create(D3DXVECTOR3(100.0f,1000.0f,300.0f));
+	pEnemy[2] = CEnemy::Create(D3DXVECTOR3(100.0f, 200.0f, 100));
 	pEnemy[2]->SetType(CEnemy::ENEMY_GROUND);
 	pEnemy[2]->SetMotion("data/MOTION/tank.txt");
 

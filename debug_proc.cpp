@@ -40,6 +40,7 @@ void CDebugProc::Print(const char *pFormat, ...)
 	va_end(args);
 
 #ifdef _DEBUG
+
 	strcat(&m_aStr[0], &aStrCpy[0]);
 #endif // DEBUG
 }

@@ -14,7 +14,7 @@
 class CObject2D :public CObject
 {
 public:
-	explicit CObject2D(int nPriority = 0);
+	explicit CObject2D(int nPriority = LAYER_ONE);
 	virtual ~CObject2D();			//デストラクタ
 
 	//初期化処理
@@ -34,7 +34,7 @@ public:
 	void SetColor(const D3DXCOLOR &col);
 	void SetPosition(const D3DXVECTOR3& pos);
 	void SetRotation(const D3DXVECTOR3& rot) { m_rot = rot; }
-	void SetAnim(const float Num,const int Pattern);
+	void SetAnim(const int Num,const int Pattern);
 	void SetScale(const D3DXVECTOR3 Size);
 
 	D3DXVECTOR3 GetRotation() { return m_rot; }

@@ -37,9 +37,6 @@
     <Filter Include="ソース ファイル\ゲーム\2D">
       <UniqueIdentifier>{57c36add-3fd2-4247-a94c-3df64a051c36}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\ゲーム\3DPolygon">
-      <UniqueIdentifier>{5bff6774-5371-48bd-bed9-f8983d09e035}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ヘッダー ファイル\ゲーム\3DPolygon">
       <UniqueIdentifier>{3a061182-c38c-40ba-8d49-d0be22282b0c}</UniqueIdentifier>
     </Filter>
@@ -57,6 +54,9 @@
     </Filter>
     <Filter Include="ソース ファイル\ゲーム\3D\Player">
       <UniqueIdentifier>{8b2ce853-b745-4672-bc5e-15e67151d20d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\ゲーム\3D\ビルボード">
+      <UniqueIdentifier>{a8a76119-2339-4af6-9376-97fcb78c5fec}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -93,15 +93,6 @@
     <ClCompile Include="Object2D.cpp">
       <Filter>ソース ファイル\ゲーム\2D</Filter>
     </ClCompile>
-    <ClCompile Include="billboard.cpp">
-      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
-    </ClCompile>
-    <ClCompile Include="meshfield.cpp">
-      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
-    </ClCompile>
-    <ClCompile Include="sphere.cpp">
-      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
-    </ClCompile>
     <ClCompile Include="mouse.cpp">
       <Filter>ソース ファイル\システム</Filter>
     </ClCompile>
@@ -132,20 +123,11 @@
     <ClCompile Include="model.cpp">
       <Filter>ソース ファイル\ゲーム\3D</Filter>
     </ClCompile>
-    <ClCompile Include="ball.cpp">
-      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
-    </ClCompile>
-    <ClCompile Include="bullt.cpp">
-      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
-    </ClCompile>
     <ClCompile Include="fade.cpp">
       <Filter>ソース ファイル\ゲーム\2D</Filter>
     </ClCompile>
     <ClCompile Include="enemy.cpp">
       <Filter>ソース ファイル\ゲーム\3D</Filter>
-    </ClCompile>
-    <ClCompile Include="explosion.cpp">
-      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
     </ClCompile>
     <ClCompile Include="motion.cpp">
       <Filter>ソース ファイル\ゲーム\3D\motion</Filter>
@@ -159,26 +141,11 @@
     <ClCompile Include="model3D.cpp">
       <Filter>ソース ファイル\ゲーム\3D</Filter>
     </ClCompile>
-    <ClCompile Include="texture3D.cpp">
-      <Filter>ソース ファイル\ゲーム\3D</Filter>
-    </ClCompile>
     <ClCompile Include="joypad.cpp">
       <Filter>ソース ファイル\システム</Filter>
     </ClCompile>
     <ClCompile Include="debug_proc.cpp">
       <Filter>ソース ファイル\システム</Filter>
-    </ClCompile>
-    <ClCompile Include="radar.cpp">
-      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
-    </ClCompile>
-    <ClCompile Include="target.cpp">
-      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
-    </ClCompile>
-    <ClCompile Include="bullet3D.cpp">
-      <Filter>ソース ファイル\ゲーム\3D</Filter>
-    </ClCompile>
-    <ClCompile Include="missile_alert.cpp">
-      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
     </ClCompile>
     <ClCompile Include="score.cpp">
       <Filter>ソース ファイル\ゲーム\2D\Score</Filter>
@@ -192,11 +159,50 @@
     <ClCompile Include="player3D.cpp">
       <Filter>ソース ファイル\ゲーム\3D\Player</Filter>
     </ClCompile>
+    <ClCompile Include="bullet3D.cpp">
+      <Filter>ソース ファイル\ゲーム\3D\ビルボード</Filter>
+    </ClCompile>
+    <ClCompile Include="particle.cpp">
+      <Filter>ソース ファイル\ゲーム\3D\ビルボード</Filter>
+    </ClCompile>
+    <ClCompile Include="texture3D.cpp">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="billboard.cpp">
+      <Filter>ソース ファイル\ゲーム\3D\ビルボード</Filter>
+    </ClCompile>
+    <ClCompile Include="bullt.cpp">
+      <Filter>ソース ファイル\ゲーム\3D\ビルボード</Filter>
+    </ClCompile>
+    <ClCompile Include="effect.cpp">
+      <Filter>ソース ファイル\ゲーム\3D\ビルボード</Filter>
+    </ClCompile>
+    <ClCompile Include="explosion.cpp">
+      <Filter>ソース ファイル\ゲーム\3D\ビルボード</Filter>
+    </ClCompile>
+    <ClCompile Include="radar.cpp">
+      <Filter>ソース ファイル\ゲーム\3D\ビルボード</Filter>
+    </ClCompile>
+    <ClCompile Include="target.cpp">
+      <Filter>ソース ファイル\ゲーム\3D\ビルボード</Filter>
+    </ClCompile>
+    <ClCompile Include="ball.cpp">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="meshfield.cpp">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="missile_alert.cpp">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="missile_locus.cpp">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="sphere.cpp">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ball.h">
-      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
-    </ClInclude>
     <ClInclude Include="number.h">
       <Filter>ソース ファイル\ゲーム\2D</Filter>
     </ClInclude>
@@ -208,12 +214,6 @@
     </ClInclude>
     <ClInclude Include="Object3D.h">
       <Filter>ソース ファイル\ゲーム\3D</Filter>
-    </ClInclude>
-    <ClInclude Include="billboard.h">
-      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
-    </ClInclude>
-    <ClInclude Include="meshfield.h">
-      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
     </ClInclude>
     <ClInclude Include="object.h">
       <Filter>ソース ファイル\ゲーム</Filter>
@@ -266,20 +266,11 @@
     <ClInclude Include="texture.h">
       <Filter>ソース ファイル\システム</Filter>
     </ClInclude>
-    <ClInclude Include="bullet.h">
-      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
-    </ClInclude>
-    <ClInclude Include="sphere.h">
-      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
-    </ClInclude>
     <ClInclude Include="fade.h">
       <Filter>ソース ファイル\ゲーム\2D</Filter>
     </ClInclude>
     <ClInclude Include="enemy.h">
       <Filter>ソース ファイル\ゲーム\3D</Filter>
-    </ClInclude>
-    <ClInclude Include="explosion.h">
-      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
     </ClInclude>
     <ClInclude Include="motion.h">
       <Filter>ソース ファイル\ゲーム\3D\motion</Filter>
@@ -290,29 +281,14 @@
     <ClInclude Include="model3D.h">
       <Filter>ソース ファイル\ゲーム\3D</Filter>
     </ClInclude>
-    <ClInclude Include="texture3D.h">
-      <Filter>ソース ファイル\ゲーム\3D</Filter>
-    </ClInclude>
     <ClInclude Include="joypad.h">
       <Filter>ソース ファイル\システム</Filter>
     </ClInclude>
     <ClInclude Include="debug_proc.h">
       <Filter>ソース ファイル\システム</Filter>
     </ClInclude>
-    <ClInclude Include="radar.h">
-      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
-    </ClInclude>
-    <ClInclude Include="target.h">
-      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
-    </ClInclude>
-    <ClInclude Include="bullet3D.h">
-      <Filter>ソース ファイル\ゲーム\3D</Filter>
-    </ClInclude>
     <ClInclude Include="parts.h">
       <Filter>ソース ファイル\ゲーム\3D\motion</Filter>
-    </ClInclude>
-    <ClInclude Include="missile_alert.h">
-      <Filter>ソース ファイル\ゲーム\3DPolygon</Filter>
     </ClInclude>
     <ClInclude Include="score.h">
       <Filter>ソース ファイル\ゲーム\2D\Score</Filter>
@@ -325,6 +301,48 @@
     </ClInclude>
     <ClInclude Include="player3D.h">
       <Filter>ソース ファイル\ゲーム\3D\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="bullet3D.h">
+      <Filter>ソース ファイル\ゲーム\3D\ビルボード</Filter>
+    </ClInclude>
+    <ClInclude Include="particle.h">
+      <Filter>ソース ファイル\ゲーム\3D\ビルボード</Filter>
+    </ClInclude>
+    <ClInclude Include="texture3D.h">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="billboard.h">
+      <Filter>ソース ファイル\ゲーム\3D\ビルボード</Filter>
+    </ClInclude>
+    <ClInclude Include="bullet.h">
+      <Filter>ソース ファイル\ゲーム\3D\ビルボード</Filter>
+    </ClInclude>
+    <ClInclude Include="effect.h">
+      <Filter>ソース ファイル\ゲーム\3D\ビルボード</Filter>
+    </ClInclude>
+    <ClInclude Include="explosion.h">
+      <Filter>ソース ファイル\ゲーム\3D\ビルボード</Filter>
+    </ClInclude>
+    <ClInclude Include="radar.h">
+      <Filter>ソース ファイル\ゲーム\3D\ビルボード</Filter>
+    </ClInclude>
+    <ClInclude Include="target.h">
+      <Filter>ソース ファイル\ゲーム\3D\ビルボード</Filter>
+    </ClInclude>
+    <ClInclude Include="ball.h">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="meshfield.h">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="missile_alert.h">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="missile_locus.h">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="sphere.h">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

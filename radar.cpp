@@ -16,7 +16,7 @@
 //=========================================
 //コンストラクタ
 //=========================================
-CRadar::CRadar(int nPriority)
+CRadar::CRadar(int nPriority) : CBillboard(nPriority)
 {
 	SetObjectType(OBJECT_RADAR);
 }
@@ -48,7 +48,7 @@ HRESULT CRadar::Init(const D3DXVECTOR3 &pos)
 		// テクスチャの設定
 		CBillboard::SetTexture(CTexture::TEXTURE_RADAR_MAP);
 		//サイズの設定
-		CBillboard::SetSize(10000.0f);
+		CBillboard::SetSize(D3DXVECTOR3(10000.0f, 10000.0f,0.0f));
 		// COLOR設定
 		CBillboard::SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 		break;
@@ -57,7 +57,7 @@ HRESULT CRadar::Init(const D3DXVECTOR3 &pos)
 		// テクスチャの設定
 		CBillboard::SetTexture(CTexture::TEXTURE_ENEMY_FLY);
 		//サイズの設定
-		CBillboard::SetSize(200.0f);
+		CBillboard::SetSize(D3DXVECTOR3(200.0f, 200.0f,0.0f));
 		// COLOR設定
 		CBillboard::SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f,1.0f));
 		break;
@@ -66,7 +66,7 @@ HRESULT CRadar::Init(const D3DXVECTOR3 &pos)
 		// テクスチャの設定
 		CBillboard::SetTexture(CTexture::TEXTURE_ENEMY_TANK);
 		//サイズの設定
-		CBillboard::SetSize(200.0f);
+		CBillboard::SetSize(D3DXVECTOR3(200.0f,200.0f,0.0f));
 		// COLOR設定
 		CBillboard::SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 	}
@@ -120,7 +120,7 @@ CRadar* CRadar::Create(const D3DXVECTOR3 &pos, CObject *object, RADAR_TYPE type)
 {
 	CRadar* pCRadar = nullptr;
 
-	pCRadar = new CRadar(5);
+	pCRadar = new CRadar(LAYER_FIVE);
 
 	if (pCRadar != nullptr)
 	{

@@ -43,6 +43,8 @@ private:
 	static CPlayer3D* m_pRobot;				// ロボット形態の処理
 
 	static PLAYER_MODE m_mode;		// プレイヤーの状態を管理する
+
+	static bool m_bTransform;				// 変形
 };
 
 #endif

@@ -10,7 +10,6 @@
 #include "object2D.h"
 #include "number.h"
 
-#define MAX_DIGITS		(6)			// スコアの桁数
 #define MAX_RANK		(5)			//表示するランキングの最大数
 
 //=========================================
@@ -18,6 +17,8 @@
 //=========================================
 class CScore :public CObject2D
 {
+private:
+	static const int MAX_DIGITS = 6;
 public:
 	CScore();							//コンストラクタ
 	virtual ~CScore() override;			//デストラクタ

@@ -37,6 +37,11 @@ public:
 		SOUND_SE_MARSHALL_ATTACK,	// 近接攻撃
 		SOUND_SE_EXPLOSION,			// 爆発
 		SOUND_SE_STEP,				// 足音
+		SOUND_SE_MISSILE,			// ミサイルの発射音
+		SOUND_SE_TRANSFORM,			// 機体を変形させた時の音
+		SOUND_SE_FLIGHT,			// 飛行中の音
+		SOUND_SE_DROP,				// 着地の音
+		SOUND_SE_JUMP,				// ジャンプの音
 		SOUND_LABEL_MAX
 	} SOUND_LABEL;
 

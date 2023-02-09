@@ -1,6 +1,6 @@
 //=========================================
 //
-//	バレットの処理(3D [ビルボード])
+//	爆発の処理(3D [ビルボード])
 //	Author:冨所知生
 //
 //=========================================
@@ -9,6 +9,7 @@
 #include "texture.h"
 #include "calculation.h"
 #include "explosion.h"
+#include "sound.h"
 
 const int CExplosion::ANIM_SPEED = 10;
 const int CExplosion::ANIM_MAX = 8;
@@ -40,7 +41,7 @@ HRESULT CExplosion::Init(const D3DXVECTOR3 &pos)
 	m_pos = pos;
 
 	//サイズの設定
-	CBillboard::SetSize(50.0f);
+	CBillboard::SetSize(D3DXVECTOR3(150.0f,150.0f,0.0f));
 
 	// テクスチャの設定
 	CBillboard::SetTexture(CTexture::TEXTURE_EXPLOSION);
@@ -118,6 +119,7 @@ CExplosion* CExplosion::Create(const D3DXVECTOR3 &pos, const D3DXQUATERNION &qua
 	{
 		pExplosion->Init(pos);
 		pExplosion->m_quaternion = quaternion;
+		CSound::PlaySound(CSound::SOUND_SE_EXPLOSION);
 	}
 
 	return pExplosion;

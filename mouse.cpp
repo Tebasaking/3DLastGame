@@ -42,7 +42,7 @@ CMouse::~CMouse()
 // Author : 唐﨑結斗
 // 概要 : マウスのアクセス権を獲得できた場合、処理を継続する
 //=============================================================================
-HRESULT CMouse::Init(HINSTANCE hInstance, HWND hWnd)
+HRESULT CMouse::Init(const HINSTANCE hInstance, const HWND hWnd)
 {
 	// 親クラスのメンバ変数を取得
 	LPDIRECTINPUTDEVICE8 pDevice = GetInputDevice();

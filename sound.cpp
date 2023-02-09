@@ -19,6 +19,11 @@ CSound::SOUNDPARAM g_aParam[CSound::SOUND_LABEL_MAX] =
 	{ "Data/SE/Attack.wav",0 },			// 近接攻撃した時のSE
 	{ "Data/SE/Explosion.wav",0 },		// 爆発した時の音
 	{ "Data/SE/footstep.wav",0 },		// 足音
+	{ "Data/SE/Missile.wav",0},			// ミサイルの発射音
+	{ "Data/SE/transform.wav",0},		// 変形時の音
+	{ "Data/SE/Flight.wav",0},			// 飛行中の音
+	{ "Data/SE/Drop.wav",0},			// 着地音
+	{ "Data/SE/Jump.wav",0},			// ジャンプ音
 };
 
 //------------------------

@@ -36,7 +36,7 @@ HRESULT CBullet::Init(const D3DXVECTOR3 &pos)
 	m_pos = pos;
 
 	//サイズの設定
-	CBillboard::SetSize(10.0f);
+	CBillboard::SetSize(D3DXVECTOR3(10.0f,10.0f,0.0f));
 
 	// テクスチャの設定
 	CBillboard::SetTexture(CTexture::TEXTURE_FIRE);

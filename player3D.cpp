@@ -27,6 +27,7 @@
 #include "parts.h"
 #include "debug_proc.h"
 #include "sound.h"
+#include "particle.h"
 #include "explosion.h"
 
 int BulletDelay = 0;
@@ -34,7 +35,7 @@ int BulletDelay = 0;
 //=========================================
 //コンストラクタ
 //=========================================
-CPlayer3D::CPlayer3D()
+CPlayer3D::CPlayer3D(int Priority) : CMotionModel3D(Priority)
 {
 	SetObjectType(OBJECT_PLAYER);
 	m_mode = MODE_MAX;
@@ -186,7 +187,10 @@ void CPlayer3D::Draw()
 		D3DXMATRIX mtxRot, mtxTrans, mtxScale;
 
 		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);				// カリングの設定
-
+		
+		// Zテストの設定
+		pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESS);
+		
 		// ワールドマトリックスの初期化
 		D3DXMatrixIdentity(&m_WorldMtx);
 
@@ -243,7 +247,7 @@ void CPlayer3D::LockOn()
 	CObject *object = CObject::GetObjectTop();
 
 	// 比較用最大サイズ
-	int MAX_SIZE = 0;
+	float MAX_SIZE = 0;
 
 	//=========================================
 	// 現在存在するターゲットのサイズを比較し、
@@ -297,13 +301,13 @@ void CPlayer3D::Rotate()
 //=========================================
 void CPlayer3D::UpdateFly()
 {
-	// クォータニオンを取得する
-	D3DXQUATERNION quaternion = m_apModel[0]->GetQuaternion();
-
 	// 目標のpos
 	D3DXVECTOR3	m_posDest;
 	//カメラ
 	CCamera *pCamera = CApplication::GetCamera();
+	
+	// クォータニオンを取得する
+	D3DXQUATERNION quaternion = pCamera->GetQuaternion();
 
 	m_pos = m_apModel[0]->GetPos();				// 座標の取得
 	m_posDest = pCamera->GetPosR();				// カメラの座標の取得
@@ -314,9 +318,30 @@ void CPlayer3D::UpdateFly()
 	m_pos.z += m_posResult.z / 5;
 	m_pos.y += m_posResult.y / 5;
 
-	m_pos = MtxPos(D3DXVECTOR3(0.0f, -5.0f, 0.0f), quaternion, m_pos);
+	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
 
-	int MOVE_SPEED = 5.0f;
+	if (pKeyboard->GetPress(DIK_W))
+	{// 加速
+		if (m_MoveAmount <= 20.0f)
+		{ // プレイヤーを前に進める
+			m_MoveAmount += 0.1f;
+		}
+
+		m_pos = MtxPos(D3DXVECTOR3(0.0f, -5.0f, m_MoveAmount), quaternion, m_pos);
+
+	}
+	else
+	{
+		if (m_MoveAmount > 0.0f)
+		{
+			m_MoveAmount -= 0.1f;
+		}
+		else
+		{
+			m_MoveAmount = 0;
+		}
+		m_pos = MtxPos(D3DXVECTOR3(0.0f, -5.0f, m_MoveAmount), quaternion, m_pos);
+	}
 
 	// 回転
 	Rotate();
@@ -334,6 +359,28 @@ void CPlayer3D::UpdateFly()
 	m_apModel[0]->SetPos(D3DXVECTOR3(m_pos.x, m_pos.y, m_pos.z));
 
 	GroundCollison();
+
+	// マネージャ―のモードと一致した時
+	if (m_mode == (CPlayer3D::PLAYER_MODE)CPlayerManager::GetMode())
+	{
+		// パーティクルの生成====================================================
+		CParticle *pParticle = CParticle::Create();
+
+		// プレイヤーの後ろを求める
+		D3DXVECTOR3 BackPos = MtxPos(D3DXVECTOR3(0.0f, 0.0f, -50.0f), m_quaternion, m_pos);
+
+		pParticle->SetPosition(BackPos);
+		pParticle->SetSize(D3DXVECTOR3(5.0f, 5.0f, 0.0f));
+		pParticle->SetPopRange(D3DXVECTOR3(3.0f, 3.0f, 3.0f));
+		pParticle->SetSpeed(50.0f);
+		pParticle->SetEffectLife(10000);
+		pParticle->SetMoveVec(D3DXVECTOR3(100.0f, 100.0f, 0.0f));
+		pParticle->SetLife(10);
+		pParticle->SetColor(D3DXCOLOR(1.0f, 0.4f, 0.1f, 1.0f));
+		pParticle->SetMaxEffect(10);
+		pParticle->SetQuaternion(m_quaternion);
+		//=======================================================================
+	}
 }
 
 //=========================================
@@ -360,9 +407,6 @@ void CPlayer3D::UpdateRob()
 	m_pos.x += m_posResult.x / 5;
 	m_pos.z += m_posResult.z / 5;
 	m_pos.y += m_posResult.y / 5;
-
-	// 弾の発射処理
-	Bullet(D3DXVECTOR3(m_pos.x, m_pos.y + 50.0f, m_pos.z));
 
 	// 地面との当たり判定
 	GroundCollison();
@@ -409,7 +453,12 @@ void CPlayer3D::Bullet(D3DXVECTOR3 pos)
 	{
 		if (!(m_Nearest_object->GetSize().x == 0.0f && m_Nearest_object->GetSize().y == 0.0f))
 		{
-			if (pKeyboard->GetPress(DIK_L))
+			CMouse *pMouse = CApplication::GetMouse();
+
+			// クリックの情報を保管
+			bool hasLeftClick = pMouse->GetPress(CMouse::MOUSE_KEY_LEFT);
+	
+			if (hasLeftClick)
 			{
 				BulletDelay++;
 
@@ -423,6 +472,10 @@ void CPlayer3D::Bullet(D3DXVECTOR3 pos)
 
 					BulletDelay = 0;
 				}
+			}
+			else if (pKeyboard->GetTrigger(DIK_SPACE))
+			{
+				CBullet::Create(m_pos, m_quaternion, m_Nearest_object);
 			}
 		}
 	}
@@ -506,10 +559,21 @@ void CPlayer3D::Attitude()
 //=========================================
 void CPlayer3D::Slash()
 {
+	if (m_mode != (CPlayer3D::PLAYER_MODE)CPlayerManager::GetMode())
+	{
+		return;
+	}
+
 	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
 	CMotion *pMotion = GetMotion();
 
-	if (pKeyboard->GetTrigger(DIK_Z) && !m_bMotion)
+	CMouse *pMouse = CApplication::GetMouse();
+
+	// クリックの情報を保管
+	bool hasLeftClick = pMouse->GetPress(CMouse::MOUSE_KEY_LEFT);
+	bool hasRightClick = pMouse->GetPress(CMouse::MOUSE_KEY_RIGHT);
+
+	if (hasLeftClick && !m_bMotion)
 	{
 		CSound::PlaySound(CSound::SOUND_SE_MARSHALL_ATTACK);
 
@@ -582,12 +646,18 @@ void CPlayer3D::Slash()
 //=========================================
 void CPlayer3D::Jump()
 {
+	if (m_mode != (CPlayer3D::PLAYER_MODE)CPlayerManager::GetMode())
+	{
+		return;
+	}
+
 	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
 	CCamera *pCamera = CApplication::GetCamera();
 	CMotion *pMotion = GetMotion();
 
-	if (pKeyboard->GetTrigger(DIK_SPACE) && !m_bMotion)
+	if (pKeyboard->GetTrigger(DIK_SPACE) && !m_bMotion && !m_bJump)
 	{
+		CSound::PlaySound(CSound::SOUND_SE_JUMP);
 		// モーションの設定
 		pMotion->SetNumMotion(3);
 
@@ -634,6 +704,10 @@ void CPlayer3D::GroundCollison()
 		{
 			if (!m_bMotion)
 			{
+				if (m_bJump)
+				{
+					CSound::PlaySound(CSound::SOUND_SE_DROP);
+				}
 				m_bJump = false;
 				m_bCollision = true;
 			}

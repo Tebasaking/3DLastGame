@@ -24,7 +24,7 @@ public:
 		MODE_MAX
 	};
 	
-	CPlayer3D();			//コンストラクタ
+	explicit CPlayer3D(int nPriority = CObject::LAYER_ONE);	//コンストラクタ
 	virtual ~CPlayer3D() override;			//デストラクタ
 
 	//初期化処理
@@ -79,6 +79,7 @@ public:
 
 private:
 	float	m_scale;									// 大きさ
+	float	m_MoveAmount;								// 移動量
 	bool	m_bCollision;								// 当たり判定
 	bool	m_bJump;									// ジャンプ中かジャンプ中じゃないか
 	bool	m_bMove;									// 移動しているかしていないか

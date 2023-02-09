@@ -21,7 +21,7 @@
 class CNumber :public CObject2D
 {
 public:
-	explicit CNumber(int nPriority = 4);	//コンストラクタ
+	explicit CNumber(int nPriority = LAYER_ONE);	//コンストラクタ
 	virtual ~CNumber() override;			//デストラクタ
 
 	//初期化処理

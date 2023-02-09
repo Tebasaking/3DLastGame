@@ -103,8 +103,6 @@ void CEnemy::Update()
 	// グラウンドの取得
 	CMesh *pGround = CGame::GetGround();
 
-	bool bCollision;
-
 	// 死亡処理
 	Death();
 
@@ -231,10 +229,9 @@ void CEnemy::Update()
 
 	if (pGround != nullptr)
 	{
-		D3DXVECTOR3 GroundPos = m_pos;
-
 		if (m_type == ENEMY_FLY)
 		{
+			D3DXVECTOR3 GroundPos = m_pos;
 			GroundPos.y -= 100.0f;
 			// 陸の当たり判定
 			pGround->Collision(&GroundPos);
@@ -242,9 +239,14 @@ void CEnemy::Update()
 		}
 		else if (m_type == ENEMY_GROUND)
 		{
+			D3DXVECTOR3 GroundPos = m_pos;
+			GroundPos.y -= 100.0f;
+
 			// 陸の当たり判定
-			pGround->Collision(&GroundPos);
-			m_pos.y = GroundPos.y;
+			if (pGround->Collision(&GroundPos))
+			{
+				m_pos.y = GroundPos.y;
+			}
 		}
 	}
 
@@ -293,8 +295,6 @@ void CEnemy::Draw()
 	D3DXMATRIX mtxRot, mtxTrans, mtxScale;
 	D3DXMATRIX mtxParents;
 
-	// 現在のマテリアル保存用
-	D3DMATERIAL9 matDef;
 	// マテリアルデータへのポインタ
 	D3DXVECTOR3 scale(5.0f, 5.0f, 5.0f);
 
@@ -367,8 +367,8 @@ CEnemy* CEnemy::Create(const D3DXVECTOR3 &pos)
 void CEnemy::Bullet(CObject *obj)
 {
 	// 両翼から弾を発射する
-	CBullet3D::Create(D3DXVECTOR3(50.0f, 0.0f, 0.0f), m_quaternion, obj, this,60);
-	CBullet3D::Create(D3DXVECTOR3(-50.0f, 0.0f, 0.0f), m_quaternion, obj, this,60);
+	CBullet3D::Create(D3DXVECTOR3(50.0f, 50.0f, 0.0f), m_quaternion, obj, this,60);
+	CBullet3D::Create(D3DXVECTOR3(-50.0f, 50.0f, 0.0f), m_quaternion, obj, this,60);
 
 	m_AttackCount = 0;
 }

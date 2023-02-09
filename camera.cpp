@@ -28,6 +28,7 @@
 #include "object.h"
 #include "joypad.h"
 #include "player3D.h"
+#include "sound.h"
 
 //*****************************************************************************
 // 定数定義
@@ -51,7 +52,8 @@ CCamera::CCamera() :
 	m_event(EVENT_NORMAL),
 	m_fDistance(0.0f),										// 視点から注視点までの距離
 	m_nCntFly(0.0f),
-	m_fRotMove(0.0f)										// 移動方向
+	m_fRotMove(0.0f),										// 移動方向
+	m_Destquaternion(D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f))
 {
 	m_mtxWorld = {};	// ワールドマトリックス
 	m_mtxProj = {};		// プロジェクションマトリックス
@@ -113,6 +115,9 @@ HRESULT CCamera::Init()
 
 	m_mode = TYPE_FREE;
 
+	m_nCntMoveSound = 10000;
+
+
 	return S_OK;
 }
 
@@ -160,6 +165,9 @@ void CCamera::Update(void)
 	{
 		FlightEvent();
 	}
+
+	m_quaternion += (m_Destquaternion - m_quaternion) * 0.1f;
+	D3DXQuaternionNormalize(&m_quaternion, &m_quaternion);
 
 	CDebugProc::Print("カメラの座標 : (%f,%f,%f) \n", m_posV.x, m_posV.y, m_posV.z);
 	CDebugProc::Print("カメラの回転 : (%f,%f,%f,%f) \n", m_quaternion.x, m_quaternion.y, m_quaternion.z, m_quaternion.w);
@@ -313,42 +321,18 @@ void CCamera::Rotate()
 				D3DXQuaternionNormalize(&quaternion, &quaternion);
 
 				// クオータニオンを適用
-				m_quaternion *= quaternion;
+				m_Destquaternion *= quaternion;
+				D3DXQuaternionNormalize(&m_Destquaternion, &m_Destquaternion);
 			}
-			else
-			{
-				if (m_mode == TYPE_SHOULDER)
-				{
-					D3DXVECTOR3 axis;
+		}
 
-					if (inverseVec.x < 0.0f)
-					{
-						D3DXVECTOR3 xAxis = D3DXVECTOR3(inverseVec.x, 0.0f, 0.0f);
-						D3DXVECTOR3 zAxis = D3DXVECTOR3(0.0f, -inverseVec.x, 0.0f);
-						D3DXVec3Cross(&axis, &xAxis, &zAxis);	// 外積で回転軸を算出。
-					}
-					else
-					{
-						D3DXVECTOR3 xAxis = D3DXVECTOR3(inverseVec.x, 0.0f, 0.0f);
-						D3DXVECTOR3 zAxis = D3DXVECTOR3(0.0f, inverseVec.x, 0.0f);
-						D3DXVec3Cross(&axis, &xAxis, &zAxis);	// 外積で回転軸を算出。
-					}
+		if (m_Objectmode == CObject::RADAR_MODE)
+		{// レーダーモードの時
+			CPlayer3D *pPlayer = CPlayerManager::GetPlayer();
 
-					if (inverseVec.x != 0.0f)
-					{
-						// クオータニオンの計算
-						D3DXQUATERNION quaternion;
+			D3DXQUATERNION PlayerQua = pPlayer->GetQuaternion();
 
-						D3DXQuaternionRotationAxis(&quaternion, &axis, 0.03f);	// 回転軸と回転角度を指定
-
-						// クオータニオンのノーマライズ
-						D3DXQuaternionNormalize(&quaternion, &quaternion);
-
-						// クオータニオンを適用
-						m_quaternion *= quaternion;
-					}
-				}
-			}
+			m_quaternion = D3DXQUATERNION(m_quaternion.x, PlayerQua.x, m_quaternion.z, m_quaternion.w);
 		}
 	}
 
@@ -358,19 +342,24 @@ void CCamera::Rotate()
 		// Y軸の回転
 	{
 		D3DXVECTOR3 axis;
+		// クオータニオンによる行列回転
+		D3DXMATRIX mtxRot, mtxVec;
 
-		if (inverseVec.x < 0.0f)
+		D3DXMatrixRotationQuaternion(&mtxRot, &m_quaternion);
+		D3DXVec3TransformCoord(&axis, &D3DXVECTOR3(1, 0, 0), &mtxRot);
+
+		D3DXVECTOR3 vecX;
+
+		if (inverseVec.x >= 0.0f)
 		{
-			D3DXVECTOR3 xAxis = D3DXVECTOR3(inverseVec.x, 0.0f, 0.0f);
-			D3DXVECTOR3 zAxis = D3DXVECTOR3(0.0f, 0.0f, -inverseVec.x);
-			D3DXVec3Cross(&axis, &xAxis, &zAxis);	// 外積で回転軸を算出。
+			vecX = D3DXVECTOR3(0, -1, 0);
 		}
-		else
+		else if (inverseVec.x <= 0.0f)
 		{
-			D3DXVECTOR3 xAxis = D3DXVECTOR3(inverseVec.x, 0.0f, 0.0f);
-			D3DXVECTOR3 zAxis = D3DXVECTOR3(0.0f, 0.0f, inverseVec.x);
-			D3DXVec3Cross(&axis, &xAxis, &zAxis);	// 外積で回転軸を算出。
+			vecX = D3DXVECTOR3(0, 1, 0);
 		}
+
+		D3DXVec3TransformCoord(&axis, &vecX, &mtxRot);
 
 		if (inverseVec.x != 0.0f)
 		{
@@ -380,10 +369,7 @@ void CCamera::Rotate()
 			D3DXQuaternionRotationAxis(&quaternion, &axis, 0.03f);	// 回転軸と回転角度を指定
 
 			// クオータニオンのノーマライズ
-			D3DXQuaternionNormalize(&quaternion, &quaternion);
-
-			// クオータニオンを適用
-			m_quaternion *= quaternion;
+			m_Destquaternion *= quaternion;
 		}
 	}
 	break;
@@ -394,19 +380,24 @@ void CCamera::Rotate()
 		if (m_Objectmode != CObject::RADAR_MODE)
 		{
 			D3DXVECTOR3 axis;
+			// クオータニオンによる行列回転
+			D3DXMATRIX mtxRot, mtxVec;
 
-			if (inverseVec.x < 0.0f)
+			D3DXMatrixRotationQuaternion(&mtxRot, &m_quaternion);
+			D3DXVec3TransformCoord(&axis, &D3DXVECTOR3(0, 0, 1), &mtxRot);
+
+			D3DXVECTOR3 vecX;
+
+			if (inverseVec.x >= 0.0f)
 			{
-				D3DXVECTOR3 xAxis = D3DXVECTOR3(inverseVec.x, 0.0f, 0.0f);
-				D3DXVECTOR3 zAxis = D3DXVECTOR3(0.0f, inverseVec.x, 0.0f);
-				D3DXVec3Cross(&axis, &xAxis, &zAxis);	// 外積で回転軸を算出。
+				vecX = D3DXVECTOR3(0, 0, 1);
 			}
-			else
+			else if (inverseVec.x <= 0.0f)
 			{
-				D3DXVECTOR3 xAxis = D3DXVECTOR3(inverseVec.x, 0.0f, 0.0f);
-				D3DXVECTOR3 zAxis = D3DXVECTOR3(0.0f, -inverseVec.x, 0.0f);
-				D3DXVec3Cross(&axis, &xAxis, &zAxis);	// 外積で回転軸を算出。
+				vecX = D3DXVECTOR3(0, 0, -1);
 			}
+
+			D3DXVec3TransformCoord(&axis, &vecX, &mtxRot);
 
 			if (inverseVec.x != 0.0f)
 			{
@@ -418,8 +409,8 @@ void CCamera::Rotate()
 				// クオータニオンのノーマライズ
 				D3DXQuaternionNormalize(&quaternion, &quaternion);
 
-				// クオータニオンを適用
-				m_quaternion *= quaternion;
+				m_Destquaternion *= quaternion;
+				D3DXQuaternionNormalize(&m_Destquaternion, &m_Destquaternion);
 			}
 		}
 	}
@@ -427,7 +418,7 @@ void CCamera::Rotate()
 	}
 
 	// クオータニオンのノーマライズ
-	D3DXQuaternionNormalize(&m_quaternion, &m_quaternion);
+	D3DXQuaternionNormalize(&m_Destquaternion, &m_Destquaternion);
 }
 
 //=============================================================================
@@ -464,25 +455,36 @@ void CCamera::FreeMove(void)
 	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
 	D3DXVECTOR3 move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
+	if (CApplication::GetMode() == CApplication::MODE_GAME)
+	{
+		m_nCntMoveSound++;
+
+		if (m_nCntMoveSound >= 60 * 19)
+		{
+			CSound::PlaySound(CSound::SOUND_SE_FLIGHT);
+			m_nCntMoveSound = 0;
+		}
+	}
+
 	//移動キーが押された
 	if (pKeyboard->GetPress(DIK_W))
-	{
+	{// 加速処理
 		MOVE_SPEED += 0.1f;
 		CAMERA_MOVE_SPEED += 0.1f;
 	}
 	else
 	{// プレイヤーが操作していないとき減速する
-		MOVE_SPEED -= 0.01f;
-		CAMERA_MOVE_SPEED -= 0.01f;
+		MOVE_SPEED -= 0.1f;
+		CAMERA_MOVE_SPEED -= 0.1f;
 	}
 
-	if (MOVE_SPEED >= 10.0f)
+	if (MOVE_SPEED >= 20.0f)
 	{
-		MOVE_SPEED = 10.0f;
+		MOVE_SPEED = 20.0f;
 	}
-	if (CAMERA_MOVE_SPEED >= 10.0f)
+	if (CAMERA_MOVE_SPEED >= 20.0f)
 	{
-		CAMERA_MOVE_SPEED = 10.0f;
+		CAMERA_MOVE_SPEED = 20.0f;
 	}
 	if (CAMERA_MOVE_SPEED <= 5.0f)
 	{
@@ -532,6 +534,9 @@ void CCamera::ShoulderMove()
 {
 	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
 	D3DXVECTOR3 move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+	// SEの停止
+	CSound::StopSound(CSound::SOUND_SE_FLIGHT);
 
 	if (m_bUp)
 	{// 上昇処理
@@ -612,6 +617,8 @@ void CCamera::ShoulderMove()
 				m_posV.y += Result.y;
 
 				m_Gravity = 0;
+
+				// 地面の当たり判定
 				pGround->Collision(&m_posV);
 				m_posR.y = pPlayer->GetPosition().y;
 			}
@@ -643,19 +650,12 @@ void CCamera::MouseMove(void)
 	m_Dest = D3DXVECTOR3(pMouse->GetMouseMove().y, pMouse->GetMouseMove().x, pMouse->GetMouseMove().z);
 
 	// クリックの情報を保管
-	bool hasLeftClick = pMouse->GetPress(CMouse::MOUSE_KEY_LEFT);
 	bool hasRightClick = pMouse->GetPress(CMouse::MOUSE_KEY_RIGHT);
 
 	if (hasRightClick)
 	{
 		Rotate();
 		VPosRotate();
-	}
-	if (hasLeftClick)
-	{
-		/*左クリックしている最中回転する*/
-		Rotate();
-		RPosRotate();
 	}
 }
 
@@ -838,7 +838,6 @@ void CCamera::UpdateRadar()
 	CMouse *pMouse = CApplication::GetMouse();
 
 	// クリックの情報を保管
-	bool hasLeftClick = pMouse->GetPress(CMouse::MOUSE_KEY_LEFT);
 	bool hasRightClick = pMouse->GetPress(CMouse::MOUSE_KEY_RIGHT);
 
 	// 回転のベクトルを設定。
@@ -895,7 +894,6 @@ bool CCamera::Limit_Used_Mouse()
 	D3DXVECTOR3 axis = {};
 
 	// クリックの情報を保管
-	bool hasLeftClick = pMouse->GetPress(CMouse::MOUSE_KEY_LEFT);
 	bool hasRightClick = pMouse->GetPress(CMouse::MOUSE_KEY_RIGHT);
 
 	if (hasRightClick)
@@ -937,10 +935,10 @@ void CCamera::CameraWork(D3DXQUATERNION que)
 
 	D3DXQuaternionNormalize(&Result, &Result);
 
-	m_quaternion += Result * 0.1f;
+	m_Destquaternion += Result;
 
 	// クオータニオンのノーマライズ
-	D3DXQuaternionNormalize(&m_quaternion, &m_quaternion);
+	D3DXQuaternionNormalize(&m_Destquaternion, &m_Destquaternion);
 
 	MouseMove();
 

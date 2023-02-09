@@ -37,7 +37,7 @@ private:
 	float  m_Size;							// サイズ
 	static D3DXVECTOR3	m_TargetPos;		// 目標の座標
 	D3DXVECTOR3			m_pos;				// 現在の座標
-	CObject *pObject;						// 目標のオブジェクト情報の保存先
+	CObject				*pObject;			// 目標のオブジェクト情報の保存先
 };
 
 #endif

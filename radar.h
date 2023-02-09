@@ -22,7 +22,7 @@ public:
 		RADAR_ENEMY
 	};
 
-	explicit CRadar(int nPriority = LAYER_TOW);			//コンストラクタ
+	explicit CRadar(int nPriority = LAYER_FIVE);			//コンストラクタ
 	virtual ~CRadar() override;			//デストラクタ
 
 											//初期化処理

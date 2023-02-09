@@ -31,7 +31,7 @@ HRESULT CResult::Init(const D3DXVECTOR3 &pos)
 	CObject2D *pObject = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), 3);
 
 	// オブジェクトのサイズ設定
-	pObject->SetScale(D3DXVECTOR3(SCREEN_HEIGHT,SCREEN_HEIGHT,0.0f));
+	pObject->SetScale(D3DXVECTOR3((float)SCREEN_HEIGHT,(float)SCREEN_HEIGHT,0.0f));
 
 	// オブジェクトのテクスチャ設定
 	pObject->SetTexture(CTexture::TEXTURE_RESULT);

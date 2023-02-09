@@ -51,7 +51,7 @@ public:
 	//--------------------------------------------------------------------
 	// メンバ関数
 	//--------------------------------------------------------------------
-	HRESULT Init(HINSTANCE hInstance, HWND hWnd) override;			// 初期化
+	HRESULT Init(const HINSTANCE hInstance, const HWND hWnd) override;			// 初期化
 	void Uninit(void) override;										// 終了
 	void Update(void) override;										// 更新
 	bool GetPress(int nKey);										// プレス情報の取得

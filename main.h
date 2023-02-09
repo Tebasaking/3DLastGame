@@ -34,7 +34,7 @@ struct VERTEX_3D
 {
 	D3DXVECTOR3 pos;	//頂点座標
 	D3DXVECTOR3 nor;	//法線ベクトル
-	D3DCOLOR col;		//頂点カラー
+	D3DCOLOR	col;	//頂点カラー
 	D3DXVECTOR2 tex;	//texture座標
 };
 
@@ -45,6 +45,6 @@ const int SCREEN_HEIGHT = 720;
 
 // 頂点フォーマット
 const DWORD FVF_VERTEX_2D = (D3DFVF_XYZRHW | D3DFVF_DIFFUSE | D3DFVF_TEX1);
-const DWORD FVF_VERTEX_3D(D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1);		//座標・法線・カラー
+const DWORD FVF_VERTEX_3D = (D3DFVF_XYZ | D3DFVF_NORMAL | D3DFVF_DIFFUSE | D3DFVF_TEX1);		//座標・法線・カラー
 
 #endif

@@ -16,7 +16,7 @@ D3DXCOLOR CFade::m_Color = {};				//カラー
 //======================================================
 //コンストラクタ
 //======================================================
-CFade::CFade(int nPriority) : CObject2D(4)
+CFade::CFade(int nPriority) : CObject2D(nPriority)
 {
 }
 

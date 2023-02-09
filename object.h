@@ -26,13 +26,15 @@ public:
 		OBJECT_TARGET,		// ターゲット
 		OBJECT_EMPTY,		// 設定されていない
 		OBJECT_FADE,
+		OBJECT_EFFECT,		// エフェクト
+//		OBJECT_BILLBOARD,	// ビルボード
 		OBJECT_MAX
 	};
 
 	enum Priority
 	{
 		LAYER_ONE,
-		LAYER_TOW,
+		LAYER_TWO,
 		LAYER_THREE,
 		LAYER_FOUR,
 		LAYER_FIVE,
@@ -120,7 +122,7 @@ private:
 	bool m_Targeting;							// ターゲットの対象になっているかいないか
 	bool m_DeathFlag;							// 死亡フラグ
 	bool bCollision;							// 当たり判定
-	int m_Prioryty;								// プライオリティ
+	int m_Priority;								// プライオリティ
 	static CObject *m_pTop[LAYER_MAX];			// 先頭のオブジェクトへのポインタ
 	static CObject *m_pCurrent[LAYER_MAX];		// 現在(一番後ろ)のオブジェクトへのポインタ
 	CObject *m_pNext;							// 自分の次のオブジェクトへのポインタ

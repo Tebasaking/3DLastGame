@@ -246,7 +246,7 @@ void CMesh::Update()
 		}
 	}
 
-	if (m_type == TYPE_GROUND)
+	if (m_type == TYPE_GROUND || m_type == TYPE_SEA)
 	{
 		for (int nCntZ = 0; nCntZ <= MESH_Z_BLOCK; nCntZ++)
 		{
@@ -260,6 +260,7 @@ void CMesh::Update()
 			}
 		}
 	}
+
 	// 頂点をアンロックする
 	m_pVtxBuff->Unlock();
 }

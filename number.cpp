@@ -10,7 +10,7 @@
 //======================================================
 //コンストラクタ
 //======================================================
-CNumber::CNumber(int nPriority) : CObject2D(nPriority)
+CNumber::CNumber(int nPriority)
 {
 	//SetType(OBJTYPE_MODE);
 }

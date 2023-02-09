@@ -160,6 +160,7 @@
     <ClCompile Include="calculation.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="debug_proc.cpp" />
+    <ClCompile Include="effect.cpp" />
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="explosion.cpp" />
     <ClCompile Include="fade.cpp" />
@@ -171,6 +172,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="meshfield.cpp" />
     <ClCompile Include="missile_alert.cpp" />
+    <ClCompile Include="missile_locus.cpp" />
     <ClCompile Include="mode.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="model3D.cpp" />
@@ -182,6 +184,7 @@
     <ClCompile Include="object.cpp" />
     <ClCompile Include="Object2D.cpp" />
     <ClCompile Include="Object3D.cpp" />
+    <ClCompile Include="particle.cpp" />
     <ClCompile Include="parts.cpp" />
     <ClCompile Include="player3D.cpp" />
     <ClCompile Include="player_manager.cpp" />
@@ -206,6 +209,7 @@
     <ClInclude Include="calculation.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="debug_proc.h" />
+    <ClInclude Include="effect.h" />
     <ClInclude Include="enemy.h" />
     <ClInclude Include="explosion.h" />
     <ClInclude Include="fade.h" />
@@ -217,6 +221,7 @@
     <ClInclude Include="main.h" />
     <ClInclude Include="meshfield.h" />
     <ClInclude Include="missile_alert.h" />
+    <ClInclude Include="missile_locus.h" />
     <ClInclude Include="mode.h" />
     <ClInclude Include="model.h" />
     <ClInclude Include="model3D.h" />
@@ -228,6 +233,7 @@
     <ClInclude Include="object.h" />
     <ClInclude Include="Object2D.h" />
     <ClInclude Include="Object3D.h" />
+    <ClInclude Include="particle.h" />
     <ClInclude Include="parts.h" />
     <ClInclude Include="player3D.h" />
     <ClInclude Include="player_manager.h" />

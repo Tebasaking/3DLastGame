@@ -88,6 +88,8 @@ public:
 
 	// オブジェクトのモードの設定
 	void SetObjMode(CObject::Object_mode mode) { m_Objectmode = mode; }
+	// カメラを揺らす
+	void ShakeCamera(int ShakeFrame, float Magnitude);
 	
 	//--------------------------------------------------------------------
 	// ゲッタ―
@@ -151,6 +153,9 @@ private:
 
 	int					m_nCntFly;			// 飛行
 	int					m_nCntCameraWork;	// カメラワークの終了までの時間
+	int					m_nCntMoveSound;	// 移動中の音
+
+
 	int					nRotateType = -1;
 };
 

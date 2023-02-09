@@ -36,6 +36,7 @@ public: /* 定義 */
 		TEXTURE_ENEMY_FLY,	// 戦闘機
 		TEXTURE_ARROW,		// 矢印
 		TEXTURE_WAVE,		// 波
+		TEXTURE_PARTIClE,	// パーティクル
 		TEXTURE_MAX,
 		TEXTURE_NONE,	// 使用しない
 	};

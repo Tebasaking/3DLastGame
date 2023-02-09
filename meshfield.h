@@ -26,7 +26,7 @@ public:
 		TYPE_GROUND,
 	};
 
-	explicit CMesh(int nPriority = 1);	//コンストラクタ
+	explicit CMesh(int nPriority = LAYER_ONE);	//コンストラクタ
 	virtual ~CMesh();			//デストラクタ
 
 	//初期化処理

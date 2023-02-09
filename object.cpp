@@ -38,7 +38,7 @@ CObject::CObject(int nPriority /*= LAYER_ONE*/)
 	//死亡フラグをfalseにする
 	m_DeathFlag = false;
 
- 	m_Prioryty = nPriority;
+ 	m_Priority = nPriority;
 }
 
 //=========================================
@@ -203,14 +203,14 @@ void CObject::Release()
 void CObject::DFlagDelete()
 {
 	//先頭のポインターだったら先頭に次のポインターを代入
-	if (m_pTop[m_Prioryty] == this)
+	if (m_pTop[m_Priority] == this)
 	{
-		m_pTop[m_Prioryty] = m_pTop[m_Prioryty]->m_pNext;
+		m_pTop[m_Priority] = m_pTop[m_Priority]->m_pNext;
 	}
 	//最後のポインターだったら一つ前のポインターを代入
-	else if (m_pCurrent[m_Prioryty] == this)
+	else if (m_pCurrent[m_Priority] == this)
 	{
-		m_pCurrent[m_Prioryty] = m_pCurrent[m_Prioryty]->m_pPrev;
+		m_pCurrent[m_Priority] = m_pCurrent[m_Priority]->m_pPrev;
 	}
 	// 中間のポインターだったら次のポインターに一つ前を、一つ前のポインターに次のポインターを。
 	if (m_pPrev != nullptr)

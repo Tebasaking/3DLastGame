@@ -13,7 +13,7 @@
 //=========================================
 //コンストラクタ
 //=========================================
-CObject2D::CObject2D(int nPriority) : CObject(nPriority)
+CObject2D::CObject2D(int nPriority) : CObject(LAYER_ONE)
 {
 	m_pVtxBuff = nullptr;
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -196,7 +196,7 @@ void CObject2D::SetScale(const D3DXVECTOR3 Size)
 //=========================================
 //テクスチャの設定
 //=========================================
-void CObject2D::SetAnim(const float Num,const int Pattern)
+void CObject2D::SetAnim(const int Num,const int Pattern)
 {
 	VERTEX_2D *pVtx;	// 頂点情報へのポインタ
 

@@ -10,13 +10,14 @@
 #include "object2D.h"
 #include "number.h"
 
-#define MAX_DIGITS		(8)			// スコアの桁数
-
 //=========================================
 // スコアクラスを定義
 //=========================================
 class CTime :public CObject2D
 {
+private:
+	static const int MAX_DIGITS = 8;
+
 public:
 	CTime();							//コンストラクタ
 	virtual ~CTime() override;			//デストラクタ
