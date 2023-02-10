@@ -49,13 +49,9 @@ public:
 	void SetMotion(const char *pName, const int nNumMotion);						// モーション情報の設定(オーバーロード)
 	CMotion *GetMotion() { return m_pMotion; }										// モーション情報の取得
 
-	void SetRotation(D3DXVECTOR3 rot) { m_rot = rot; }
-	D3DXVECTOR3 GetRotation() { return m_rot; }
-
 protected:
 	D3DXVECTOR3		m_pos;															// 位置
 	D3DXQUATERNION	m_quaternion;													// クオータニオン
-	D3DXVECTOR3		m_rot;					// 向き
 
 private:
 	//--------------------------------------------------------------------

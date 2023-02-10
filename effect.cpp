@@ -67,13 +67,19 @@ void CEffect::Update()
 {
 	// 位置の取得
 	//D3DXVECTOR3 pos = GetPosition();
-	D3DCOLOR col = GetColor();
+	D3DXCOLOR col = GetColor();
 
 	//// 色をランダムで下げていく
 	//m_col = GetColor();
-	m_col.a -= 0.01f;
+	col.a -= 0.01f;
 
-	SetColor(m_col);
+	SetColor(col);
+
+	D3DXVECTOR3 size = GetSize();
+	size.x += -0.75f;
+	size.y += -0.75f;
+	size.z += -0.75f;
+	SetSize(size);
 
 	// 位置の更新
 	//SetPosition(pos);
@@ -81,7 +87,7 @@ void CEffect::Update()
 	// ライフの減少
 	DecreaseLife();
 
-	if (m_col.a <= 0.0f || m_nLife == 0)
+	if (col.a <= 0.0f || m_nLife == 0 || size.x <= 0.0f)
 	{
 		Uninit();
 	}

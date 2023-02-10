@@ -18,6 +18,7 @@ CBillboard::CBillboard(int nPriority)
 	m_pVtxBuff = nullptr;
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	SetObjectType(OBJECT_EFFECT);
 	m_texture = CTexture::TEXTURE_NONE;
 	m_zFunc = D3DCMP_LESS;							// Zテストの優先度
@@ -71,9 +72,6 @@ HRESULT CBillboard::Init(const D3DXVECTOR3 &pos)
 
 	// 頂点をアンロックする
 	m_pVtxBuff->Unlock();
-
-	// 頂点カラーの設定
-	SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
 
 	SetSize(D3DXVECTOR3(10.0f,10.0f,0.0f));
 

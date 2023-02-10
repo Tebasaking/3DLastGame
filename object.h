@@ -86,6 +86,7 @@ public:
 	// セッター
 	void SetHP(int HP) { m_HP = HP; }
 	void SetPosition(const D3DXVECTOR3& pos);
+	void SetRotation(const D3DXVECTOR3& rot) { m_rot = rot; }
 	void SetObjectType(EObjType type) { m_type = type; }
 	void SetSize(D3DXVECTOR3 size) { m_size = size; }
 	void SetCollision(bool bCollision) { m_Collision = bCollision; }

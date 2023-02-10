@@ -159,6 +159,9 @@
     <ClCompile Include="bullt.cpp" />
     <ClCompile Include="calculation.cpp" />
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="Camera_Game.cpp" />
+    <ClCompile Include="Camera_Radar.cpp" />
+    <ClCompile Include="Camera_Title.cpp" />
     <ClCompile Include="debug_proc.cpp" />
     <ClCompile Include="effect.cpp" />
     <ClCompile Include="enemy.cpp" />
@@ -199,6 +202,7 @@
     <ClCompile Include="texture3D.cpp" />
     <ClCompile Include="time.cpp" />
     <ClCompile Include="title.cpp" />
+    <ClCompile Include="utility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h" />
@@ -208,6 +212,9 @@
     <ClInclude Include="bullet3D.h" />
     <ClInclude Include="calculation.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="Camera_Game.h" />
+    <ClInclude Include="Camera_Radar.h" />
+    <ClInclude Include="Camera_Title.h" />
     <ClInclude Include="debug_proc.h" />
     <ClInclude Include="effect.h" />
     <ClInclude Include="enemy.h" />
@@ -248,6 +255,7 @@
     <ClInclude Include="texture3D.h" />
     <ClInclude Include="time.h" />
     <ClInclude Include="title.h" />
+    <ClInclude Include="utility.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

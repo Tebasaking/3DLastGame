@@ -54,6 +54,10 @@ HRESULT CMissile_Locus::Init(const D3DXVECTOR3 &pos)
 	// 体力の設定
 	SetHP(100);
 
+	// Zバッファの設定
+	SetZFunc(D3DCMP_LESS);
+	SetAlphaValue(100);
+
 	return S_OK;
 }
 
@@ -70,9 +74,6 @@ void CMissile_Locus::Update()
 	
 	m_col = GetColor();
 	m_col.a -= m_RandAlfa;
-	m_col.r = 1.0f;
-	m_col.g = .0f;
-	m_col.b = .0f;
 
 	SetColor(m_col);
 

@@ -108,13 +108,18 @@ void CBullet3D::Update()
 		CExplosion::Create(m_TargetObj->GetPosition(), m_quaternion);
 		Uninit();
 		m_TargetObj->ManageHP(-5);
-		CDebugProc::Print("当たったよ！");
 
 		if (m_TargetObj->GetObjectType() == OBJECT_ENEMY)
 		{// エネミーのステートを変化する
 			CEnemy* pEnemy = (CEnemy*)m_TargetObj;
 
 			pEnemy->SetState(CEnemy::ENEMY_WARNNING);
+		}
+		if (m_TargetObj->GetObjectType() == OBJECT_PLAYER)
+		{
+			//カメラ情報の取得
+			CCamera *pCamera = CApplication::GetCamera();
+			pCamera->ShakeCamera(60.0f, 10.0f);
 		}
 	}
 	
@@ -212,6 +217,7 @@ CBullet3D* CBullet3D::Create(const D3DXVECTOR3 &pos ,const D3DXQUATERNION &quate
 	if (pCBullet3D != nullptr)
 	{
 		pCBullet3D->m_TargetObj = object;
+		pCBullet3D->m_pShooter = Shooter;
 		pCBullet3D->Init(pCBullet3D->MtxPos(pos,quaternion, pShooter->GetPosition()));
 		pCBullet3D->SetRot(pShooter->GetRot());
 		pCBullet3D->SetQue(pShooter->GetQuaternion());
@@ -296,17 +302,20 @@ void CBullet3D::BulletMove()
 
 		if (m_FrontMoveCnt <= 30)
 		{
-			if (m_quaternion != D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f))
+			if (m_pShooter->GetObjectType() == CObject::OBJECT_PLAYER)
 			{
 				// クォータニオンを使用した移動の適応
 				Pos = WorldCastVtx(D3DXVECTOR3(0.0f, 0.0f, m_MissileSpeed), m_pos, m_quaternion);
 			}
 			else
 			{
+				// 移動角度の設定
 				MoveRot = m_ShooterRot;
 
+				D3DXVECTOR3 Rot = m_pShooter->GetRot();
+
 				// 移動量
-				Pos = WorldCastVtx(D3DXVECTOR3(0.0f, 0.0f, m_MissileSpeed), m_pos, MoveRot);
+				Pos = WorldCastVtx(D3DXVECTOR3(0.0f, 0.0f, m_MissileSpeed), m_pos, Rot);
 			}
 
 			// 角度の設定

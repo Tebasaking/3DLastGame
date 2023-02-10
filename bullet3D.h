@@ -55,6 +55,7 @@ private:
 	CAlert*					m_pAlert;					// ミサイルアラート
 	CModel3D*				m_pModel;					// モデルの最大数
 	CObject*				m_TargetObj;				// ターゲットオブジェクト
+	CObject*				m_pShooter;					// シューター
 	D3DXQUATERNION			m_quaternion;				// クォータニオン
 	D3DXVECTOR3				m_Rot;						// オイラー角
 	D3DXVECTOR3				m_pos;						// 座標

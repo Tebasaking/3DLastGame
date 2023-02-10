@@ -58,12 +58,12 @@
     <Filter Include="ソース ファイル\ゲーム\3D\ビルボード">
       <UniqueIdentifier>{a8a76119-2339-4af6-9376-97fcb78c5fec}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\システム\カメラ">
+      <UniqueIdentifier>{1ff30a97-b610-419f-afc4-c78e7a9ead24}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="application.cpp">
-      <Filter>ソース ファイル\システム</Filter>
-    </ClCompile>
-    <ClCompile Include="camera.cpp">
       <Filter>ソース ファイル\システム</Filter>
     </ClCompile>
     <ClCompile Include="input.cpp">
@@ -201,6 +201,21 @@
     <ClCompile Include="sphere.cpp">
       <Filter>ソース ファイル\ゲーム\3D</Filter>
     </ClCompile>
+    <ClCompile Include="utility.cpp">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClCompile>
+    <ClCompile Include="camera.cpp">
+      <Filter>ソース ファイル\システム\カメラ</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera_Radar.cpp">
+      <Filter>ソース ファイル\システム\カメラ</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera_Title.cpp">
+      <Filter>ソース ファイル\システム\カメラ</Filter>
+    </ClCompile>
+    <ClCompile Include="Camera_Game.cpp">
+      <Filter>ソース ファイル\システム\カメラ</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="number.h">
@@ -237,9 +252,6 @@
       <Filter>ソース ファイル\システム</Filter>
     </ClInclude>
     <ClInclude Include="calculation.h">
-      <Filter>ソース ファイル\システム</Filter>
-    </ClInclude>
-    <ClInclude Include="camera.h">
       <Filter>ソース ファイル\システム</Filter>
     </ClInclude>
     <ClInclude Include="input.h">
@@ -343,6 +355,21 @@
     </ClInclude>
     <ClInclude Include="sphere.h">
       <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="utility.h">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClInclude>
+    <ClInclude Include="camera.h">
+      <Filter>ソース ファイル\システム\カメラ</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera_Radar.h">
+      <Filter>ソース ファイル\システム\カメラ</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera_Title.h">
+      <Filter>ソース ファイル\システム\カメラ</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera_Game.h">
+      <Filter>ソース ファイル\システム\カメラ</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

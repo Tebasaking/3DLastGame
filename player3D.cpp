@@ -29,6 +29,7 @@
 #include "sound.h"
 #include "particle.h"
 #include "explosion.h"
+#include "effect.h"
 
 int BulletDelay = 0;
 
@@ -126,6 +127,8 @@ void CPlayer3D::Update()
 		UpdateRob();
 		break;
 	}
+
+	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
 
 	// ロックオン処理
 	LockOn();
@@ -364,21 +367,43 @@ void CPlayer3D::UpdateFly()
 	if (m_mode == (CPlayer3D::PLAYER_MODE)CPlayerManager::GetMode())
 	{
 		// パーティクルの生成====================================================
-		CParticle *pParticle = CParticle::Create();
 
 		// プレイヤーの後ろを求める
 		D3DXVECTOR3 BackPos = MtxPos(D3DXVECTOR3(0.0f, 0.0f, -50.0f), m_quaternion, m_pos);
 
-		pParticle->SetPosition(BackPos);
-		pParticle->SetSize(D3DXVECTOR3(5.0f, 5.0f, 0.0f));
-		pParticle->SetPopRange(D3DXVECTOR3(3.0f, 3.0f, 3.0f));
-		pParticle->SetSpeed(50.0f);
-		pParticle->SetEffectLife(10000);
-		pParticle->SetMoveVec(D3DXVECTOR3(100.0f, 100.0f, 0.0f));
-		pParticle->SetLife(10);
-		pParticle->SetColor(D3DXCOLOR(1.0f, 0.4f, 0.1f, 1.0f));
-		pParticle->SetMaxEffect(10);
-		pParticle->SetQuaternion(m_quaternion);
+		auto FloatRandom = [](float fMax, float fMin)
+		{
+			return ((rand() / (float)RAND_MAX) * (fMax - fMin)) + fMin;
+		};
+
+		for (int i = 0; i < 10; i++)
+		{
+			D3DXVECTOR3 pos = BackPos;
+
+			pos.x += FloatRandom(2.5f, -2.5f);
+			pos.y += FloatRandom(2.5f, -2.5f);
+			pos.z += FloatRandom(2.5f, -2.5f);
+
+			CEffect *pEffect = CEffect::Create(pos, 0, 0, CTexture::TEXTURE_PARTIClE);
+			pEffect->SetSize(D3DXVECTOR3(5.0f, 5.0f, 0.0f));
+			pEffect->SetMoveVec(D3DXVECTOR3(0.0f, FloatRandom(1.5f, -1.5f), FloatRandom(1.5f, -1.5f)));
+			pEffect->SetLife(20);
+
+			if (FloatRandom(2.0f, -1.0f) >= 0.0f)
+			{
+				pEffect->SetRenderMode(CEffect::MODE_ADD);
+			}
+			else
+			{
+				pEffect->SetRenderMode(CEffect::MODE_NORMAL);
+			}
+
+			pEffect->SetColor(D3DXCOLOR(1.0f, FloatRandom(1.0f, 0.0f), 0.1f, 1.0f));
+
+			pEffect->SetTex(CTexture::TEXTURE_PARTIClE);
+			pEffect->SetQuaternion(m_quaternion);
+		}
+
 		//=======================================================================
 	}
 }

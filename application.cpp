@@ -122,7 +122,7 @@ HRESULT CApplication::Init(HINSTANCE hInstance,HWND hWnd)
 	if (m_pCamera != nullptr)
 	{
 		m_pCamera->SetObjMode(CObject::NORMAL_MODE);
-		m_pCamera->Init();
+		m_pCamera->Init(D3DXVECTOR3(0.0f, 1000.0f, -150.0f));
 		m_pCamera->SetViewSize(0, 0, SCREEN_WIDTH , SCREEN_HEIGHT);
 	}
 
@@ -130,7 +130,7 @@ HRESULT CApplication::Init(HINSTANCE hInstance,HWND hWnd)
 	{
 		// カメラの初期化設定2
 		m_pRader->SetObjMode(CObject::RADAR_MODE);
-		m_pRader->Init();
+		m_pRader->Init(D3DXVECTOR3(0.0f, 5000.0f, -150.0f));
 		m_pRader->SetViewSize(0, 0, SCREEN_WIDTH * 0.25f, SCREEN_HEIGHT * 0.5f);
 	}
 
@@ -375,15 +375,22 @@ void CApplication::ChangeMode()
 	switch (m_NextMode)
 	{
 	case MODE_TITLE:
+		// カメラの初期化処理
+		m_pCamera->Init(D3DXVECTOR3(0.0f, 0.0f, -150.0f));
+
 		m_pMode = new CTitle;
 		break;
 
 	case MODE_GAME:
-		m_pRader->Init();
+		// カメラの初期化処理
+		m_pCamera->Init(D3DXVECTOR3(0.0f, 1000.0f, -150.0f));
+		m_pRader->Init(D3DXVECTOR3(0.0f, 5000.0f, -150.0f));
 		m_pMode = new CGame;
 		break;
 
 	case MODE_RESULT:
+		// カメラの初期化処理
+		m_pCamera->Init(D3DXVECTOR3(0.0f, 1000.0f, -150.0f));
 		m_pMode = new CResult;
 		break;
 
@@ -393,9 +400,6 @@ void CApplication::ChangeMode()
 
 	// 次のモードの初期化
 	m_NextMode = MODE_MAX;
-
-	// カメラの初期化処理
-	m_pCamera->Init();
 
 	if (m_pMode != nullptr)
 	{

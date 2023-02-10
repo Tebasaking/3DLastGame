@@ -7,10 +7,14 @@
 #include "application.h"
 #include "title.h"
 #include "player3D.h"
+#include "enemy.h"
 #include "inputkeyboard.h"
 #include "fade.h"
 #include "texture.h"
+#include "meshfield.h"
+#include "sphere.h"
 
+CMesh* CTitle::m_pMesh[3] = {};
 //==================================================
 // コンストラクタ
 //==================================================
@@ -30,15 +34,14 @@ CTitle::~CTitle()
 //=========================================
 HRESULT CTitle::Init(const D3DXVECTOR3 &pos)
 {
-	// オブジェクトの生成
-	CObject2D *pObject = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), 3);
+	// 海
+	m_pMesh[0] = CMesh::Create(D3DXVECTOR3(0.0f, -350.0f, 0.0f), CMesh::TYPE_SEA);
+	m_pMesh[2] = CMesh::Create(D3DXVECTOR3(0.0f, -300.0f, 0.0f), CMesh::TYPE_WAVE);
 
-	// オブジェクトのサイズ設定
-	pObject->SetScale(D3DXVECTOR3((float)SCREEN_HEIGHT, (float)SCREEN_HEIGHT,0.0f));
-	pObject->SetColor(D3DXCOLOR(1.0f, 1.0, 1.0f, 1.0f));
+	CSphere *pSphere = CSphere::Create(D3DXVECTOR3(0.0f, -0.0f, 0.0f));
 
-	// オブジェクトのテクスチャ設定
-	pObject->SetTexture(CTexture::TEXTURE_TITLE);
+	// 陸
+	m_pMesh[1] = CMesh::Create(D3DXVECTOR3(0.0f, -400.0f, 0.0f), CMesh::TYPE_GROUND);
 
 	return S_OK;
 }

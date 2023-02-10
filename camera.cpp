@@ -29,6 +29,7 @@
 #include "joypad.h"
 #include "player3D.h"
 #include "sound.h"
+#include "utility.h"
 
 //*****************************************************************************
 // 定数定義
@@ -76,15 +77,16 @@ CCamera::~CCamera()
 // Author : 唐﨑結斗
 // 概要 : 視点と注視点の間の距離を算出する
 //=============================================================================
-HRESULT CCamera::Init()
+HRESULT CCamera::Init(D3DXVECTOR3 pos)
 {
 	switch (m_Objectmode)
 	{
 	case CObject::NORMAL_MODE:
-		m_posV = D3DXVECTOR3(0.0f, 1000.0f, -150.0f);
+		m_posV = pos;
 		m_posR = D3DXVECTOR3(0.0f, 1000.0f, 0.0f);
 		m_vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);			// 固定
 		m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		m_quaternion = D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f);
 		m_viewport.MinZ = 0.0f;
 		m_viewport.MaxZ = 1.0f;
 		break;
@@ -94,6 +96,7 @@ HRESULT CCamera::Init()
 		m_posR = D3DXVECTOR3(0.0f, 5000.0f, 0.0f);
 		m_vecU = D3DXVECTOR3(0.0f, 1.0f, 0.0f);			// 固定
 		m_rot = D3DXVECTOR3(D3DX_PI * 0.5f, 0.0f, 0.0f);
+		m_quaternion = D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f);
 		m_viewport.MinZ = 0.0f;
 		m_viewport.MaxZ = 1.0f;
 		m_viewType = TYPE_PARALLEL;
@@ -154,7 +157,6 @@ void CCamera::Update(void)
 
 		case CObject::RADAR_MODE:
 			UpdateRadar();
-
 			break;
 		}
 
@@ -175,7 +177,7 @@ void CCamera::Update(void)
 
 //=============================================================================
 // カメラの設定
-// Author : 唐﨑結斗
+// Author : 冨所知生
 // 概要 : ビューマトリックスの設定
 //=============================================================================
 void CCamera::Set()
@@ -199,6 +201,21 @@ void CCamera::Set()
 
 	// ビューポートの適応
 	pDevice->SetViewport(&m_viewport);
+
+	// 揺れカウンターを減らす
+	m_nCntFrame--;
+
+	if (m_nCntFrame >= 0)
+	{
+		D3DXVECTOR3 adjustPos = {};
+
+		adjustPos.x = FloatRandom(m_Magnitude, -m_Magnitude);
+		adjustPos.y = FloatRandom(m_Magnitude, -m_Magnitude);
+		adjustPos.z = FloatRandom(m_Magnitude, -m_Magnitude);
+		
+		m_posV += adjustPos;
+		m_posR += adjustPos;
+	}
 
 	// ビューマトリックスの設定
 	pDevice->SetTransform(D3DTS_VIEW, &m_mtxView);
@@ -330,9 +347,12 @@ void CCamera::Rotate()
 		{// レーダーモードの時
 			CPlayer3D *pPlayer = CPlayerManager::GetPlayer();
 
-			D3DXQUATERNION PlayerQua = pPlayer->GetQuaternion();
+			if (pPlayer != nullptr)
+			{
+				D3DXQUATERNION PlayerQua = pPlayer->GetQuaternion();
 
-			m_quaternion = D3DXQUATERNION(m_quaternion.x, PlayerQua.x, m_quaternion.z, m_quaternion.w);
+				m_quaternion = D3DXQUATERNION(m_quaternion.x, PlayerQua.x, m_quaternion.z, m_quaternion.w);
+			}
 		}
 	}
 
@@ -379,6 +399,7 @@ void CCamera::Rotate()
 	{
 		if (m_Objectmode != CObject::RADAR_MODE)
 		{
+
 			D3DXVECTOR3 axis;
 			// クオータニオンによる行列回転
 			D3DXMATRIX mtxRot, mtxVec;
@@ -748,80 +769,83 @@ void CCamera::UpdateNormal()
 
 	m_mode = (CCamera::CAMERA_TYPE)CPlayerManager::GetMode();
 
-	// 状態ごとに移動方法を変える
-	switch (m_mode)
+	if (CApplication::GetMode() == CApplication::MODE_GAME)
 	{
-	case TYPE_FREE:
-		MouseMove();		// マウス移動
-		FreeMove();			// 移動
-		break;
+		// 状態ごとに移動方法を変える
+		switch (m_mode)
+		{
+		case TYPE_FREE:
+			MouseMove();		// マウス移動
+			FreeMove();			// 移動
+			break;
 
-	case TYPE_SHOULDER:
-		if (m_bWork)
-		{// マウスの移動を可能にする
-			MouseMove();
+		case TYPE_SHOULDER:
+			if (m_bWork)
+			{// マウスの移動を可能にする
+				MouseMove();
+			}
+
+			ShoulderMove();	// 肩越しモード
+
+			if (!m_bWork)
+			{// カメラワーク
+				CameraWork(D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f));
+			}
+
+			break;
 		}
 
-		ShoulderMove();	// 肩越しモード
+		//==================================================================================
 
-		if (!m_bWork)
-		{// カメラワーク
-			CameraWork(D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f));
+		// オブジェクトの取得
+		CObject *object = CObject::GetObjectTop();
+
+		D3DXVECTOR3 PlayerPos = {};
+		D3DXVECTOR3	PlayerRot = {};
+
+		//プレイヤーの座標を取得
+		while (object)
+		{
+			if (object != nullptr)
+			{
+				CObject::EObjType ObjType = object->GetObjectType();
+
+				if (ObjType == CObject::OBJECT_PLAYER)
+				{
+					PlayerPos = object->GetPosition();
+					PlayerRot = object->GetRot();
+					break;
+				}
+			}
+			object = object->GetObjectNext();
 		}
 
-		break;
-	}
-
-	//==================================================================================
-
-	// オブジェクトの取得
-	CObject *object = CObject::GetObjectTop();
-
-	D3DXVECTOR3 PlayerPos = {};
-	D3DXVECTOR3	PlayerRot = {};
-
-	//プレイヤーの座標を取得
-	while (object)
-	{
 		if (object != nullptr)
 		{
-			CObject::EObjType ObjType = object->GetObjectType();
-
-			if (ObjType == CObject::OBJECT_PLAYER)
+			// エンターキーが押された
+			if (pKeyboard->GetTrigger(DIK_RETURN))
 			{
-				PlayerPos = object->GetPosition();
-				PlayerRot = object->GetRot();
-				break;
-			}
-		}
-		object = object->GetObjectNext();
-	}
+				switch (m_mode)
+				{
+				case TYPE_FREE:
+					m_mode = TYPE_SHOULDER;
+					break;
 
-	if (object != nullptr)
-	{
-		// エンターキーが押された
-		if (pKeyboard->GetTrigger(DIK_RETURN))
-		{
-			switch (m_mode)
-			{
-			case TYPE_FREE:
-				m_mode = TYPE_SHOULDER;
-				break;
+				case TYPE_SHOULDER:
+					m_bWork = false;
 
-			case TYPE_SHOULDER:
-				m_bWork = false;
+					m_mode = TYPE_FREE;
 
-				m_mode = TYPE_FREE;
+					// 1.0f浮かせる処理
+					m_posV.y += 100.0f;
+					VPosRotate();
+					m_posR.y += 100.0f;
 
-				// 1.0f浮かせる処理
-				m_posV.y += 100.0f;
-				VPosRotate();
-				m_posR.y += 100.0f;
+					// 飛行イベント開始
+					m_event = EVENT_FLY;
 
-				// 飛行イベント開始
-				m_event = EVENT_FLY;
-
-				break;
+					break;
+				}
 			}
 		}
 	}
@@ -969,4 +993,14 @@ void CCamera::Up()
 		m_bUp = false;
 		m_nCntCameraWork = 0;
 	}
+}
+
+//=========================================
+// カメラを揺らす処理
+// Author : 冨所知生
+//=========================================
+void CCamera::ShakeCamera(int ShakeFrame, float Magnitude)
+{
+	m_nCntFrame = ShakeFrame;
+	m_Magnitude = Magnitude;
 }

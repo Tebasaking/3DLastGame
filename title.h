@@ -23,6 +23,8 @@ public:
 	virtual void Update() override;						//XVˆ—
 	virtual void Draw() override {};					//•`‰æˆ—
 
+private:
+	static CMesh		  *m_pMesh[3];
 };
 
 #endif	// _TITLE_H_

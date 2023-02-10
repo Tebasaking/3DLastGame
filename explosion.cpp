@@ -46,6 +46,8 @@ HRESULT CExplosion::Init(const D3DXVECTOR3 &pos)
 	// テクスチャの設定
 	CBillboard::SetTexture(CTexture::TEXTURE_EXPLOSION);
 
+	SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+
 	// 体力の設定
 	SetHP(100);
 

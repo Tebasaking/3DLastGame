@@ -129,7 +129,9 @@ void CEnemy::Update()
 		object = object->GetObjectNext();
 	}
 
-	if (SearchEye(PlayerPos, m_pos, D3DX_PI * 0.5f, 100.0f, m_rot.y))
+	D3DXVECTOR3 rot = GetRot();
+
+	if (SearchEye(PlayerPos, m_pos, D3DX_PI * 0.5f, 100.0f, rot.y))
 	{
 		m_state = ENEMY_WARNNING;
 	}
@@ -147,14 +149,14 @@ void CEnemy::Update()
 	//=========================================
 	if (m_state == ENEMY_IDOL)
 	{
-		m_rot.y += 0.01f;
+		rot.y += 0.01f;
 
 		if (m_type == ENEMY_FLY)
 		{
 			// 移動量
-			move = D3DXVECTOR3(sinf(m_rot.y) * EnemySpeed,
-				-(m_rot.x * EnemySpeed),
-				cosf(m_rot.y) * EnemySpeed);
+			move = D3DXVECTOR3(sinf(rot.y) * EnemySpeed,
+				-(rot.x * EnemySpeed),
+				cosf(rot.y) * EnemySpeed);
 		}
 
 		if (m_type == ENEMY_GROUND)
@@ -163,15 +165,15 @@ void CEnemy::Update()
 
 			if (!pGround->Collision(&CollisionCheck))
 			{
-				move = D3DXVECTOR3(sinf(m_rot.y) * EnemySpeed,
+				move = D3DXVECTOR3(sinf(rot.y) * EnemySpeed,
 					-10.0f,
-					cosf(m_rot.y) * EnemySpeed);
+					cosf(rot.y) * EnemySpeed);
 			}
 			else
 			{
-				move = D3DXVECTOR3(sinf(m_rot.y) * EnemySpeed,
+				move = D3DXVECTOR3(sinf(rot.y) * EnemySpeed,
 					-0.0f,
-					cosf(m_rot.y) * EnemySpeed);
+					cosf(rot.y) * EnemySpeed);
 			}
 		}
 	}
@@ -199,19 +201,19 @@ void CEnemy::Update()
 		sub.x = sinf(FellowRot.x) * sinf(FellowRot.y) * EnemySpeed;
 		sub.y = cosf(atan2f(Pos.y, distance.y))  * EnemySpeed;
 
-		D3DXVECTOR3 rotDest = (D3DXVECTOR3(FellowRot.x - D3DX_PI * 0.5f, FellowRot.y, m_rot.z));
-		D3DXVECTOR3 rotResult = rotDest - m_rot;
+		D3DXVECTOR3 rotDest = (D3DXVECTOR3(FellowRot.x - D3DX_PI * 0.5f, FellowRot.y, rot.z));
+		D3DXVECTOR3 rotResult = rotDest - rot;
 
 		rotResult = NormalizeRotXYZ(rotResult);
 		
 		// 回転の加算
-		m_rot += rotResult * 0.01f;
+		rot += rotResult * 0.01f;
 
-		m_rot = NormalizeRotXYZ(m_rot);
+		rot = NormalizeRotXYZ(rot);
 
-		move = D3DXVECTOR3(sinf(m_rot.y) * EnemySpeed,
+		move = D3DXVECTOR3(sinf(rot.y) * EnemySpeed,
 			-0.0f,
-			cosf(m_rot.y) * EnemySpeed);
+			cosf(rot.y) * EnemySpeed);
 
 		// アタックカウントを進める
 		m_AttackCount++;
@@ -257,10 +259,10 @@ void CEnemy::Update()
 	EnemyCollision();
 
 	// エネミーの回転の設定
-	m_apModel[0]->SetRot(m_rot);
+	m_apModel[0]->SetRot(rot);
 
 	// 回転の設定
-	SetRotation(m_rot);
+	SetRotation(rot);
 
 	// モーションの更新処理
 	CMotionModel3D::Update();

@@ -48,7 +48,6 @@ CMotionModel3D::CMotionModel3D(int nPriority) : CObject(nPriority),
 m_pMotion(nullptr),		// モーション情報
 m_pos(D3DXVECTOR3()),										// 位置
 m_posOld(D3DXVECTOR3()),									// 過去位置
-m_rot(D3DXVECTOR3()),										// 向き
 m_size(D3DXVECTOR3())										// 大きさ
 {
 
@@ -74,7 +73,6 @@ HRESULT CMotionModel3D::Init(const D3DXVECTOR3 &pos)
 	// 変数の初期化
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);					// 位置
 	m_posOld = D3DXVECTOR3(0.0f, 0.0f, 0.0f);				// 過去位置
-	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);					// 向き
 	m_size = D3DXVECTOR3(0.0f, 0.0f, 0.0f);					// 大きさ
 
 	return E_NOTIMPL;
@@ -130,13 +128,15 @@ void CMotionModel3D::Draw()
 	// 描画の終了
 	pDevice->EndScene();
 
+	D3DXVECTOR3 rot = GetRot();
+
 	if (SUCCEEDED(pDevice->BeginScene()))
 	{
 		// ワールドマトリックスの初期化
 		D3DXMatrixIdentity(&mtxWorld);											// 行列初期化関数
 
 		// 向きの反映
-		D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);			// 行列回転関数
+		D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);			// 行列回転関数
 		D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxRot);						// 行列掛け算関数 
 
 		// クォータニオンの反映
