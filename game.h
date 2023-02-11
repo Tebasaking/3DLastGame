@@ -16,7 +16,6 @@ class CPlayerManager;
 class CEnemy;
 class CRadar;
 class CScore;
-class CCamera;
 //=========================================
 // ƒNƒ‰ƒX
 //=========================================
