@@ -210,7 +210,7 @@ D3DXVECTOR3 ConvertQuaternionfromRadian(const D3DXQUATERNION& inQuaternion)
 // çsóÒÇÃãtçsóÒÇïœä∑
 // Author : Yuda Kaito
 //---------------------------------------------------------------------------
-const D3DXMATRIX & InverseMatrixConversion(const D3DXMATRIX & inMtx)
+const D3DXMATRIX InverseMatrixConversion(const D3DXMATRIX & inMtx)
 {
 	D3DXMATRIX mtx;
 

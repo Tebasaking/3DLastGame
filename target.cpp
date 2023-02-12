@@ -5,7 +5,6 @@
 //
 //=========================================
 #include "target.h"
-#include "camera.h"
 #include "application.h"
 #include "debug_proc.h"
 
@@ -53,8 +52,6 @@ void CTarget::Update()
 {
 	D3DXVECTOR3 EnemyPos;			// エネミーの変換前座標
 	D3DXVECTOR3 PlayerPos;			// プレイヤーの座標
-
-	CCamera *pCamera = CApplication::GetCamera();
 
 	//プレイヤーの座標を取得
 	if (pObject != nullptr)

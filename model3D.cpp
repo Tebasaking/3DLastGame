@@ -15,6 +15,8 @@
 #include "texture3D.h"
 #include "light.h"
 #include "camera.h"
+#include "camera_player.h"
+#include "camera_radar.h"
 
 //--------------------------------------------------------------------
 // Ã“Iƒƒ“ƒo•Ï”’è‹`

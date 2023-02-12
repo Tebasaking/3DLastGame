@@ -207,6 +207,15 @@
     <ClCompile Include="camera.cpp">
       <Filter>ソース ファイル\システム\カメラ</Filter>
     </ClCompile>
+    <ClCompile Include="camera_player.cpp">
+      <Filter>ソース ファイル\システム\カメラ</Filter>
+    </ClCompile>
+    <ClCompile Include="camera_title.cpp">
+      <Filter>ソース ファイル\システム\カメラ</Filter>
+    </ClCompile>
+    <ClCompile Include="camera_radar.cpp">
+      <Filter>ソース ファイル\システム\カメラ</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="number.h">
@@ -351,6 +360,15 @@
       <Filter>ソース ファイル\システム</Filter>
     </ClInclude>
     <ClInclude Include="camera.h">
+      <Filter>ソース ファイル\システム\カメラ</Filter>
+    </ClInclude>
+    <ClInclude Include="camera_player.h">
+      <Filter>ソース ファイル\システム\カメラ</Filter>
+    </ClInclude>
+    <ClInclude Include="camera_title.h">
+      <Filter>ソース ファイル\システム\カメラ</Filter>
+    </ClInclude>
+    <ClInclude Include="camera_radar.h">
       <Filter>ソース ファイル\システム\カメラ</Filter>
     </ClInclude>
   </ItemGroup>

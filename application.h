@@ -15,6 +15,8 @@ class CTexture;
 class CPlayer;
 class CEnemy;
 class CCamera;
+class CCameraPlayer;
+class CCameraRadar;
 class CMesh;
 class CInputKeyboard;
 class CTarget;
@@ -58,8 +60,8 @@ public:
 	static CEnemy *GetEnemy();
 	static CPlayer *GetPlayer();
 	static CTexture* GetTexture();
-	static CCamera* GetCamera() { return m_pCamera; };
-	static CCamera* GetRader() { return m_pRader; }
+	static CCameraPlayer* GetCamera() { return m_pCamera; };
+	static CCameraRadar* GetRader() { return m_pRader; }
 	static CInputKeyboard * GetInputKeyboard();
 	static CMouse *GetMouse() { return m_pMouse; }
 	static CGame *GetGame() { return m_pGame; }
@@ -74,8 +76,8 @@ private:
 	static CRender			*m_pRender;
 	static CInputKeyboard	*m_pInputKeyboard;
 	static CTexture			*m_pTexture;
-	static CCamera			*m_pCamera;
-	static CCamera			*m_pRader;
+	static CCameraPlayer	*m_pCamera;
+	static CCameraRadar		*m_pRader;
 	static CPlayer			*m_pPlayer;
 	static CEnemy			*m_pEnemy;
 	static CMouse			*m_pMouse;

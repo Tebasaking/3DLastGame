@@ -677,7 +677,7 @@ void CPlayer3D::Jump()
 	}
 
 	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
-	CCamera *pCamera = CApplication::GetCamera();
+	CCameraPlayer *pCamera = CApplication::GetCamera();
 	CMotion *pMotion = GetMotion();
 
 	if (pKeyboard->GetTrigger(DIK_SPACE) && !m_bMotion && !m_bJump)

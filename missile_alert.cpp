@@ -57,8 +57,6 @@ void CAlert::Update()
 
 	m_Size = 50.0f;
 
-	CCamera *pCamera = CApplication::GetCamera();
-
 	//プレイヤーの座標を取得
 	if (pObject != nullptr)
 	{

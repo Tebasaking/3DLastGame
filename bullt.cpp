@@ -44,8 +44,7 @@ HRESULT CBullet::Init(const D3DXVECTOR3 &pos)
 	// ƒ‰ƒCƒtÝ’è
 	SetHP(100);
 
-	CCamera *pCamera = CApplication::GetCamera();
-	Camera_Type = pCamera->GetMode();
+	Camera_Type = CApplication::GetCamera()->GetMode();
 
 	return S_OK;
 }
@@ -72,7 +71,7 @@ void CBullet::Update()
 		CBullet::Uninit();
 	}
 
-	int Size = GetScale();
+	float Size = GetScale();
 
 	CObject *object = m_pTargetObj;
 
@@ -84,12 +83,12 @@ void CBullet::Update()
 
 		switch (Camera_Type)
 		{
-		case CCamera::TYPE_FREE:
+		case CCameraPlayer::TYPE_FREE:
 			// ’e‚ÌˆÚ“®
 			m_pos = WorldCastVtx(D3DXVECTOR3(0.0f, 0.0f, 50.0f), m_pos, m_quaternion);
 			break;
 
-		case CCamera::TYPE_SHOULDER:
+		case CCameraPlayer::TYPE_SHOULDER:
 			// ’e‚ÌˆÚ“®
 			m_TargetPos = object->GetPosition();
 			m_pos += LockOn(TargetMatrix);

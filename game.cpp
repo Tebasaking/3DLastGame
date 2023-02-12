@@ -153,7 +153,7 @@ void CGame::EnemyManage()
 {
 	if (m_EnemyList.size() <= 0)
 	{
-      	CFade::SetFade(CApplication::MODE_RESULT);
+		CFade::SetFade(CApplication::MODE_RESULT);
 	}
 }
 
