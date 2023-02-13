@@ -13,6 +13,7 @@
 #include "texture.h"
 #include "meshfield.h"
 #include "sphere.h"
+#include "camera.h"
 
 CMesh* CTitle::m_pMesh[3] = {};
 //==================================================
@@ -42,6 +43,8 @@ HRESULT CTitle::Init(const D3DXVECTOR3 &pos)
 
 	// —¤
 	m_pMesh[1] = CMesh::Create(D3DXVECTOR3(0.0f, -400.0f, 0.0f), CMesh::TYPE_GROUND);
+
+	CPlayer3D *pPlayer = CPlayer3D::Create(D3DXVECTOR3(0.0f, 1000.0f, 0.0f));
 
 	return S_OK;
 }

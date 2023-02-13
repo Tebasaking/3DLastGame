@@ -60,8 +60,8 @@ public:
 
 	// ステートの設定
 	void SetState(EnemyState state) { m_state = state; }
-	// タイプの設定
-	void SetType(EnemyType type) { m_type = type; }
+	// タイプの設定とタイプに応じたモーションの設定
+	void SetType(EnemyType type);
 	// 弾の発射
 	void Bullet(CObject *obj);
 

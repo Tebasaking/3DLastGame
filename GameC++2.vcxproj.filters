@@ -61,6 +61,9 @@
     <Filter Include="ソース ファイル\システム\カメラ">
       <UniqueIdentifier>{1ff30a97-b610-419f-afc4-c78e7a9ead24}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\ゲーム\3D\Enemy">
+      <UniqueIdentifier>{f3093f73-7489-4333-974d-57a1af83e357}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="application.cpp">
@@ -125,9 +128,6 @@
     </ClCompile>
     <ClCompile Include="fade.cpp">
       <Filter>ソース ファイル\ゲーム\2D</Filter>
-    </ClCompile>
-    <ClCompile Include="enemy.cpp">
-      <Filter>ソース ファイル\ゲーム\3D</Filter>
     </ClCompile>
     <ClCompile Include="motion.cpp">
       <Filter>ソース ファイル\ゲーム\3D\motion</Filter>
@@ -207,6 +207,12 @@
     <ClCompile Include="camera.cpp">
       <Filter>ソース ファイル\システム\カメラ</Filter>
     </ClCompile>
+    <ClCompile Include="enemy.cpp">
+      <Filter>ソース ファイル\ゲーム\3D\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="enemy_manager.cpp">
+      <Filter>ソース ファイル\ゲーム\3D\Enemy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="number.h">
@@ -271,9 +277,6 @@
     </ClInclude>
     <ClInclude Include="fade.h">
       <Filter>ソース ファイル\ゲーム\2D</Filter>
-    </ClInclude>
-    <ClInclude Include="enemy.h">
-      <Filter>ソース ファイル\ゲーム\3D</Filter>
     </ClInclude>
     <ClInclude Include="motion.h">
       <Filter>ソース ファイル\ゲーム\3D\motion</Filter>
@@ -352,6 +355,12 @@
     </ClInclude>
     <ClInclude Include="camera.h">
       <Filter>ソース ファイル\システム\カメラ</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy.h">
+      <Filter>ソース ファイル\ゲーム\3D\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy_manager.h">
+      <Filter>ソース ファイル\ゲーム\3D\Enemy</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

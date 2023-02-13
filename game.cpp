@@ -6,6 +6,7 @@
 #include "application.h"
 #include "game.h"
 #include "player_manager.h"
+#include "enemy_manager.h"
 #include "sphere.h"
 #include "meshfield.h"
 #include "score.h"
@@ -24,6 +25,7 @@ bool CGame::m_bFinish = false;
 CMesh* CGame::m_pMesh[3] = {};
 CScore* CGame::m_pScore = nullptr;
 CPlayerManager* CGame::pPlayerManager = nullptr;
+CEnemy_Manager* CGame::pEnemyManager = nullptr;
 //=========================================
 // コンストラクタ
 //=========================================
@@ -60,27 +62,13 @@ HRESULT CGame::Init(const D3DXVECTOR3 &pos)
 	m_pMesh[2] = CMesh::Create(D3DXVECTOR3(0.0f, -300.0f, 0.0f), CMesh::TYPE_WAVE);
 
 	pPlayerManager = CPlayerManager::Create(D3DXVECTOR3(0.0f, 1000.0f, 5.0f));
+	pEnemyManager = CEnemy_Manager::Create();
 
 	CSphere *pSphere = CSphere::Create(D3DXVECTOR3(0.0f, -0.0f, 0.0f));
 	//CScore *pScore = CScore::Create(D3DXVECTOR3(20.0f, 20.0f, 0.0f));
 
 	// 陸
 	m_pMesh[1] = CMesh::Create(D3DXVECTOR3(0.0f, -400.0f, 0.0f), CMesh::TYPE_GROUND);
-
-	CEnemy *pEnemy[3] = {};
-
-	// 戦闘機
-	for (int nCnt = 0; nCnt < 2; nCnt++)
-	{
-		pEnemy[nCnt] = CEnemy::Create(D3DXVECTOR3(nCnt *(rand() % 100 + 100), 1000.0f, 300.0f ));
-		pEnemy[nCnt]->SetType(CEnemy::ENEMY_FLY);
-		pEnemy[nCnt]->SetMotion("data/MOTION/fly_motion.txt");
-	}
-
-	// タンク
-	pEnemy[2] = CEnemy::Create(D3DXVECTOR3(100.0f, 200.0f, 100));
-	pEnemy[2]->SetType(CEnemy::ENEMY_GROUND);
-	pEnemy[2]->SetMotion("data/MOTION/tank.txt");
 
 	m_pRadar = nullptr;
 	m_pRadar = CRadar::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), GetObjectinfo(), CRadar::RADAR_MAP);
@@ -139,11 +127,6 @@ void CGame::Update()
 //=========================================
 void CGame::DeleteEnemy(CEnemy* pEnemy)
 {
-	// リストからpEnemyを削除する
-	auto itEnd = std::remove(std::begin(m_EnemyList), std::end(m_EnemyList), pEnemy);
-
-	// 本当の意味で要素を取り除く
-	m_EnemyList.erase(itEnd, std::cend(m_EnemyList)); 
 }
 
 //=========================================
@@ -151,10 +134,6 @@ void CGame::DeleteEnemy(CEnemy* pEnemy)
 //=========================================
 void CGame::EnemyManage()
 {
-	if (m_EnemyList.size() <= 0)
-	{
-      	CFade::SetFade(CApplication::MODE_RESULT);
-	}
 }
 
 //=========================================

@@ -398,3 +398,22 @@ void CEnemy::EnemyCollision()
 		object = object->GetObjectNext();
 	}
 }
+
+//=========================================
+// タイプとモーションの設定
+//=========================================
+void CEnemy::SetType(EnemyType type)
+{
+	m_type = type;
+
+	switch (m_type)
+	{
+	case ENEMY_FLY:
+		SetMotion("data/MOTION/fly_motion.txt");
+		break;
+
+	case ENEMY_GROUND:
+		SetMotion("data/MOTION/tank.txt");
+		break;
+	}
+}

@@ -16,6 +16,7 @@ class CPlayerManager;
 class CEnemy;
 class CRadar;
 class CScore;
+class CEnemy_Manager;
 //=========================================
 // ƒNƒ‰ƒX
 //=========================================
@@ -42,9 +43,9 @@ public:
 private:
 	static CMesh		  *m_pMesh[3];
 	static CPlayerManager *pPlayerManager;
+	static CEnemy_Manager *pEnemyManager;
 	static CScore *m_pScore;
 	static bool m_bFinish;
-	std::vector<CEnemy*>  m_EnemyList;
 	CRadar*				  m_pRadar;
 };
 
