@@ -8,7 +8,7 @@
 #define _RADAR_H_		//２重インクルード防止のマクロ定義
 
 #include "billboard.h"
-#include "camera.h"
+#include "camera_player.h"
 
 class CObject2D;
 class CCamera;
@@ -49,7 +49,7 @@ private:
 	D3DXVECTOR3 m_move;				// 移動量
 	D3DXQUATERNION m_quaternion;	// クォータニオン
 	CObject *m_pObject;
-	CCamera::CAMERA_TYPE Camera_Type;
+	CCameraPlayer::CAMERA_TYPE Camera_Type;
 	RADAR_TYPE m_type;				// レーダーのタイプ
 	CObject2D *m_pBackGround;		// レーダーの背景
 };

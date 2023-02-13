@@ -8,9 +8,10 @@
 #define _BULLET_H_		//２重インクルード防止のマクロ定義
 
 #include "billboard.h"
-#include "camera.h"
+#include "camera_player.h"
 
 class CCamera;
+
 class CBullet :public CBillboard
 {
 public:
@@ -39,7 +40,7 @@ private:
 	D3DXVECTOR3						m_TargetPos;		// 目標の値
 	D3DXQUATERNION					m_quaternion;		// クォータニオン
 	CObject*						m_pTargetObj;		// ターゲットのオブジェクト
-	CCamera::CAMERA_TYPE			Camera_Type;		// カメラのタイプ
+	CCameraPlayer::CAMERA_TYPE		Camera_Type;		// カメラのタイプ
 };
 
 #endif

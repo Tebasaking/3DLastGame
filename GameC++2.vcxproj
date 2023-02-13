@@ -159,6 +159,9 @@
     <ClCompile Include="bullt.cpp" />
     <ClCompile Include="calculation.cpp" />
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="camera_player.cpp" />
+    <ClCompile Include="camera_title.cpp" />
+    <ClCompile Include="camera_radar.cpp" />
     <ClCompile Include="debug_proc.cpp" />
     <ClCompile Include="effect.cpp" />
     <ClCompile Include="enemy.cpp" />
@@ -210,6 +213,9 @@
     <ClInclude Include="bullet3D.h" />
     <ClInclude Include="calculation.h" />
     <ClInclude Include="camera.h" />
+    <ClInclude Include="camera_player.h" />
+    <ClInclude Include="camera_title.h" />
+    <ClInclude Include="camera_radar.h" />
     <ClInclude Include="debug_proc.h" />
     <ClInclude Include="effect.h" />
     <ClInclude Include="enemy.h" />

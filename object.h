@@ -43,7 +43,8 @@ public:
 
 	enum Object_mode
 	{
-		NORMAL_MODE,
+		NONE_MODE = -1,
+		NORMAL_MODE = 0,
 		RADAR_MODE,
 		MAX_MODE
 	};

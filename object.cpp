@@ -6,12 +6,15 @@
 //=========================================
 #include "object.h"
 #include "camera.h"
+#include "camera_player.h"
+#include "camera_radar.h"
 #include "application.h"
 #include <assert.h>
 
 int CObject::m_nNumAll = 0;
 CObject *CObject::m_pTop[LAYER_MAX] = { nullptr };
 CObject *CObject::m_pCurrent[LAYER_MAX] = { nullptr };
+
 //=========================================
 //コンストラクタ
 //=========================================

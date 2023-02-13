@@ -13,7 +13,7 @@
 #include "sound.h"
 #include "enemy.h"
 #include "debug_proc.h"
-#include "camera.h"
+#include "camera_player.h"
 #include "calculation.h"
 #include "missile_locus.h"
 
@@ -118,8 +118,7 @@ void CBullet3D::Update()
 		if (m_TargetObj->GetObjectType() == OBJECT_PLAYER)
 		{
 			//ƒJƒƒ‰î•ñ‚ÌŽæ“¾
-			CCamera *pCamera = CApplication::GetCamera();
-			pCamera->ShakeCamera(60.0f, 10.0f);
+			CApplication::GetCamera()->ShakeCamera(60.0f, 10.0f);
 		}
 	}
 	

@@ -12,6 +12,8 @@
 #include "input.h"
 #include "texture.h"
 #include "camera.h"
+#include "camera_player.h"
+#include "camera_radar.h"
 #include "light.h"
 #include "Object3D.h"
 #include "meshfield.h"
@@ -43,8 +45,8 @@ CGame* CApplication::m_pGame = nullptr;
 CTexture3D* CApplication::m_pTexture3D = nullptr;
 CSound*	CApplication::m_pSound = nullptr;		//ƒTƒEƒ“ƒh
 
-CCamera* CApplication::m_pRader = nullptr;
-CCamera* CApplication::m_pCamera = nullptr;
+CCameraRadar* CApplication::m_pRader = nullptr;
+CCameraPlayer* CApplication::m_pCamera = nullptr;
 
 CSound *pSound = nullptr;
 CApplication::MODE CApplication::m_NextMode = MODE_MAX;
@@ -73,8 +75,8 @@ HRESULT CApplication::Init(HINSTANCE hInstance,HWND hWnd)
 {
 	m_pRender = new CRender;
 	m_pTexture = new CTexture;
-	m_pCamera = new CCamera;
-	m_pRader = new CCamera;
+	m_pCamera = new CCameraPlayer;
+	m_pRader = new CCameraRadar;
 	m_pInputKeyboard = new CInputKeyboard;
 	pSound = new CSound;
 	m_pMouse = new CMouse;

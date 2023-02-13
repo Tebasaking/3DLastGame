@@ -62,7 +62,7 @@ D3DXVECTOR3 WorldCastVtx(D3DXVECTOR3 vtx, D3DXVECTOR3 FormerPos, D3DXQUATERNION 
 	D3DXMatrixMultiply(&mtxWorldVtx, &mtxWorldVtx, &mtxTrans);		// 行列掛け算関数
 
 	// クォータニオンの使用した姿勢の設定
-	D3DXMatrixRotationQuaternion(&mtxRot, &FormeQuaternion);            // クオータニオンによる行列回転
+	D3DXMatrixRotationQuaternion(&mtxRot, &FormeQuaternion);		// クオータニオンによる行列回転
 
 	// 行列掛け算関数 (第二引数 * 第三引数を第一引数に格納)
 	D3DXMatrixMultiply(&mtxWorldVtx, &mtxWorldVtx, &mtxRot);
