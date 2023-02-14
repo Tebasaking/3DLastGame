@@ -384,21 +384,21 @@ void CPlayer3D::UpdateFly()
 			pos.y += FloatRandom(2.5f, -2.5f);
 			pos.z += FloatRandom(2.5f, -2.5f);
 
-			CEffect *pEffect = CEffect::Create(pos, 0, 0, CTexture::TEXTURE_PARTIClE);
+			CEffect *pEffect = CEffect::Create(D3DXVECTOR3(pos.x + FloatRandom(1.0f,-1.0f),pos.y,pos.z + FloatRandom(1.0f, -1.0f)), 0, 0, CTexture::TEXTURE_PARTIClE);
 			pEffect->SetSize(D3DXVECTOR3(5.0f, 5.0f, 0.0f));
 			pEffect->SetMoveVec(D3DXVECTOR3(0.0f, FloatRandom(1.5f, -1.5f), FloatRandom(1.5f, -1.5f)));
-			pEffect->SetLife(20);
-
-			if (FloatRandom(2.0f, -1.0f) >= 0.0f)
+			pEffect->SetLife(5);
+			pEffect->SetRenderMode(CEffect::MODE_ADD);
+		/*	if (FloatRandom(2.0f, -1.0f) >= 0.0f)
 			{
 				pEffect->SetRenderMode(CEffect::MODE_ADD);
 			}
 			else
 			{
 				pEffect->SetRenderMode(CEffect::MODE_NORMAL);
-			}
+			}*/
 
-			pEffect->SetColor(D3DXCOLOR(1.0f, FloatRandom(1.0f, 0.0f), 0.1f, 1.0f));
+			pEffect->SetColor(D3DXCOLOR(1.0f, FloatRandom(0.5f, 0.0f), 0.1f, 1.0f));
 
 			pEffect->SetTex(CTexture::TEXTURE_PARTIClE);
 			pEffect->SetQuaternion(m_quaternion);

@@ -99,8 +99,6 @@ void CBullet3D::Update()
 	// ’e‚ÌˆÚ“®§Œä
 	BulletMove();
 
-	CDebugProc::Print("pos : %.1f\n",m_pos.y);
-
 	// “–‚½‚è”»’è
 	if (Collision(m_TargetObj, false))
 	{

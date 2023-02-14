@@ -56,6 +56,8 @@ HRESULT CMissile_Locus::Init(const D3DXVECTOR3 &pos)
 
 	// Zバッファの設定
 	SetZFunc(D3DCMP_LESS);
+
+	// アルファ量の設定
 	SetAlphaValue(100);
 
 	return S_OK;

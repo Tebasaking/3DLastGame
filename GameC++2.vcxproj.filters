@@ -64,6 +64,9 @@
     <Filter Include="ソース ファイル\ゲーム\3D\Enemy">
       <UniqueIdentifier>{f3093f73-7489-4333-974d-57a1af83e357}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\ゲーム\3D\モデル">
+      <UniqueIdentifier>{14e5c644-3d79-44db-a171-b27dcf03fd7e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="application.cpp">
@@ -138,9 +141,6 @@
     <ClCompile Include="parts.cpp">
       <Filter>ソース ファイル\ゲーム\3D\motion</Filter>
     </ClCompile>
-    <ClCompile Include="model3D.cpp">
-      <Filter>ソース ファイル\ゲーム\3D</Filter>
-    </ClCompile>
     <ClCompile Include="joypad.cpp">
       <Filter>ソース ファイル\システム</Filter>
     </ClCompile>
@@ -207,20 +207,23 @@
     <ClCompile Include="camera.cpp">
       <Filter>ソース ファイル\システム\カメラ</Filter>
     </ClCompile>
-    <ClCompile Include="camera_player.cpp">
-      <Filter>ソース ファイル\システム\カメラ</Filter>
-    </ClCompile>
-    <ClCompile Include="camera_title.cpp">
-      <Filter>ソース ファイル\システム\カメラ</Filter>
-    </ClCompile>
-    <ClCompile Include="camera_radar.cpp">
-      <Filter>ソース ファイル\システム\カメラ</Filter>
-    </ClCompile>
     <ClCompile Include="enemy.cpp">
       <Filter>ソース ファイル\ゲーム\3D\Enemy</Filter>
     </ClCompile>
     <ClCompile Include="enemy_manager.cpp">
       <Filter>ソース ファイル\ゲーム\3D\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="camera_player.cpp">
+      <Filter>ソース ファイル\システム\カメラ</Filter>
+    </ClCompile>
+    <ClCompile Include="camera_radar.cpp">
+      <Filter>ソース ファイル\システム\カメラ</Filter>
+    </ClCompile>
+    <ClCompile Include="camera_title.cpp">
+      <Filter>ソース ファイル\システム\カメラ</Filter>
+    </ClCompile>
+    <ClCompile Include="model3D.cpp">
+      <Filter>ソース ファイル\ゲーム\3D\モデル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -293,9 +296,6 @@
     <ClInclude Include="motion_model3D.h">
       <Filter>ソース ファイル\ゲーム\3D\motion</Filter>
     </ClInclude>
-    <ClInclude Include="model3D.h">
-      <Filter>ソース ファイル\ゲーム\3D</Filter>
-    </ClInclude>
     <ClInclude Include="joypad.h">
       <Filter>ソース ファイル\システム</Filter>
     </ClInclude>
@@ -365,20 +365,23 @@
     <ClInclude Include="camera.h">
       <Filter>ソース ファイル\システム\カメラ</Filter>
     </ClInclude>
-    <ClInclude Include="camera_player.h">
-      <Filter>ソース ファイル\システム\カメラ</Filter>
-    </ClInclude>
-    <ClInclude Include="camera_title.h">
-      <Filter>ソース ファイル\システム\カメラ</Filter>
-    </ClInclude>
-    <ClInclude Include="camera_radar.h">
-      <Filter>ソース ファイル\システム\カメラ</Filter>
-    </ClInclude>
     <ClInclude Include="enemy.h">
       <Filter>ソース ファイル\ゲーム\3D\Enemy</Filter>
     </ClInclude>
     <ClInclude Include="enemy_manager.h">
       <Filter>ソース ファイル\ゲーム\3D\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="camera_player.h">
+      <Filter>ソース ファイル\システム\カメラ</Filter>
+    </ClInclude>
+    <ClInclude Include="camera_radar.h">
+      <Filter>ソース ファイル\システム\カメラ</Filter>
+    </ClInclude>
+    <ClInclude Include="camera_title.h">
+      <Filter>ソース ファイル\システム\カメラ</Filter>
+    </ClInclude>
+    <ClInclude Include="model3D.h">
+      <Filter>ソース ファイル\ゲーム\3D\モデル</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

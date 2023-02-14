@@ -25,6 +25,7 @@ CMouse::CMouse()
 	memset(&m_aKeyState, 0, sizeof(m_aKeyState));
 	memset(&m_aKeyStateTrigger, 0, sizeof(m_aKeyStateTrigger));
 	memset(&m_aKeyStateRelease, 0, sizeof(m_aKeyStateRelease));
+	m_isPosLock = false;
 }
 
 //=============================================================================
@@ -137,6 +138,11 @@ void CMouse::Update(void)
 
 	// Deviceの設定
 	SetDevice(pDevice);
+
+	if (m_isPosLock)
+	{
+		SetCursorPosLock();
+	}
 }
 
 //=============================================================================
@@ -203,4 +209,29 @@ int CMouse::GetMouseWheel(void)
 D3DXVECTOR3 CMouse::GetMouseMove(void)
 {
 	return D3DXVECTOR3((float)(m_aKeyState.lX), (float)(m_aKeyState.lY), (float)(m_aKeyState.lZ));
+}
+
+//=============================================================================
+// カーソルのロック
+// Author : YudaKaito
+// 概要 : カーソルの位置をロックする。
+//=============================================================================
+void CMouse::SetCursorPosLock()
+{
+	D3DXVECTOR2 pos;
+
+	pos.x = SCREEN_WIDTH / 2;
+	pos.y = SCREEN_HEIGHT / 2;
+
+	WINDOWINFO windowInfo;
+
+	//ウィンドウの位置を取得
+	windowInfo.cbSize = sizeof(WINDOWINFO);
+	GetWindowInfo(m_hWnd, &windowInfo);
+
+	//マウスの移動先の絶対座標（モニター左上からの座標）
+	pos.x += windowInfo.rcWindow.left;
+	pos.y += windowInfo.rcWindow.top + 35; //ウィンドウのタイトルバーの分（35px）をプラス
+
+	SetCursorPos(pos.x, pos.y);
 }

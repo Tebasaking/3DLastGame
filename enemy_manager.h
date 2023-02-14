@@ -18,7 +18,15 @@ class CEnemy_Manager
 public:
 	typedef struct
 	{
-		std::vector<CEnemy*>  m_EnemyList;
+		D3DXVECTOR3 pos;
+		int			type;
+	}EnemyData;
+
+	typedef struct
+	{
+		int m_Amount;		// そのウェーブ中に出現するエネミーの数
+		std::vector<EnemyData> m_EnemyData;
+		std::vector<CEnemy*> m_EnemyList;
 	}Wave;
 
 	CEnemy_Manager();			//コンストラクタ
@@ -36,9 +44,17 @@ public:
 	static CEnemy_Manager *Create(void);
 	// ファイルを読み込む処理
 	void LoadFile();
+	// 読み込んだウェーブの情報を元にエネミーを生成する
+	void EnemyCreate(int Wave);
+	// ウェーブ内のエネミーが全滅した時
+	void Extinction();
+	// ウェーブ内のエネミーが死亡した処理
+	void Death(CEnemy* pEnemy);
 
 private:
 	std::vector<Wave> m_Wave;
+	int m_MaxWave;				// ウェーブの最大数
+	int m_NowWave;				// 現在のウェーブ数
 };
 
 #endif

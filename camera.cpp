@@ -23,7 +23,7 @@
 // 定数定義
 //*****************************************************************************
 const float CCamera::CAMERA_NEAR = 30.0f;		// ニア
-const float CCamera::CAMERA_FUR = 100000000.0f;	// ファー
+const float CCamera::CAMERA_FUR = 20000.0f;	// ファー
 
 //=============================================================================
 // コンストラクタ
@@ -37,6 +37,7 @@ CCamera::CCamera() :
 	m_quaternion(D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f)),	// クオータニオン
 	m_viewType(TYPE_CLAIRVOYANCE),							// 投影方法の種別
 	m_event(EVENT_NORMAL),
+	m_Dest(D3DXVECTOR3(0.0f,0.0f,0.0f)),
 	m_fDistance(0.0f),										// 視点から注視点までの距離
 	m_Destquaternion(D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f))
 {

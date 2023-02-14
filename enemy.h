@@ -51,12 +51,17 @@ public:
 	//エネミー同士の当たり判定
 	void EnemyCollision(void);
 	//クリエイト処理
-	static CEnemy* Create(const D3DXVECTOR3 &pos);
+	static CEnemy* Create(const D3DXVECTOR3 &pos,const EnemyType &type,const int &Wave);
 
 	//番号設定処理
 	void SetNumber(int Number) { m_Number = Number; }
 	//番号取得処理
 	int GetNumber() { return m_Number; }
+	// ウェーブ数の取得
+	int GetWave() { return m_Wave; }
+
+	// ウェーブ数の設定
+	void SetWave(int wave) { m_Wave = wave; }
 
 	// ステートの設定
 	void SetState(EnemyState state) { m_state = state; }
@@ -74,6 +79,7 @@ private:
 	bool					m_bColision;				// 当たっているかどうか
 
 	int						m_AttackCount;				// 攻撃間隔
+	int						m_Wave;						// 自身が所属しているウェーブ数
 
 	EnemyType				m_type;						// タイプの設定
 	CModel3D*				m_apModel[MAX_PARTS];		// モデルの最大数

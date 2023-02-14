@@ -47,8 +47,8 @@ HRESULT CMesh::Init(const D3DXVECTOR3 &pos)
 
 	case TYPE_WAVE:
 		m_texture = CTexture::TEXTURE_SEA;
-		SetMeshSize(500.0f);
-		SetBlock(40.0f, 40.0f);
+		SetMeshSize(2000.0f);
+		SetBlock(10.0f, 10.0f);
 		break;
 
 	case TYPE_GROUND:
@@ -435,93 +435,96 @@ bool CMesh::Collision(D3DXVECTOR3 *pos)
 	// 当たり判定
 	bool bCollison = false;
 
-	CApplication::MODE pMode = CApplication::GetMode();
-
-	if (CApplication::GetMode() == CApplication::MODE_GAME && m_pVtxBuff != nullptr)
+	if (pos->y <= 200.0f)
 	{
-		// 頂点情報の取得
-		VERTEX_3D *pVtx = NULL;
+		CApplication::MODE pMode = CApplication::GetMode();
 
-		// 頂点バッファをロック
-		m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
-
-		// インデックスバッファをロック
-		WORD *pIdx;
-		m_pIdxVtxBuff->Lock(0, 0, (void**)&pIdx, 0);
-
-		// ターゲット情報の宣言
-		D3DXVECTOR3 posTarget = *pos;
-
-		for (int nCntPolygon = 0; nCntPolygon < MESH_PRIMITIVE_NUM; nCntPolygon++)
+		if (CApplication::GetMode() == CApplication::MODE_GAME && m_pVtxBuff != nullptr)
 		{
-			// 変数宣言
-			D3DXVECTOR3 V1 = pVtx[pIdx[nCntPolygon]].pos;
-			D3DXVECTOR3 V2 = pVtx[pIdx[nCntPolygon + 1]].pos;
-			D3DXVECTOR3 V3 = pVtx[pIdx[nCntPolygon + 2]].pos;
+			// 頂点情報の取得
+			VERTEX_3D *pVtx = NULL;
 
-			V1 = WorldCastVtx(V1, m_pos, m_rot);
-			V2 = WorldCastVtx(V2, m_pos, m_rot);
-			V3 = WorldCastVtx(V3, m_pos, m_rot);
+			// 頂点バッファをロック
+			m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
-			if (V1 == V2
-				|| V1 == V3
-				|| V2 == V3)
-			{// 縮退ポリゴンの場合
-				continue;
-			}
+			// インデックスバッファをロック
+			WORD *pIdx;
+			m_pIdxVtxBuff->Lock(0, 0, (void**)&pIdx, 0);
 
-			// ポリゴンの辺ベクトル
-			D3DXVECTOR3 P1 = V2 - V1;
-			D3DXVECTOR3 P2 = V3 - V2;
-			D3DXVECTOR3 P3 = V1 - V3;
+			// ターゲット情報の宣言
+			D3DXVECTOR3 posTarget = *pos;
 
-			// 頂点とターゲットのベクトル
-			D3DXVECTOR3 VecA = posTarget - V1;
-			D3DXVECTOR3 VecB = posTarget - V2;
-			D3DXVECTOR3 VecC = posTarget - V3;
+			for (int nCntPolygon = 0; nCntPolygon < MESH_PRIMITIVE_NUM; nCntPolygon++)
+			{
+				// 変数宣言
+				D3DXVECTOR3 V1 = pVtx[pIdx[nCntPolygon]].pos;
+				D3DXVECTOR3 V2 = pVtx[pIdx[nCntPolygon + 1]].pos;
+				D3DXVECTOR3 V3 = pVtx[pIdx[nCntPolygon + 2]].pos;
 
-			// 比較演算用の変数の定義と代入
-			float fA = (P1.x * VecA.z) - (P1.z * VecA.x);
-			float fB = (P2.x * VecB.z) - (P2.z * VecB.x);
-			float fC = (P3.x * VecC.z) - (P3.z * VecC.x);
+				V1 = WorldCastVtx(V1, m_pos, m_rot);
+				V2 = WorldCastVtx(V2, m_pos, m_rot);
+				V3 = WorldCastVtx(V3, m_pos, m_rot);
 
-			if ((0.0f < fA && 0.0f < fB && 0.0f < fC)
-				|| (0.0f > fA && 0.0f > fB && 0.0f > fC))
-			{// 判定の設定
-				// 面法線ベクトル
-				D3DXVECTOR3 norVec = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-
-				// 面法線ベクトル
-				D3DXVec3Cross(&norVec, &P1, &P2);
-
-				//正規化
-				D3DXVec3Normalize(&norVec, &norVec);
-
-				// 位置の設定
-				float fCloss = V1.y - ((posTarget.x - V1.x) * norVec.x + (posTarget.z - V1.z) * norVec.z) / norVec.y;
-
-				if (fCloss >= pos->y)
-				{
-					bCollison = true;
-					pos->y = fCloss;
+				if (V1 == V2
+					|| V1 == V3
+					|| V2 == V3)
+				{// 縮退ポリゴンの場合
+					continue;
 				}
 
-				float randcolr = (rand() % 10) * 1.0f;
-				float randcolg = (rand() % 10) * 1.0f;
-				float randcolb = (rand() % 10) * 1.0f;
-				pVtx[pIdx[nCntPolygon]].col = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
-				pVtx[pIdx[nCntPolygon + 1]].col = D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f);
-				pVtx[pIdx[nCntPolygon + 2]].col = D3DXCOLOR(0.0f, 0.0f, 1.0f, 1.0f);
-				break;
+				// ポリゴンの辺ベクトル
+				D3DXVECTOR3 P1 = V2 - V1;
+				D3DXVECTOR3 P2 = V3 - V2;
+				D3DXVECTOR3 P3 = V1 - V3;
+
+				// 頂点とターゲットのベクトル
+				D3DXVECTOR3 VecA = posTarget - V1;
+				D3DXVECTOR3 VecB = posTarget - V2;
+				D3DXVECTOR3 VecC = posTarget - V3;
+
+				// 比較演算用の変数の定義と代入
+				float fA = (P1.x * VecA.z) - (P1.z * VecA.x);
+				float fB = (P2.x * VecB.z) - (P2.z * VecB.x);
+				float fC = (P3.x * VecC.z) - (P3.z * VecC.x);
+
+				if ((0.0f < fA && 0.0f < fB && 0.0f < fC)
+					|| (0.0f > fA && 0.0f > fB && 0.0f > fC))
+				{// 判定の設定
+					// 面法線ベクトル
+					D3DXVECTOR3 norVec = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+
+					// 面法線ベクトル
+					D3DXVec3Cross(&norVec, &P1, &P2);
+
+					//正規化
+					D3DXVec3Normalize(&norVec, &norVec);
+
+					// 位置の設定
+					float fCloss = V1.y - ((posTarget.x - V1.x) * norVec.x + (posTarget.z - V1.z) * norVec.z) / norVec.y;
+
+					if (fCloss >= pos->y)
+					{
+						bCollison = true;
+						pos->y = fCloss;
+					}
+
+					float randcolr = (rand() % 10) * 1.0f;
+					float randcolg = (rand() % 10) * 1.0f;
+					float randcolb = (rand() % 10) * 1.0f;
+					pVtx[pIdx[nCntPolygon]].col = D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f);
+					pVtx[pIdx[nCntPolygon + 1]].col = D3DXCOLOR(0.0f, 1.0f, 0.0f, 1.0f);
+					pVtx[pIdx[nCntPolygon + 2]].col = D3DXCOLOR(0.0f, 0.0f, 1.0f, 1.0f);
+					break;
+				}
 			}
+
+			// インデックスバッファのアンロック
+			m_pIdxVtxBuff->Unlock();
+
+			// 頂点バッファのアンロック
+			m_pVtxBuff->Unlock();
+
 		}
-
-		// インデックスバッファのアンロック
-		m_pIdxVtxBuff->Unlock();
-
-		// 頂点バッファのアンロック
-		m_pVtxBuff->Unlock();
-
 	}
 
 	return bCollison;

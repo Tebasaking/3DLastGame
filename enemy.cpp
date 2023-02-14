@@ -17,6 +17,7 @@
 #include "meshfield.h"
 #include "radar.h"
 #include "bullet3D.h"
+#include "enemy_manager.h"
 
 //=========================================
 //グローバル変数
@@ -131,10 +132,10 @@ void CEnemy::Update()
 
 	D3DXVECTOR3 rot = GetRot();
 
-	if (SearchEye(PlayerPos, m_pos, D3DX_PI * 0.5f, 100.0f, rot.y))
-	{
-		m_state = ENEMY_WARNNING;
-	}
+	//if (SearchEye(PlayerPos, m_pos, D3DX_PI * 0.5f, 100.0f, rot.y))
+	//{
+	//	m_state = ENEMY_WARNNING;
+	//}
 
 	// 移動量用
 	D3DXVECTOR3 move;
@@ -334,6 +335,8 @@ void CEnemy::Death()
 		// エネミーの総数
 		((CGame*)CApplication::GetModeObject())->DeleteEnemy(this);
 
+		CApplication::GetGame()->GetEM()->Death(this);
+		
 		CGame::Add(100);
 
 		// 初期化
@@ -344,7 +347,7 @@ void CEnemy::Death()
 //=========================================
 //オブジェクトのクリエイト
 //=========================================
-CEnemy* CEnemy::Create(const D3DXVECTOR3 &pos)
+CEnemy* CEnemy::Create(const D3DXVECTOR3 &pos, const EnemyType &type,const int &Wave)
 {
 	CEnemy* pCEnemy = nullptr;
 
@@ -352,6 +355,9 @@ CEnemy* CEnemy::Create(const D3DXVECTOR3 &pos)
 
 	if (pCEnemy != nullptr)
 	{
+		pCEnemy->SetWave(Wave);
+		pCEnemy->SetType(type);
+		pCEnemy->SetPosition(pos);
 		pCEnemy->Init(pos);
 		
 		// エネミー番号の指定
@@ -368,10 +374,10 @@ CEnemy* CEnemy::Create(const D3DXVECTOR3 &pos)
 //=========================================
 void CEnemy::Bullet(CObject *obj)
 {
-	// 両翼から弾を発射する
-	CBullet3D::Create(D3DXVECTOR3(50.0f, 50.0f, 0.0f), m_quaternion, obj, this,60);
-	CBullet3D::Create(D3DXVECTOR3(-50.0f, 50.0f, 0.0f), m_quaternion, obj, this,60);
-
+//	// 両翼から弾を発射する
+//	CBullet3D::Create(D3DXVECTOR3(50.0f, 50.0f, 0.0f), m_quaternion, obj, this,60);
+//	CBullet3D::Create(D3DXVECTOR3(-50.0f, 50.0f, 0.0f), m_quaternion, obj, this,60);
+//
 	m_AttackCount = 0;
 }
 
@@ -404,6 +410,7 @@ void CEnemy::EnemyCollision()
 //=========================================
 void CEnemy::SetType(EnemyType type)
 {
+	// タイプの設定
 	m_type = type;
 
 	switch (m_type)

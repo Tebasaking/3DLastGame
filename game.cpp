@@ -20,12 +20,13 @@
 #include "time.h"
 #include "score.h"
 #include "sound.h"
+#include "mouse.h"
 
 bool CGame::m_bFinish = false;
 CMesh* CGame::m_pMesh[3] = {};
 CScore* CGame::m_pScore = nullptr;
-CPlayerManager* CGame::pPlayerManager = nullptr;
-CEnemy_Manager* CGame::pEnemyManager = nullptr;
+CPlayerManager* CGame::m_pPlayerManager = nullptr;
+CEnemy_Manager* CGame::m_pEnemyManager = nullptr;
 //=========================================
 // コンストラクタ
 //=========================================
@@ -45,6 +46,10 @@ CGame::~CGame()
 //=========================================
 HRESULT CGame::Init(const D3DXVECTOR3 &pos)
 {
+	CMouse *pMouse = CApplication::GetMouse();
+
+	pMouse->UseSetPosLock(true);
+
 	m_bFinish = false;
 
 	/*CRender *pRender = CApplication::GetRender();
@@ -61,11 +66,13 @@ HRESULT CGame::Init(const D3DXVECTOR3 &pos)
 	m_pMesh[0] = CMesh::Create(D3DXVECTOR3(0.0f, -350.0f, 0.0f), CMesh::TYPE_SEA);
 	m_pMesh[2] = CMesh::Create(D3DXVECTOR3(0.0f, -300.0f, 0.0f), CMesh::TYPE_WAVE);
 
-	pPlayerManager = CPlayerManager::Create(D3DXVECTOR3(0.0f, 1000.0f, 5.0f));
-	pEnemyManager = CEnemy_Manager::Create();
+	// プレイヤーマネージャ―の取得
+	m_pPlayerManager = CPlayerManager::Create(D3DXVECTOR3(0.0f, 1000.0f, 5.0f));
+	// エネミーのマネージャーの取得
+	m_pEnemyManager = CEnemy_Manager::Create();
 
+	// スフィア
 	CSphere *pSphere = CSphere::Create(D3DXVECTOR3(0.0f, -0.0f, 0.0f));
-	//CScore *pScore = CScore::Create(D3DXVECTOR3(20.0f, 20.0f, 0.0f));
 
 	// 陸
 	m_pMesh[1] = CMesh::Create(D3DXVECTOR3(0.0f, -400.0f, 0.0f), CMesh::TYPE_GROUND);
@@ -96,7 +103,7 @@ void CGame::Uninit()
 	m_pScore->Uninit();
 	m_pScore = nullptr;
 
-	pPlayerManager = nullptr;
+	m_pPlayerManager = nullptr;
 
 	Release();
 }
@@ -109,7 +116,10 @@ void CGame::Update()
 	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
 
 	// プレイヤーマネージャ―の更新処理
-	pPlayerManager->Update();
+	m_pPlayerManager->Update();
+
+	// エネミーマネージャ―の更新処理
+	m_pEnemyManager->Update();
 
 	// ゲームが終了するかしないか
 	//EnemyManage();

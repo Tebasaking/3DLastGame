@@ -60,6 +60,8 @@ public:
 	D3DXVECTOR3 GetMouseCursor(void);								// マウスカーソルのスクリーン座標の取得
 	int GetMouseWheel(void);										// マウスのホイールの動き処理
 	D3DXVECTOR3 GetMouseMove(void);									// マウスの移動量を出力処理
+	void UseSetPosLock(bool use) { m_isPosLock = use; }
+	void SetCursorPosLock(void);
 
 private:
 	//--------------------------------------------------------------------
@@ -70,6 +72,7 @@ private:
 	DIMOUSESTATE2 m_aKeyStateRelease;			// リリース情報
 	POINT m_mouseCursor;						// マウスカーソルの位置
 	HWND m_hWnd;								// ウィンドウハンドを格納する変数
+	bool m_isPosLock;
 };
 
 #endif

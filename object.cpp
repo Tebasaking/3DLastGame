@@ -349,6 +349,14 @@ bool CObject::Collision(CObject *Target, bool bExtrude)
 	D3DXVECTOR3 posTarget = Target->GetPosition();
 	D3DXVECTOR3 SizeTarget = Target->GetSize();
 
+	D3DXVECTOR3 posDiss = pos - posTarget;
+	float fDistance = sqrtf((posDiss.y * posDiss.y) + (posDiss.x * posDiss.x) + (posDiss.z * posDiss.z));
+
+	if (fDistance >= 50.0f)
+	{
+		return false;
+	}
+
 	// “–‚½‚Á‚½
 	if ((pos.z - size.z) < (posTarget.z + SizeTarget.z)
 		&& (pos.z + size.z) > (posTarget.z - SizeTarget.z)

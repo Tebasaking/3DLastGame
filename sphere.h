@@ -10,7 +10,7 @@
 #include "object.h"
 #include "texture.h"
 
-#define SPHERE_SIZE (10000000.0f)
+#define SPHERE_SIZE (10000.0f)
 #define SPHERE_X_BLOCK (20)
 #define SPHERE_Z_BLOCK (20)
 #define SPHERE_VERTEX_NUM ((SPHERE_X_BLOCK + 1) * (SPHERE_Z_BLOCK + 1))

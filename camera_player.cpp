@@ -65,6 +65,7 @@ HRESULT CCameraPlayer::Init(D3DXVECTOR3 pos)
 
 	m_posR = D3DXVECTOR3(0.0f, 1000.0f, 0.0f);
 	m_quaternion = D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f);
+	m_rotMove = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_viewport.MinZ = 0.0f;
 	m_viewport.MaxZ = 1.0f;
 

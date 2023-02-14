@@ -4,6 +4,7 @@
 //	Author:冨所知生
 //
 //=========================================
+#include <algorithm>
 #include <assert.h>
 #include <string.h>
 #include "player3D.h"
@@ -11,6 +12,7 @@
 #include "application.h"
 #include "sound.h"
 #include "inputkeyboard.h"
+#include "fade.h"
 #include "enemy.h"
 
 //=========================================
@@ -18,6 +20,7 @@
 //=========================================
 CEnemy_Manager::CEnemy_Manager()
 {
+	m_NowWave = 0;
 }
 
 //=========================================
@@ -32,7 +35,12 @@ CEnemy_Manager::~CEnemy_Manager()
 //=========================================
 HRESULT CEnemy_Manager::Init()
 {
+	// ファイルの読み込み
 	LoadFile();
+
+	// エネミーの初回生成
+	EnemyCreate(m_NowWave);
+
 	return S_OK;
 }
 
@@ -41,6 +49,8 @@ HRESULT CEnemy_Manager::Init()
 //=========================================
 void CEnemy_Manager::Update()
 {
+	// 絶滅判定
+	Extinction();
 }
 
 //=========================================
@@ -99,11 +109,10 @@ void CEnemy_Manager::LoadFile()
 
 			if (strstr(&aStr[0], "MAX_WAVE_ENEMY") != NULL)
 			{// ウェーブ数
-				int MAX_WAVE;
 				fscanf(pFile, "%s", &aStr[0]);
-				fscanf(pFile, "%d", &MAX_WAVE);
+				fscanf(pFile, "%d", &m_MaxWave);
 
-				m_Wave.resize(MAX_WAVE);
+				m_Wave.resize(m_MaxWave);
 			}
 
 			if (strcmp(&aStr[0], "WAVE_SET") == 0)
@@ -124,35 +133,35 @@ void CEnemy_Manager::LoadFile()
 					{// 出現させるエネミーの数
 						fscanf(pFile, "%s", &aEqual[0]);
 						fscanf(pFile, "%d", &nCntEnemySpawn);
+						
+						// エネミーの数を別途保存する
+						m_Wave[WaveNumber].m_Amount = nCntEnemySpawn;
+						// エネミーデータをエネミーの数分確保する
+						m_Wave[WaveNumber].m_EnemyData.resize(nCntEnemySpawn);
 					}
 
 					for (int nCnt = 0; nCnt < nCntEnemySpawn; nCnt++)
 					{
 						fscanf(pFile, "%s", &aStr[0]);
 
-						// ウェーブにエネミーの情報を保存する
-						m_Wave[WaveNumber].m_EnemyList.push_back(CEnemy::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f)));
-
 						D3DXVECTOR3 pos = {};
-						int	type = 0;
+						int type = 0;
 
 						if (strcmp(&aStr[0], "ENEMY_POS") == 0)
 						{// 出現させるエネミーの数
 							fscanf(pFile, "%s", &aEqual[0]);
 							fscanf(pFile, "%f %f %f", &pos.x,&pos.y,&pos.z);
-							
-							// 座標の設定
-							m_Wave[WaveNumber].m_EnemyList[nCnt]->SetPosition(pos);
 							fscanf(pFile, "%s", &aStr[0]);
 						}
 						if (strcmp(&aStr[0], "ENEMY_TYPE") == 0)
 						{// 出現させるエネミーの数
 							fscanf(pFile, "%s", &aEqual[0]);
 							fscanf(pFile, "%d", &type);
-
-							// タイプの設定
-							m_Wave[WaveNumber].m_EnemyList[nCnt]->SetType((CEnemy::EnemyType)type);
 						}
+
+						// ウェーブにエネミーの情報を保存する
+						m_Wave[WaveNumber].m_EnemyData[nCnt].pos = pos;
+						m_Wave[WaveNumber].m_EnemyData[nCnt].type = type;
 					}
 				}
 			}
@@ -162,4 +171,62 @@ void CEnemy_Manager::LoadFile()
 	{
 		assert(false);
 	}
+}
+
+//=========================================
+// エネミーを生成する処理
+//=========================================
+void CEnemy_Manager::EnemyCreate(int Wave)
+{
+	int ENEMY_AMOUNT = m_Wave[Wave].m_Amount;
+
+	for (int nCnt = 0; nCnt < ENEMY_AMOUNT; nCnt++)
+	{
+		D3DXVECTOR3 pos = m_Wave[Wave].m_EnemyData[nCnt].pos;
+		int	type = m_Wave[Wave].m_EnemyData[nCnt].type;	
+
+		// ウェーブにエネミーの情報を保存する
+		m_Wave[Wave].m_EnemyList.push_back(CEnemy::Create(pos, (CEnemy::EnemyType)type,Wave));
+	}
+}
+
+//=========================================
+// エネミーが全滅したか判定する
+//=========================================
+void CEnemy_Manager::Extinction()
+{
+	// 現在のウェーブ内のエネミーリストのサイズが0より小さいなら
+	if (m_NowWave != m_MaxWave)
+	{
+		if (m_Wave[m_NowWave].m_EnemyList.size() <= 0)
+		{// ウェーブ数を進める
+			m_NowWave++;
+
+			if (m_NowWave != m_MaxWave)
+			{
+				EnemyCreate(m_NowWave);
+			}
+		}
+	}
+
+	if (m_NowWave == m_MaxWave)
+	{
+		//モードの設定
+		CFade::SetFade(CApplication::MODE_RESULT);
+	}
+}
+
+//=========================================
+// エネミーの死亡処理
+//=========================================
+void CEnemy_Manager::Death(CEnemy* pEnemy)
+{
+	// pEnemy所属しているウェーブ数の取得
+	int nWave = pEnemy->GetWave();
+
+	// リストからpEnemyを削除する
+	auto itEnd = std::remove(std::begin(m_Wave[nWave].m_EnemyList), std::end(m_Wave[nWave].m_EnemyList), pEnemy);
+
+	// 本当の意味で要素を取り除く
+	m_Wave[nWave].m_EnemyList.erase(itEnd, std::cend(m_Wave[nWave].m_EnemyList));
 }
