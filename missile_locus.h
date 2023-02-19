@@ -37,6 +37,7 @@ private:
 	static const int		ANIM_MAX;
 	int						nAnimCount;
 	int						nAnimNum;
+	int						nAnimNumY;
 	float					m_RandAlfa;		// ƒ¿’l‚ðX(ƒ‰ƒ“ƒ_ƒ€)Œ¸‚ç‚·
 };
 

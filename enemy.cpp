@@ -47,6 +47,8 @@ CEnemy::~CEnemy()
 //=========================================
 HRESULT CEnemy::Init(const D3DXVECTOR3 &pos)
 {
+	m_PlayerPos = D3DXVECTOR3(10000.0f, 10000.0f, 10000.0f);
+
 	m_apModel[0] = new CModel3D;
 
 	m_apModel[0]->SetModelID(3);
@@ -95,6 +97,11 @@ HRESULT CEnemy::Init(const D3DXVECTOR3 &pos)
 //=========================================
 void CEnemy::Update()
 {
+	auto FloatRandom = [](float fMax, float fMin)
+	{
+		return ((rand() / (float)RAND_MAX) * (fMax - fMin)) + fMin;
+	};
+
 	// 古い座標の設定
 	SetPosOld(m_pos);
 
@@ -122,13 +129,15 @@ void CEnemy::Update()
 
 			if (ObjType == OBJECT_PLAYER)
 			{
-				PlayerPos = object->GetPosition();
+				m_PlayerPos = object->GetPosition();
 				PlayerRot = object->GetRot();
 				break;
 			}
 		}
 		object = object->GetObjectNext();
 	}
+
+	Search();
 
 	D3DXVECTOR3 rot = GetRot();
 
@@ -137,10 +146,12 @@ void CEnemy::Update()
 	//	m_state = ENEMY_WARNNING;
 	//}
 
-	// 移動量用
-	D3DXVECTOR3 move;
+	float EnemySpeed = 5.0f;
 
-	float EnemySpeed = 3.0f;
+	// 移動量用
+	D3DXVECTOR3 move = move = D3DXVECTOR3(sinf(rot.y) * EnemySpeed,
+		-(rot.x * EnemySpeed),
+		cosf(rot.y) * EnemySpeed);
 
 	//=========================================
 	// エネミーの現在の状態
@@ -148,6 +159,26 @@ void CEnemy::Update()
 	//=========================================
 	// 非戦闘状態の敵の行動処理
 	//=========================================
+	if (m_state == ENEMY_CAUTION)
+	{
+		rot.y += 0.01f;
+
+		if (m_type == ENEMY_FLY)
+		{
+			// 移動量
+			move = D3DXVECTOR3(sinf(rot.y) * EnemySpeed,
+				-(rot.x * EnemySpeed),
+				cosf(rot.y) * EnemySpeed);
+
+			m_CntWar++;
+		}
+		if (m_CntWar >= 120 + (int)FloatRandom(100,0))
+		{
+			m_CntWar = 0;
+			m_state = ENEMY_WARNNING;
+		}
+	}
+
 	if (m_state == ENEMY_IDOL)
 	{
 		rot.y += 0.01f;
@@ -191,20 +222,42 @@ void CEnemy::Update()
 		Pos = GetPosition();
 		posTarget = PlayerPos;
 
-		// 敵のいる向き
-		D3DXVECTOR3 sub = D3DXVECTOR3(0.0f, 0.0f, 0.f);
-		// ターゲットと現在地の距離
-		D3DXVECTOR3 distance = posTarget - Pos;
+		D3DXVECTOR3 EnemyVec = m_PlayerPos - GetPosition();
 
-		D3DXVECTOR3 FellowRot = AtanRot(posTarget, Pos);
-	
-		sub.z = sinf(FellowRot.x) * cosf(FellowRot.y) * EnemySpeed;
-		sub.x = sinf(FellowRot.x) * sinf(FellowRot.y) * EnemySpeed;
-		sub.y = cosf(atan2f(Pos.y, distance.y))  * EnemySpeed;
+		// ベクトルを算出
+		D3DXVECTOR3 MoveVec = {};
 
-		D3DXVECTOR3 rotDest = (D3DXVECTOR3(FellowRot.x - D3DX_PI * 0.5f, FellowRot.y, rot.z));
+		D3DXVec3Normalize(&MoveVec, &move);
+		D3DXVec3Normalize(&EnemyVec, &EnemyVec);
+
+		// 進行方向ベクトルから出した現在地から見たエネミーへの角度
+		float AdvanceRot = acos((MoveVec.x * EnemyVec.x) + (MoveVec.y * EnemyVec.y) + (MoveVec.z * EnemyVec.z));
+
+		float AdvanceRotVec = AdvanceRot * (180 * D3DX_PI);
+
+		D3DXVECTOR3 Vec = EnemyVec / AdvanceRotVec;
+
+		// 1フレームに動く角度を設定する
+		float OneRadian = (1 * (180 / D3DX_PI));
+
+		D3DXVec3Normalize(&Vec, &Vec);
+
+		D3DXVECTOR3 A = Vec;
+
+		D3DXVECTOR3 AB = Vec *  OneRadian;
+		D3DXVec3Normalize(&AB, &AB);
+
+		//m_move = AB * m_MissileSpeed;
+
+		move = AB * EnemySpeed;
+
+		// 角度の設定
+		D3DXVECTOR3 rotDest = AtanRot(m_pos + move, m_pos);
+		rotDest.x -= D3DX_PI * 0.5f;
+		rotDest.z += D3DX_PI;
+
 		D3DXVECTOR3 rotResult = rotDest - rot;
-
+		
 		rotResult = NormalizeRotXYZ(rotResult);
 		
 		// 回転の加算
@@ -212,18 +265,34 @@ void CEnemy::Update()
 
 		rot = NormalizeRotXYZ(rot);
 
-		move = D3DXVECTOR3(sinf(rot.y) * EnemySpeed,
-			-0.0f,
-			cosf(rot.y) * EnemySpeed);
-
 		// アタックカウントを進める
 		m_AttackCount++;
 
-		// アタックカウントが300以上の時
-		if (object != nullptr && m_AttackCount >= 300)
+		// 飛行機だけ移動させる
+		if (m_type == ENEMY_FLY)
 		{
-			// プレイヤーに対してミサイルを発射する
-			Bullet(object);
+			move = D3DXVECTOR3(sinf(rot.y) * EnemySpeed,
+				-(rot.x * EnemySpeed),
+				cosf(rot.y) * EnemySpeed);
+		}
+		else if (m_type == ENEMY_GROUND)
+		{
+			move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+		}
+
+		if (AdvanceRot <= D3DX_PI * 0.25f)
+		{
+			// アタックカウントが300~400以上の時
+			if (object != nullptr && m_AttackCount >= 300 + FloatRandom(100,0))
+			{
+				// プレイヤーに対してミサイルを発射する
+				Bullet(object);
+				if (m_type == ENEMY_FLY)
+				{
+					// エネミーの状態を待機状態にする
+					m_state = ENEMY_CAUTION;
+				}
+			}
 		}
 	}
 
@@ -280,6 +349,12 @@ void CEnemy::Uninit()
 	// モデルの解放
 	m_apModel[0]->Uninit();
 
+	// ターゲットの終了処理
+	m_Target->Uninit();
+
+	// レーダーの終了処理
+	m_Radar->Uninit();
+
 	// モーションの終了処理
 	CMotionModel3D::Uninit();
 
@@ -292,6 +367,7 @@ void CEnemy::Uninit()
 //=========================================
 void CEnemy::Draw()
 {
+	// デバイスの取得
 	PDIRECT3DDEVICE9 pDevice = CApplication::GetRender()->GetDevice();
 
 	// 計算用マトリックス
@@ -374,10 +450,10 @@ CEnemy* CEnemy::Create(const D3DXVECTOR3 &pos, const EnemyType &type,const int &
 //=========================================
 void CEnemy::Bullet(CObject *obj)
 {
-//	// 両翼から弾を発射する
-//	CBullet3D::Create(D3DXVECTOR3(50.0f, 50.0f, 0.0f), m_quaternion, obj, this,60);
-//	CBullet3D::Create(D3DXVECTOR3(-50.0f, 50.0f, 0.0f), m_quaternion, obj, this,60);
-//
+	// 両翼から弾を発射する
+	CBullet3D::Create(D3DXVECTOR3(50.0f, 50.0f, 0.0f), m_quaternion, obj, this, 60 , D3DX_PI * 0.15f);
+	CBullet3D::Create(D3DXVECTOR3(-50.0f, 50.0f, 0.0f), m_quaternion, obj, this, 60 , D3DX_PI * 0.15f);
+
 	m_AttackCount = 0;
 }
 
@@ -422,5 +498,31 @@ void CEnemy::SetType(EnemyType type)
 	case ENEMY_GROUND:
 		SetMotion("data/MOTION/tank.txt");
 		break;
+	}
+}
+
+//=========================================
+// プレイヤーが一定の範囲内に入ったか判定する処理
+//=========================================
+void CEnemy::Search()
+{
+	// 視点と注視点の距離
+	D3DXVECTOR3 posDiss = m_pos - m_PlayerPos;
+	float fDistance = sqrtf((posDiss.y * posDiss.y) + (posDiss.x * posDiss.x) + (posDiss.z * posDiss.z));
+
+	if (fDistance >= -1000.0f && fDistance <= 1000.0f)
+	{// エネミーを敵対状態にする
+		m_state = ENEMY_WARNNING;
+	}
+}
+
+//=========================================
+// ターゲットを赤く染める
+//=========================================
+void CEnemy::TargetSetColor(D3DXCOLOR col)
+{
+	if(m_Target != nullptr)
+	{ 
+	m_Target->SetColor(col);
 	}
 }

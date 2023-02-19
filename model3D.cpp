@@ -17,6 +17,7 @@
 #include "camera.h"
 #include "camera_player.h"
 #include "camera_radar.h"
+#include "camera_title.h"
 
 //--------------------------------------------------------------------
 // Ã“Iƒƒ“ƒo•Ï”’è‹`
@@ -453,9 +454,17 @@ void CModel3D::DrawMaterial()
 	switch (CApplication::GetRender()->GetCheck())
 	{
 	case false:
-		pCamera = CApplication::GetCamera();
-		break;
+		switch (CApplication::GetMode())
+		{
+		case CApplication::MODE_TITLE:
+			pCamera = CApplication::GetTitleCamera();
+			break;
 
+		case CApplication::MODE_GAME:
+			pCamera = CApplication::GetCamera();
+			break;
+		}
+		break;
 	case true:
 		pCamera = CApplication::GetRader();
 		break;

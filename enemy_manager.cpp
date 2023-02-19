@@ -14,6 +14,7 @@
 #include "inputkeyboard.h"
 #include "fade.h"
 #include "enemy.h"
+#include "debug_proc.h"
 
 //=========================================
 // コンストラクタ
@@ -38,9 +39,6 @@ HRESULT CEnemy_Manager::Init()
 	// ファイルの読み込み
 	LoadFile();
 
-	// エネミーの初回生成
-	EnemyCreate(m_NowWave);
-
 	return S_OK;
 }
 
@@ -49,8 +47,7 @@ HRESULT CEnemy_Manager::Init()
 //=========================================
 void CEnemy_Manager::Update()
 {
-	// 絶滅判定
-	Extinction();
+	EnemyCreate(m_NowWave);
 }
 
 //=========================================
@@ -146,6 +143,16 @@ void CEnemy_Manager::LoadFile()
 
 						D3DXVECTOR3 pos = {};
 						int type = 0;
+						int time = 0;
+
+						if (strncmp(&aStr[0], "-", 1) == 0)
+						{// 一列読み込む
+							fgets(&aStr[0], sizeof(aStr), pFile);
+						}
+						if (strncmp(&aStr[0], "#", 1) == 0)
+						{// 一列読み込む
+							fgets(&aStr[0], sizeof(aStr), pFile);
+						}
 
 						if (strcmp(&aStr[0], "ENEMY_POS") == 0)
 						{// 出現させるエネミーの数
@@ -157,11 +164,18 @@ void CEnemy_Manager::LoadFile()
 						{// 出現させるエネミーの数
 							fscanf(pFile, "%s", &aEqual[0]);
 							fscanf(pFile, "%d", &type);
+							fscanf(pFile, "%s", &aStr[0]);
+						}
+						if (strcmp(&aStr[0], "ENEMY_TIME") == 0)
+						{// 出現させるエネミーの数
+							fscanf(pFile, "%s", &aEqual[0]);
+							fscanf(pFile, "%d", &time);
 						}
 
 						// ウェーブにエネミーの情報を保存する
 						m_Wave[WaveNumber].m_EnemyData[nCnt].pos = pos;
 						m_Wave[WaveNumber].m_EnemyData[nCnt].type = type;
+						m_Wave[WaveNumber].m_EnemyData[nCnt].time = time;
 					}
 				}
 			}
@@ -181,13 +195,21 @@ void CEnemy_Manager::EnemyCreate(int Wave)
 	int ENEMY_AMOUNT = m_Wave[Wave].m_Amount;
 
 	for (int nCnt = 0; nCnt < ENEMY_AMOUNT; nCnt++)
-	{
-		D3DXVECTOR3 pos = m_Wave[Wave].m_EnemyData[nCnt].pos;
-		int	type = m_Wave[Wave].m_EnemyData[nCnt].type;	
+	{// ウェーブのタイマーがエネミーのタイマーと一致した時、一致したエネミーを生成する
+		if (m_Wave[Wave].m_Timer == m_Wave[Wave].m_EnemyData[nCnt].time * 60)
+		{
+			D3DXVECTOR3 pos = m_Wave[Wave].m_EnemyData[nCnt].pos;
+			int	type = m_Wave[Wave].m_EnemyData[nCnt].type;
 
-		// ウェーブにエネミーの情報を保存する
-		m_Wave[Wave].m_EnemyList.push_back(CEnemy::Create(pos, (CEnemy::EnemyType)type,Wave));
+			// ウェーブにエネミーの情報を保存する
+			m_Wave[Wave].m_EnemyList.push_back(CEnemy::Create(pos, (CEnemy::EnemyType)type, Wave));
+		}
 	}
+
+	m_Wave[Wave].m_Timer++;
+	
+	// カメラの視点
+	CDebugProc::Print("エネミーカウント %d \n", m_Wave[Wave].m_Timer);
 }
 
 //=========================================

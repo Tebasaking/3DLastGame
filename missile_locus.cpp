@@ -12,8 +12,8 @@
 #include "missile_locus.h"
 #include "sound.h"
 
-const int CMissile_Locus::ANIM_SPEED = 10;
-const int CMissile_Locus::ANIM_MAX = 8;
+const int CMissile_Locus::ANIM_SPEED = 1;
+const int CMissile_Locus::ANIM_MAX = 6;
 //=========================================
 //コンストラクタ
 //=========================================
@@ -46,10 +46,10 @@ HRESULT CMissile_Locus::Init(const D3DXVECTOR3 &pos)
 	SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 	
 	//サイズの設定
-	CBillboard::SetSize(D3DXVECTOR3(40.0f,40.0f,0.0f));
+	CBillboard::SetSize(D3DXVECTOR3(20.0f,20.0f,0.0f));
 
 	// テクスチャの設定
-	CBillboard::SetTexture(CTexture::TEXTURE_EXPLOSION);
+	CBillboard::SetTexture(CTexture::TEXTURE_SMOKE);
 
 	// 体力の設定
 	SetHP(100);
@@ -91,7 +91,7 @@ void CMissile_Locus::Update()
 
 	nAnimCount++;
 
-	CBillboard::SetAnim((float)nAnimNum, ANIM_MAX);
+	CBillboard::SetAnim((float)nAnimNum, ANIM_MAX,nAnimNumY,6);
 
 	// アニメーション処理
 	if (nAnimCount >= ANIM_SPEED)
@@ -101,7 +101,13 @@ void CMissile_Locus::Update()
 
 		if (nAnimNum >= ANIM_MAX)
 		{
+			nAnimNumY++;
 			nAnimNum = 0;
+
+			if (nAnimNumY >= 6)
+			{
+				nAnimNumY = 0;
+			}
 			//CMissile_Locus::Uninit();
 		}
 	}

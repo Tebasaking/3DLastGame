@@ -12,6 +12,7 @@
 //=========================================
 // ƒNƒ‰ƒX
 //=========================================
+class CObject2D;
 class CTitle : public CMode
 {
 public:
@@ -25,6 +26,10 @@ public:
 
 private:
 	static CMesh		  *m_pMesh[3];
+	CObject2D *pObject2D[4];
+	int		m_Select;
+	bool	m_bSelect;
+	int		m_SelectCnt;
 };
 
 #endif	// _TITLE_H_

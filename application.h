@@ -27,6 +27,7 @@ class CFade;
 class CTexture3D;
 class CJoypad;
 class CSound;
+class CCameraTitle;
 class CApplication
 {
 public:
@@ -61,6 +62,7 @@ public:
 	static CPlayer *GetPlayer();
 	static CTexture* GetTexture();
 	static CCameraPlayer* GetCamera() { return m_pCamera; };
+	static CCameraTitle *GetTitleCamera() { return m_pTitle; }
 	static CCameraRadar* GetRader() { return m_pRader; }
 	static CInputKeyboard * GetInputKeyboard();
 	static CMouse *GetMouse() { return m_pMouse; }
@@ -86,6 +88,7 @@ private:
 	static CTexture3D		*m_pTexture3D;
 	static CJoypad			*m_pJoy;
 	static CSound			*m_pSound;
+	static CCameraTitle		*m_pTitle;
 	static LPD3DXEFFECT		m_pEffect;			// シェーダー
 	bool					m_bCheckViewport;
 };

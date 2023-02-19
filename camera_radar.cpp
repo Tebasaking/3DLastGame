@@ -12,6 +12,7 @@
 // インクルード
 //*****************************************************************************
 #include <assert.h>
+#include <DirectXMath.h>
 
 #include "camera_radar.h"
 #include "application.h"
@@ -27,6 +28,7 @@
 #include "meshfield.h"
 #include "object.h"
 #include "joypad.h"
+#include "camera_player.h"
 #include "player3D.h"
 #include "sound.h"
 #include "utility.h"
@@ -37,13 +39,12 @@
 const float CCameraRadar::CAMERA_NEAR = 30.0f;		// ニア
 const float CCameraRadar::CAMERA_FUR = 100000000.0f;	// ファー
 
-//=============================================================================
-// コンストラクタ
-// Author	: 唐﨑結斗
-// 概要		: インスタンス生成時に行う処理
-//=============================================================================
+														//=============================================================================
+														// コンストラクタ
+														// Author	: 唐﨑結斗
+														// 概要		: インスタンス生成時に行う処理
+														//=============================================================================
 CCameraRadar::CCameraRadar() :
-	m_viewType(TYPE_CLAIRVOYANCE),							// 投影方法の種別
 	m_nCntFly(0),
 	m_fRotMove(0.0f)										// 移動方向
 {
@@ -66,12 +67,14 @@ CCameraRadar::~CCameraRadar()
 //=============================================================================
 HRESULT CCameraRadar::Init(D3DXVECTOR3 pos)
 {
-	m_posV = D3DXVECTOR3(0.0f, 5000.0f, -150.0f);
-	m_posR = D3DXVECTOR3(0.0f, 5000.0f, 0.0f);
+	m_posV = D3DXVECTOR3(0.0f, 5000.0f, 0.0f);
+	m_posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_quaternion = D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f);
 	m_viewport.MinZ = 0.0f;
 	m_viewport.MaxZ = 1.0f;
 	m_viewType = TYPE_PARALLEL;
+	SetViewType(m_viewType);
 
 	// 視点と注視点の距離
 	D3DXVECTOR3 posDiss = m_posR - m_posV;
@@ -102,39 +105,25 @@ void CCameraRadar::Update(void)
 {
 	// プレイヤーの位置を取得して、X と Y の座標を合わせる。
 	CPlayer3D *pPlayer = CPlayerManager::GetPlayer();
+
 	if (pPlayer != nullptr)
 	{
 		D3DXVECTOR3 PlayerPos = pPlayer->GetPosition();
 
-		m_posV = D3DXVECTOR3(PlayerPos.x, m_posV.y, PlayerPos.z);
-		m_posR = D3DXVECTOR3(PlayerPos.x, m_posR.y, PlayerPos.z);
+		m_posV = D3DXVECTOR3(PlayerPos.x, GetPosV().y, PlayerPos.z);
+		m_posR = D3DXVECTOR3(PlayerPos.x, GetPosR().y, PlayerPos.z);
 	}
 
-	CMouse *pMouse = CApplication::GetMouse();
+	//	CMouse *pMouse = CApplication::GetMouse();
 
-	// 回転のベクトルを設定。
-	m_Dest = D3DXVECTOR3(pMouse->GetMouseMove().y, pMouse->GetMouseMove().x, pMouse->GetMouseMove().z);
-
-	// 右クリック時、回転を行う。
-	if (pMouse->GetPress(CMouse::MOUSE_KEY_RIGHT))
-	{
-		m_quaternion = D3DXQUATERNION(m_quaternion.x, m_quaternion.y, m_quaternion.z, m_quaternion.w);
-
-		Rotate();
-		RPosRotate();
-	}
-
-	D3DXVECTOR3 Result = m_Dest - m_rotMove;
-	m_rotMove += Result * 0.25f;
-
-	// 慣性を持たせた回転
-	m_quaternion += (m_Destquaternion - m_quaternion) * 0.1f;
-	D3DXQuaternionNormalize(&m_quaternion, &m_quaternion);
+	// 回転を行う。
+	Rotate();
 
 	// デバッグ用
 	CDebugProc::Print("=========== camera_radar ===========\n");
 	CDebugProc::Print("カメラの座標 : (%.1f,%.1f,%.1f) \n", m_posV.x, m_posV.y, m_posV.z);
-	CDebugProc::Print("カメラの回転 : (%.2f,%.2f,%.2f,%.2f) \n", m_quaternion.x, m_quaternion.y, m_quaternion.z, m_quaternion.w);
+	CDebugProc::Print("カメラの座標R : (%.1f,%.1f,%.1f) \n", m_posR.x, m_posR.y, m_posR.z);
+	CDebugProc::Print("カメラの回転 : (%.2f,%.2f,%.2f) \n", GetRot().x, GetRot().y, GetRot().z);
 	CDebugProc::Print("====================================\n");
 }
 
@@ -146,55 +135,42 @@ void CCameraRadar::Update(void)
 //=============================================================================
 void CCameraRadar::Rotate()
 {
-	// 入力情報の取得
-	static const float MIN_MOUSE_MOVED = 2.0f;		// この値以上動かさないと反応しない
-
-	if (!(D3DXVec3Length(&m_rotMove) > MIN_MOUSE_MOVED) && !(D3DXVec3Length(&m_rotMove) < -MIN_MOUSE_MOVED))
-	{
-		return;
-	}
-
-	// デッドゾーンの設定
-	if (m_rotMove.x >= -MIN_MOUSE_MOVED && m_rotMove.x <= MIN_MOUSE_MOVED)
-	{
-		m_rotMove.x = 0.0f;
-	}
-	if (m_rotMove.y >= -MIN_MOUSE_MOVED && m_rotMove.y <= MIN_MOUSE_MOVED)
-	{
-		m_rotMove.y = 0.0f;
-	}
-
-	/* ↓指定した長さ以上で動かしてる↓ */
-
-	static const float ROTATE_MOUSE_MOVED = 0.45f;	// 回転速度
-
-	// 移動方向の算出
-	D3DXVECTOR3 rollDir = (m_rotMove * (D3DX_PI / 180.0f) * ROTATE_MOUSE_MOVED);
-
-	//m_pRoll->Moving(rollDir);
-
-	// マウスのベクトル軸取得
-	m_axisVec.y = rollDir.x;
-	m_axisVec.x = -rollDir.y;
-
-	D3DXVECTOR3 inverseVec = m_axisVec;
-
-	D3DXVec3Normalize(&inverseVec, &inverseVec);
-
-	m_VecGet = inverseVec;
-
 	// X軸の回転
 	CPlayer3D *pPlayer = CPlayerManager::GetPlayer();
 
-	if (pPlayer != nullptr)
-	{
-		D3DXQUATERNION PlayerQua = pPlayer->GetQuaternion();
+	// プレイヤーのクォータニオンの取得
+	D3DXQUATERNION qua = CApplication::GetCamera()->GetQuaternion();
+	D3DXQuaternionNormalize(&qua, &qua);
 
-		m_quaternion = D3DXQUATERNION(m_quaternion.x, PlayerQua.x, m_quaternion.z, m_quaternion.w);
-	}
+	D3DXMATRIX WorldMatrix;
 
-	// クオータニオンのノーマライズ
-	D3DXQuaternionNormalize(&m_Destquaternion, &m_Destquaternion);
+	// プレイヤーの進行方向ベクトル(0,0,1)を現在のクォータニオンをベクトルに変換して２つのベクトルの角度を求める
+	D3DXVECTOR3 Vec1 = D3DXVECTOR3(0, 0, 1);
+	// クォータニオンを回転行列に変換
+	D3DXMatrixRotationQuaternion(&WorldMatrix, &qua);
+
+	D3DXVECTOR3 Vec2;
+	D3DXVec3TransformCoord(&Vec2, &Vec1, &WorldMatrix);
+
+	CDebugProc::Print("Vec2 : (%.1f,%.1f,%.1f) \n", Vec2.x, Vec2.y, Vec2.z);
+	CDebugProc::Print("%.1f \n", atan2f(Vec2.x, Vec2.z));
+	SetRot(D3DXVECTOR3(0.0f, 0.0f, atan2f(Vec2.x, Vec2.z)));
+
+
+	//// 内積計算
+	//float dot = Vec1.x * Vec2.x + Vec1.z * Vec2.z;
+	//
+	//dot = acos(dot);
+
+	//// 外積計算
+	//float Cross = Vec2Cross(&Vec1, &Vec2);
+
+	//if (Cross <= 0)
+	//{
+	//	dot *= -1;
+	//}
+
+	//SetRot(D3DXVECTOR3(GetRot().x, GetRot().y, dot));
 }
 
 //=========================================
@@ -215,7 +191,7 @@ void CCameraRadar::MouseMove(void)
 	if (hasRightClick)
 	{
 		Rotate();
-		VPosRotate();
+		//VPosRotate();
 	}
 }
 
@@ -241,7 +217,7 @@ void CCameraRadar::JoyPadMove(void)
 		}
 
 		Rotate();
-		VPosRotate();
+		//VPosRotate();
 	}
 }
 
@@ -276,4 +252,111 @@ bool CCameraRadar::Limit_Used_Mouse()
 	}
 
 	return false;
+}
+
+//=========================================
+// クォータニオンをラジアンに変換する処理
+//=========================================
+double CCameraRadar::quaternion_to_radian(double qw, double qx, double qy, double qz)
+{
+	// Calculate quaternion magnitude
+	double q_norm = std::sqrt(qw*qw + qx*qx + qy*qy + qz*qz);
+
+	// Calculate rotation angle in radians
+	double theta = 2.0*std::acos(qw / q_norm);
+
+	// Calculate rotation axis
+	double axis_x = qx / q_norm;
+	double axis_y = qy / q_norm;
+	double axis_z = qz / q_norm;
+
+	// Calculate rotation matrix
+	double R[3][3] = { { std::cos(theta / 2.0), -axis_x*std::sin(theta / 2.0), -axis_y*std::sin(theta / 2.0) },
+	{ axis_x*std::sin(theta / 2.0), std::cos(theta / 2.0), -axis_z*std::sin(theta / 2.0) },
+	{ axis_y*std::sin(theta / 2.0), axis_z*std::sin(theta / 2.0), std::cos(theta / 2.0) } };
+
+	// Calculate radians
+	double radian = std::acos((R[0][0] + R[1][1] + R[2][2] - 1.0) / 2.0);
+
+	return radian;
+}
+
+//=========================================
+// ラジアンをクォータニオンに変換
+//=========================================
+D3DXQUATERNION CCameraRadar::radian_to_quaternion(double radian)
+{
+	D3DXQUATERNION qua;
+
+	// Calculate quaternion elements
+	qua.w = std::cos(radian * 0.5f);
+	qua.x = 0.0;
+	qua.y = std::sin(radian * 0.5f);
+	qua.z = std::sin(radian * 0.5f);
+
+	// Normalize quaternion
+	double q_norm = std::sqrt(qua.w*qua.w + qua.x * qua.x + qua.y * qua.y + qua.z * qua.z);
+	qua.w /= q_norm;
+	qua.x /= q_norm;
+	qua.y /= q_norm;
+	qua.z /= q_norm;
+
+	return qua;
+}
+
+//=========================================
+// クォータニオンをラジアンに変換する処理
+//=========================================
+D3DXVECTOR3 CCameraRadar::QuaternionToPolar(double w, double x, double y, double z)
+{
+	D3DXVECTOR3 radian;
+
+	float r = std::sqrt(w*w + x*x + y*y + z*z); // 半径を計算
+	radian.x = std::acos(w / r); // 第1の角度を計算
+	radian.y = std::atan2(y, x); // 第2の角度を計算
+	radian.z = std::atan2(z, std::sqrt(w*w + x*x + y*y)); // 第3の角度を計算
+
+	return radian;
+}
+
+//=========================================
+// オイラー角をクォータニオンに変換する
+//=========================================
+D3DXQUATERNION CCameraRadar::fromEuler(float yaw, float pitch, float roll)
+{
+	// 各軸の回転をクォータニオンに変換する
+	D3DXQUATERNION qYaw;
+	D3DXQuaternionRotationYawPitchRoll(&qYaw, yaw, 0, 0);
+
+	D3DXQUATERNION qPitch;
+	D3DXQuaternionRotationYawPitchRoll(&qPitch, 0, pitch, 0);
+
+	D3DXQUATERNION qRoll;
+	D3DXQuaternionRotationYawPitchRoll(&qRoll, 0, 0, roll);
+
+	// 各クォータニオンを順番に掛け合わせる
+	D3DXQUATERNION qRotation;
+	D3DXQuaternionMultiply(&qRotation, &qYaw, &qPitch);
+	D3DXQuaternionMultiply(&qRotation, &qRotation, &qRoll);
+
+	// 結果を正規化する
+	D3DXQuaternionNormalize(&qRotation, &qRotation);
+
+	return qRotation;
+}
+
+//=========================================
+// クォータニオンを回転行列に変換する
+//=========================================
+D3DXVECTOR3 CCameraRadar::DirectionVectorFromQuaternion(const D3DXQUATERNION& qRotation)
+{
+	// クォータニオンを回転行列に変換する
+	D3DXMATRIX rotationMatrix;
+	D3DXMatrixRotationQuaternion(&rotationMatrix, &qRotation);
+
+	// 方向ベクトルを取り出す
+	D3DXVECTOR3 direction(0, 0, 1);
+	D3DXVec3TransformNormal(&direction, &direction, &rotationMatrix);
+
+	return direction;
 }

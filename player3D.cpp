@@ -74,8 +74,40 @@ HRESULT CPlayer3D::Init(const D3DXVECTOR3 &pos)
 	m_Radar = nullptr;
 
 	// プレイヤーをレーダー上に表示させる
-	m_Radar = CRadar::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), GetObjectinfo(), CRadar::RADAR_PLAYER);
+	// オブジェクトの取得
+	CObject *pObj = CObject::GetObjectTop();
+	CRadar *pRadar = nullptr;
+	bool bCheck = false;
 
+	//プレイヤーの座標を取得
+	while (pObj)
+	{
+		if (pObj != nullptr)
+		{
+			EObjType ObjType = pObj->GetObjectType();
+
+			if (ObjType == OBJECT_RADAR)
+			{
+				pRadar = dynamic_cast<CRadar*> (pObj);
+				
+				if (pRadar != nullptr)
+				{
+					if (pRadar->GetType() == CRadar::RADAR_PLAYER)
+					{
+						bCheck = true;
+						break;
+					}
+				}
+			}
+		}
+		pObj = pObj->GetObjectNext();
+	}
+
+	// レーダープレイヤーが生成されていなかったとき
+	if (!bCheck)
+	{
+		m_Radar = CRadar::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), GetObjectinfo(), CRadar::RADAR_PLAYER);
+	}
 	//=========================================
 	// 人型モデルの読み込み
 	//=========================================
@@ -153,6 +185,11 @@ void CPlayer3D::Update()
 
 	// モーションの更新処理
 	CMotionModel3D::Update();
+
+	// デバッグ用
+	CDebugProc::Print("=========== player_object ===========\n");
+	CDebugProc::Print("プレイヤーの座標 : (%.2f,%.2f,%.2f) \n", m_pos.x, m_pos.y, m_pos.z);
+	CDebugProc::Print("====================================\n");
 }
 
 //=========================================
@@ -267,13 +304,19 @@ void CPlayer3D::LockOn()
 			{
 				CTarget *pTarget = (CTarget*)object;
 
-				if (MAX_SIZE <= pTarget->GetSize())
+				if (MAX_SIZE < pTarget->GetSize())
 				{
 					// 比較用に現在の最大サイズを保存
 					MAX_SIZE = pTarget->GetSize();
 
 					// 最大サイズのオブジェクトの保存
 					m_Nearest_object = pTarget->GetTargetObject();
+	
+					pTarget->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+				}
+				else
+				{
+					pTarget->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 				}
 			}
 		}
@@ -343,6 +386,7 @@ void CPlayer3D::UpdateFly()
 		{
 			m_MoveAmount = 0;
 		}
+
 		m_pos = MtxPos(D3DXVECTOR3(0.0f, -5.0f, m_MoveAmount), quaternion, m_pos);
 	}
 
@@ -389,7 +433,8 @@ void CPlayer3D::UpdateFly()
 			pEffect->SetMoveVec(D3DXVECTOR3(0.0f, FloatRandom(1.5f, -1.5f), FloatRandom(1.5f, -1.5f)));
 			pEffect->SetLife(5);
 			pEffect->SetRenderMode(CEffect::MODE_ADD);
-		/*	if (FloatRandom(2.0f, -1.0f) >= 0.0f)
+
+			/*if (FloatRandom(2.0f, -1.0f) >= 0.0f)
 			{
 				pEffect->SetRenderMode(CEffect::MODE_ADD);
 			}
@@ -492,8 +537,8 @@ void CPlayer3D::Bullet(D3DXVECTOR3 pos)
 					int BulletSpeed = 50;
 
 					// 両翼から弾を発射する
-					CBullet3D::Create(D3DXVECTOR3(50.0f, 0.0f, 0.0f), m_quaternion, m_Nearest_object, this, 30);
-					CBullet3D::Create(D3DXVECTOR3(-50.0f, 0.0f, 0.0f), m_quaternion, m_Nearest_object, this, 30);
+					CBullet3D::Create(D3DXVECTOR3(50.0f, 0.0f, 0.0f), m_quaternion, m_Nearest_object, this, 30, D3DX_PI * 0.25f);
+					CBullet3D::Create(D3DXVECTOR3(-50.0f, 0.0f, 0.0f), m_quaternion, m_Nearest_object, this, 30, D3DX_PI * 0.25f);
 
 					BulletDelay = 0;
 				}

@@ -13,7 +13,7 @@
 class CBillboard :public CObject
 {
 public:
-	explicit CBillboard(int nPriority = CObject::LAYER_FIVE);	//コンストラクタ
+	explicit CBillboard(int nPriority = CObject::LAYER_FOUR);	//コンストラクタ
 	virtual ~CBillboard();			//デストラクタ
 
 	//初期化処理
@@ -30,13 +30,12 @@ public:
 	void SetTexture(CTexture::TEXTURE texture);	// テクスチャの設定
 
 	void SetPosition(const D3DXVECTOR3& pos);
-	void SetAnim(const float Num, const int Pattern);
+	void SetAnim(const float NumX, const int PatternX, const int NumY, const int PatternY);
 	void SetSize(const D3DXVECTOR3 Size);
 	void SetColor(const D3DXCOLOR &col);
 
 	void SetZFunc(const _D3DCMPFUNC zFunc) { m_zFunc = zFunc; }						// Zテストの優先度のセッター
 	void SetAlphaValue(const int nAlphaValue) { m_nAlphaValue = nAlphaValue; }		// アルファテストの透過率のセッター
-
 
 	D3DCOLOR GetColor() { return m_col; }
 	D3DXVECTOR3 GetSize() { return m_scale; }

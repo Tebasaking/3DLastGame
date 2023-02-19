@@ -408,6 +408,7 @@ void CCameraPlayer::FreeMove(void)
 
 	if (CApplication::GetMode() == CApplication::MODE_GAME)
 	{
+
 		m_nCntMoveSound++;
 
 		if (m_nCntMoveSound >= 60 * 19)
@@ -702,12 +703,12 @@ bool CCameraPlayer::Limit_Used_Mouse()
 //=========================================
 void CCameraPlayer::CameraWork(D3DXQUATERNION que)
 {
-	if (m_quaternion == D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f))
+	m_quaternion = GetQuaternion();
+
+	if (m_quaternion.w >= 0.99999f)
 	{
 		return;
 	}
-
-	m_quaternion = GetQuaternion();
 
 	// クォータニオンのデスト
 	D3DXQUATERNION Result = m_quaternion - que;

@@ -1,6 +1,6 @@
 //=========================================
 //
-//	バレットの処理(3D [ビルボード])
+//	レーダーの処理(3D [ビルボード])
 //	Author:冨所知生
 //
 //=========================================
@@ -11,7 +11,8 @@
 #include "motion_model3D.h"
 #include "Object2D.h"
 #include "radar.h"
-#include "camera.h"
+#include "camera_player.h"
+#include "debug_proc.h"
 
 //=========================================
 //コンストラクタ
@@ -37,39 +38,42 @@ HRESULT CRadar::Init(const D3DXVECTOR3 &pos)
 	CBillboard::Init(pos);
 	m_pos = pos;
 
-	m_pBackGround = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.25f * 0.5f, SCREEN_HEIGHT * 0.5f * 0.5f,0.0f),0);
-	m_pBackGround->SetTexture(CTexture::TEXTURE_FRAME);
-	m_pBackGround->SetScale(D3DXVECTOR3(SCREEN_WIDTH * 0.25f * 0.5f, SCREEN_HEIGHT * 0.5f * 0.5f,0.0f));
-	m_pBackGround->SetObjectType(OBJECT_RADAR);
+	//if (CApplication::GetMode() == CApplication::MODE_GAME)
+	//{
+		m_pBackGround = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.25f * 0.5f, SCREEN_HEIGHT * 0.5f * 0.5f, 0.0f), 0);
+		m_pBackGround->SetTexture(CTexture::TEXTURE_FRAME);
+		m_pBackGround->SetScale(D3DXVECTOR3(SCREEN_WIDTH * 0.25f * 0.5f, SCREEN_HEIGHT * 0.5f * 0.5f, 0.0f));
+		m_pBackGround->SetObjectType(OBJECT_RADAR);
 
-	switch (m_type)
-	{
-	case RADAR_MAP:
-		// テクスチャの設定
-		CBillboard::SetTexture(CTexture::TEXTURE_RADAR_MAP);
-		//サイズの設定
-		CBillboard::SetSize(D3DXVECTOR3(10000.0f, 10000.0f,0.0f));
-		// COLOR設定
-		CBillboard::SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-		break;
+		switch (m_type)
+		{
+		case RADAR_MAP:
+			// テクスチャの設定
+			CBillboard::SetTexture(CTexture::TEXTURE_RADAR_MAP);
+			//サイズの設定
+			CBillboard::SetSize(D3DXVECTOR3(1000000.0f, 1000000.0f, 0.0f));
+			// COLOR設定
+			SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+			break;
 
-	case RADAR_PLAYER:
-		// テクスチャの設定
-		CBillboard::SetTexture(CTexture::TEXTURE_ENEMY_FLY);
-		//サイズの設定
-		CBillboard::SetSize(D3DXVECTOR3(200.0f, 200.0f,0.0f));
-		// COLOR設定
-		CBillboard::SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f,1.0f));
-		break;
+		case RADAR_PLAYER:
+			// テクスチャの設定
+			CBillboard::SetTexture(CTexture::TEXTURE_ENEMY_FLY);
+			//サイズの設定
+			CBillboard::SetSize(D3DXVECTOR3(200.0f, 200.0f, 0.0f));
+			// COLOR設定
+			CBillboard::SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+			break;
 
-	case RADAR_ENEMY:
-		// テクスチャの設定
-		CBillboard::SetTexture(CTexture::TEXTURE_ENEMY_TANK);
-		//サイズの設定
-		CBillboard::SetSize(D3DXVECTOR3(200.0f,200.0f,0.0f));
-		// COLOR設定
-		CBillboard::SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-	}
+		case RADAR_ENEMY:
+			// テクスチャの設定
+			CBillboard::SetTexture(CTexture::TEXTURE_ENEMY_TANK);
+			//サイズの設定
+			CBillboard::SetSize(D3DXVECTOR3(200.0f, 200.0f, 0.0f));
+			// COLOR設定
+			CBillboard::SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+		}
+	//}
 
 	return S_OK;
 }
@@ -81,8 +85,8 @@ void CRadar::Update()
 {
 	D3DXCOLOR col = GetColor();
 
-	/*if (m_type != RADAR_MAP)
-	{*/
+	if (m_type != RADAR_MAP)
+	{
 		// 目標の座標設定
 		D3DXVECTOR3 TargetPos = m_pObject->GetPosition();
 
@@ -91,10 +95,11 @@ void CRadar::Update()
 
 		// 座標の設定
 		SetPosition(m_pos);
-	//}
+	}
+
+	SetColor(col);
 
 	CBillboard::Update();
-
 }
 
 //=========================================

@@ -20,10 +20,12 @@ public:
 	{
 		D3DXVECTOR3 pos;
 		int			type;
+		int			time;
 	}EnemyData;
 
 	typedef struct
 	{
+		int m_Timer;		// エネミーの生成を遅らせるタイマー
 		int m_Amount;		// そのウェーブ中に出現するエネミーの数
 		std::vector<EnemyData> m_EnemyData;
 		std::vector<CEnemy*> m_EnemyList;

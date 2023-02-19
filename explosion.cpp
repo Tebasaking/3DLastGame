@@ -74,7 +74,7 @@ void CExplosion::Update()
 
 	nAnimCount++;
 
-	CBillboard::SetAnim((float)nAnimNum, ANIM_MAX);
+	CBillboard::SetAnim((float)nAnimNum, ANIM_MAX,1,1);
 
 	// アニメーション処理
 	if (nAnimCount >= ANIM_SPEED)

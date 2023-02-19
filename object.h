@@ -45,6 +45,7 @@ public:
 	{
 		NONE_MODE = -1,
 		NORMAL_MODE = 0,
+		TITLE_MODE,
 		RADAR_MODE,
 		MAX_MODE
 	};

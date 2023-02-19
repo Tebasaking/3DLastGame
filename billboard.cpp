@@ -291,20 +291,21 @@ void CBillboard::SetColor(const D3DXCOLOR &col)
 //=========================================
 //テクスチャの設定
 //=========================================
-void CBillboard::SetAnim(const float Num, const int Pattern)
+void CBillboard::SetAnim(const float NumX, const int PatternX, const int NumY, const int PatternY)
 {
 	VERTEX_3D *pVtx;	// 頂点情報へのポインタ
 
-	float PatternSize = 1.0f / Pattern;
+	float PatternSizeX = 1.0f / PatternX;
+	float PatternSizeY = 1.0f / PatternY;
 
 	// 頂点バッファをロックし、頂点情報へのポインタを取得
 	m_pVtxBuff->Lock(0, 0, (void**)&pVtx, 0);
 
 	//texの設定
-	pVtx[0].tex = D3DXVECTOR2(Num * PatternSize, 0.0f);
-	pVtx[1].tex = D3DXVECTOR2(Num * PatternSize + PatternSize, 0.0f);
-	pVtx[2].tex = D3DXVECTOR2(Num * PatternSize, 1.0f);
-	pVtx[3].tex = D3DXVECTOR2(Num * PatternSize + PatternSize, 1.0f);
+	pVtx[0].tex = D3DXVECTOR2(NumX * PatternSizeX, NumY * PatternSizeY);
+	pVtx[1].tex = D3DXVECTOR2(NumX * PatternSizeX + PatternSizeX, NumY * PatternSizeY);
+	pVtx[2].tex = D3DXVECTOR2(NumX * PatternSizeX, NumY * PatternSizeY + PatternSizeY);
+	pVtx[3].tex = D3DXVECTOR2(NumX * PatternSizeX + PatternSizeX, NumY * PatternSizeY + PatternSizeY);
 
 	// 頂点をアンロックする
 	m_pVtxBuff->Unlock();

@@ -144,6 +144,10 @@ HRESULT CMesh::Init(const D3DXVECTOR3 &pos)
 		break;
 
 	case TYPE_GROUND:
+
+		// ¡A‚±‚ÌuŠÔ‚¾‚¯srand‚ğ0‚ÅŒÅ’è‚·‚éB
+		srand(0);
+
 		for (int nCntZ = 0; nCntZ <= MESH_Z_BLOCK; nCntZ++)
 		{
 			for (int nCntX = 0; nCntX <= MESH_X_BLOCK; nCntX++)

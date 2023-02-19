@@ -22,10 +22,10 @@ public:
 		RADAR_ENEMY
 	};
 
-	explicit CRadar(int nPriority = LAYER_FIVE);			//コンストラクタ
-	virtual ~CRadar() override;			//デストラクタ
+	explicit CRadar(int nPriority = LAYER_FIVE);			// コンストラクタ
+	virtual ~CRadar() override;								// デストラクタ
 
-											//初期化処理
+	//初期化処理
 	HRESULT Init(const D3DXVECTOR3 &pos) override;
 	//更新処理
 	void Update(void) override;
@@ -42,6 +42,8 @@ public:
 	void SetObject(CObject *pObj) { m_pObject = pObj; }
 	// タイプの設定
 	void SetType(RADAR_TYPE type) { m_type = type; }
+	// タイプのゲッター
+	RADAR_TYPE GetType() { return m_type; }
 
 private:
 	D3DXVECTOR3 m_pos;				// 座標

@@ -18,6 +18,13 @@ class CAlert;
 class CBullet3D : public CObject
 {
 public:
+	enum MISSILE_STATE
+	{
+		IDOL_STATE = 0,		// 通常
+		LOCK_ON_STATE,		// ロックオン
+		MAX_STATE,			// 計算方法の最大数
+	};
+
 	CBullet3D();							//コンストラクタ
 	virtual ~CBullet3D() override;			//デストラクタ
 
@@ -41,6 +48,7 @@ public:
 	// 角度の設定
 	void SetRot(D3DXVECTOR3 rot) { m_ShooterRot = rot; }
 	void SetQue(D3DXQUATERNION que) { m_quaternion = que; }
+	void SetAngleLimit(float Limit) { m_fAngleLimit = Limit; }
 	// ミサイルの速度の取得
 	float GetSpeed() { return m_MissileSpeed; }
 
@@ -49,7 +57,7 @@ public:
 
 	// クリエイト処理
 	// 引数 : ずらす座標の大きさ、クォータニオン、目標オブジェクト情報、射手オブジェクト情報、誘導のタイミングをカウントする目標値
-	static CBullet3D* Create(const D3DXVECTOR3 &pos, const D3DXQUATERNION &quaternion, CObject *object, CObject *Shooter,int val);
+	static CBullet3D* Create(const D3DXVECTOR3 &pos, const D3DXQUATERNION &quaternion, CObject *object, CObject *Shooter,int val,float Limit);
 
 private:
 	CAlert*					m_pAlert;					// ミサイルアラート
@@ -66,8 +74,10 @@ private:
 	D3DXVECTOR3				m_FllowRot;					// 追尾している方向
 	D3DXVECTOR3				m_move;						// 進行方向を保存する
 	D3DXMATRIX				m_WorldMtx;					// ワールドマトリックス
+	MISSILE_STATE			m_state;					// ステート
 	float					m_length;					// 弾と目標値の距離
 	float					m_MissileSpeed;				// ミサイルの速度
+	float					m_fAngleLimit;				// 視野の限界値
 	int						m_FrontMoveCnt;				// 真っすぐ飛ぶカウント
 	int						m_SearchCnt;				// 探索カウント
 	int						m_SearchValue;				// 探索カウントの目標値

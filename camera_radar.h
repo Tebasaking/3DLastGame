@@ -38,13 +38,6 @@ public:
 	// Author : 唐﨑結斗
 	// 概要 : 投影方法の種別
 	//=============================================================================
-	enum VIEW_TYPE
-	{
-		TYPE_CLAIRVOYANCE = 0,		// 透視投影
-		TYPE_PARALLEL,				// 平行投影
-		MAX_VIEW_TYPE,				// タイプの最大数
-	};
-
 	enum CAMERA_TYPE
 	{
 		TYPE_FREE,					// 自由にカメラを動かせる状態
@@ -67,15 +60,24 @@ public:
 	//--------------------------------------------------------------------
 	// メンバ関数
 	//--------------------------------------------------------------------
-	virtual HRESULT Init(D3DXVECTOR3 pos);									// 初期化
+	virtual HRESULT Init(D3DXVECTOR3 pos);								// 初期化
 	virtual void Uninit();												// 終了
 	virtual void Update();												// 更新
 
 	// floatを利用したカメラの制限(結構無理やり)
 	bool Limit_Used_Mouse();
-
+	// クォータニオンを極座標に変換する処理
+	D3DXVECTOR3 QuaternionToPolar(double w, double x, double y, double z);
+	// ラジアンをクォータニオンに変換
+	D3DXQUATERNION radian_to_quaternion(double radian);
+	// オイラー角をクォータニオンに変換
+	D3DXQUATERNION fromEuler(float yaw, float pitch, float roll);
+	// クォータニオンをラジアンに変換
+	double quaternion_to_radian(double qw, double qx, double qy, double qz);
 	// オブジェクトのモードの設定
 	void SetObjMode(CObject::Object_mode mode) { m_Objectmode = mode; }
+	// クォータニオンを回転行列に変換
+	D3DXVECTOR3 DirectionVectorFromQuaternion(const D3DXQUATERNION& qRotation);
 	
 private:
 	//--------------------------------------------------------------------
@@ -92,7 +94,6 @@ private:
 	D3DXVECTOR3			m_VecGet;			// マウスのベクトル
 	D3DXVECTOR3			m_Dest;				// マウスのDest
 	D3DXVECTOR3			m_axisVec;			// 回転方向のベクトル
-	VIEW_TYPE			m_viewType;			// 投影の種別
 	CAMERA_TYPE			m_mode;				// カメラのモード
 
 	float				m_fRotMove;			// 移動方向

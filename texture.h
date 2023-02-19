@@ -37,6 +37,11 @@ public: /* 定義 */
 		TEXTURE_ARROW,		// 矢印
 		TEXTURE_WAVE,		// 波
 		TEXTURE_PARTIClE,	// パーティクル
+		TEXTURE_SMOKE,		// 煙
+		TEXTURE_TITLE_LOGO,	// タイトルロゴ
+		TEXTURE_TITLE_START,// スタート
+		TEXTURE_TITLE_TUTORIAL,	// チュートリアル
+		TEXTURE_TITLE_END,	// エンド
 		TEXTURE_MAX,
 		TEXTURE_NONE,	// 使用しない
 	};

@@ -23,6 +23,7 @@ public:
 	enum EnemyState
 	{
 		ENEMY_IDOL,			// エネミーの待機状態
+		ENEMY_CAUTION,		// エネミーが警戒している
 		ENEMY_WARNNING,		// エネミーがプレイヤーを発見した状態
 		//見失った状態とかも作りたいけど余裕があれば。
 	};
@@ -50,6 +51,8 @@ public:
 	void Death(void);
 	//エネミー同士の当たり判定
 	void EnemyCollision(void);
+	// ターゲットの色を設定する
+	void TargetSetColor(D3DXCOLOR col);
 	//クリエイト処理
 	static CEnemy* Create(const D3DXVECTOR3 &pos,const EnemyType &type,const int &Wave);
 
@@ -69,6 +72,8 @@ public:
 	void SetType(EnemyType type);
 	// 弾の発射
 	void Bullet(CObject *obj);
+	// プレイヤーが一定の距離に来た時に判定する処理
+	void Search();
 
 	CModel3D *GetModel() { return m_apModel[0]; }
 
@@ -80,12 +85,14 @@ private:
 
 	int						m_AttackCount;				// 攻撃間隔
 	int						m_Wave;						// 自身が所属しているウェーブ数
+	int						m_CntWar;					// 闘いを再会するまでの時間
 
 	EnemyType				m_type;						// タイプの設定
 	CModel3D*				m_apModel[MAX_PARTS];		// モデルの最大数
 	EnemyState				m_state;					// 状態
 	D3DXMATRIX				m_WorldMtx;					// ワールドマトリックス
 	D3DXVECTOR3				m_size;						// サイズ設定
+	D3DXVECTOR3				m_PlayerPos;				// プレイヤーの座標
 	D3DXVECTOR3				m_posOld;
 	D3DXVECTOR3				m_DestMove;					// デスト
 };

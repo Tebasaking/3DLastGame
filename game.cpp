@@ -52,12 +52,14 @@ HRESULT CGame::Init(const D3DXVECTOR3 &pos)
 
 	m_bFinish = false;
 
-	/*CRender *pRender = CApplication::GetRender();
-	pRender->SetFog(true, D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0001f));*/
+	CRender *pRender = CApplication::GetRender();
+	pRender->SetFog(true, D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0001f));
 
 	//タイマーの生成
 	CTime *pTime = CTime::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f - 200.0f, 50.0f, 0.0f));
-	pTime->SetAlarm(1,0);
+
+	// ゲームのタイムリミットを設定(分,秒);
+	pTime->SetAlarm(3,0);
 
 	// スコアの生成
 	m_pScore = CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 300.0f, 50.0f, 0.0f));

@@ -119,7 +119,6 @@ void CRender::Update()
 	CObject::UpdateAll();
 
 	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
-
 	//ƒƒCƒ„[ƒtƒŒ[ƒ€
 	if (pKeyboard->GetTrigger(DIK_F1))
 	{
@@ -175,16 +174,32 @@ void CRender::Draw()
 		CDebugProc::Draw();
 #endif // _DEBUG
 
-		if (CApplication::GetMode() == CApplication::MODE_GAME)
+		switch (CApplication::GetMode())
 		{
-			//•`‰æˆ—
-			bCheck = true;
-			CObject::DrawAll(CObject::RADAR_MODE);
+		case CApplication::MODE_TITLE:
+		{// ƒ^ƒCƒgƒ‹ƒ‚[ƒh
+			// •`‰æˆ—
+			CObject::DrawAll(CObject::TITLE_MODE);
+			break;
 		}
 
-		//•`‰æˆ—
-		bCheck = false;
-		CObject::DrawAll(CObject::NORMAL_MODE);
+		case CApplication::MODE_GAME:
+		{
+			//•`‰æˆ—
+			CObject::DrawAll(CObject::RADAR_MODE);
+			//•`‰æˆ—
+			CObject::DrawAll(CObject::NORMAL_MODE);
+			break;
+		}
+
+		case CApplication::MODE_RESULT:
+		{
+			// •`‰æˆ—
+			CObject::DrawAll(CObject::TITLE_MODE);
+			break;
+		}
+
+		}
 
 		// Direct3D‚É‚æ‚é•`‰æ‚ÌI—¹
 		m_pD3DDevice->EndScene();
@@ -210,7 +225,8 @@ void CRender::SetFog(bool bFlag, D3DXCOLOR col)
 
 	// ”ÍˆÍŽw’è(¦LINEARŽž‚ÉŽw’è)
 	float fFogStartPos = 100;
-	float fFogEndPos = 1000000;
+	float fFogEndPos = 13000;
+
 	m_pD3DDevice->SetRenderState(D3DRS_FOGSTART, *(DWORD*)(&fFogStartPos));
 	m_pD3DDevice->SetRenderState(D3DRS_FOGEND, *(DWORD*)(&fFogEndPos));
 

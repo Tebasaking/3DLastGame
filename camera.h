@@ -60,13 +60,16 @@ public:
 	virtual HRESULT Init(D3DXVECTOR3 pos);							// 初期化
 	virtual void Uninit(void);										// 終了
 	virtual void Update(void);										// 更新
-	virtual void Set();												// 設定
+	/*virtual*/ void Set();												// 設定
+	void Set2();												// 設定
 	void SetViewType(VIEW_TYPE type) { m_viewType = type; }			// タイプの設定
 	void SetViewSize(DWORD X, DWORD Y, int fWidth, int fHeight);	// ビューポートの大きさ設定
 	void AddViewSize(DWORD X, DWORD Y, int fWidth, int fHeight);	// ビューポートの拡縮
 
 	// オブジェクトのモードの設定
 	void SetObjMode(CObject::Object_mode mode) { m_Objectmode = mode; }
+	// 回転の設定
+	void SetRot(D3DXVECTOR3 rot) { m_rot = rot; }
 	// カメラを揺らす
 	void ShakeCamera(int ShakeFrame, float Magnitude);
 	
@@ -80,6 +83,7 @@ public:
 	D3DVIEWPORT9 GetViewport() { return m_viewport; }				//ビューポートの取得
 	CObject::Object_mode GetObjType() { return m_Objectmode; }
 	const D3DXQUATERNION GetQuaternion() { return m_quaternion; }	// 視点角度の取得
+	D3DXVECTOR3 GetRot() { return m_rot; }
 
 protected:
 	//--------------------------------------------------------------------
@@ -100,6 +104,7 @@ protected:
 	D3DXVECTOR3			m_posR;				// 注視点
 	D3DXVECTOR3			m_rotMove;			// 移動方向
 	D3DXVECTOR3			m_Dest;				// マウスのDest
+	D3DXVECTOR3			m_rot;				// 回転の設定
 	VIEW_TYPE			m_viewType;			// 投影の種別
 	D3DVIEWPORT9		m_viewport;			// ビューポート
 	EVENT				m_event;			// イベント管理

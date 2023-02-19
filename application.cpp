@@ -14,6 +14,7 @@
 #include "camera.h"
 #include "camera_player.h"
 #include "camera_radar.h"
+#include "camera_title.h"
 #include "light.h"
 #include "Object3D.h"
 #include "meshfield.h"
@@ -27,6 +28,7 @@
 #include "title.h"
 #include "debug_proc.h"
 #include "result.h"
+#include "camera_title.h"
 #include "fade.h"
 #include "model3D.h"
 #include "texture3D.h"
@@ -42,6 +44,7 @@ CMouse* CApplication::m_pMouse = nullptr;
 CMode* CApplication::m_pMode = nullptr;
 CJoypad *CApplication::m_pJoy = {};	
 CGame* CApplication::m_pGame = nullptr;
+CCameraTitle* CApplication::m_pTitle = nullptr;
 CTexture3D* CApplication::m_pTexture3D = nullptr;
 CSound*	CApplication::m_pSound = nullptr;		//サウンド
 
@@ -83,6 +86,7 @@ HRESULT CApplication::Init(HINSTANCE hInstance,HWND hWnd)
 	m_pDebug = new CDebugProc;
 	m_pTexture3D = new CTexture3D;
 	m_pJoy = new CJoypad;
+	m_pTitle = new CCameraTitle;
 
 	if (FAILED(m_pRender->Init(hWnd, true)))
 	{// 初期化処理が失敗した場合
@@ -136,6 +140,14 @@ HRESULT CApplication::Init(HINSTANCE hInstance,HWND hWnd)
 		m_pRader->SetViewSize(0, 0, SCREEN_WIDTH * 0.25f, SCREEN_HEIGHT * 0.5f);
 	}
 
+	// カメラの初期化設定
+	if (m_pTitle != nullptr)
+	{	// カメラの初期化設定3
+		m_pTitle->SetObjMode(CObject::TITLE_MODE);
+		m_pTitle->Init(D3DXVECTOR3(0.0f, 0.0f, -150.0f));
+		m_pTitle->SetViewSize(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
+	}
+
 	// ゲームスタート時の初期設定
 	// モードの設定
 	SetNextMode(MODE_TITLE);
@@ -175,6 +187,9 @@ void CApplication::Update()
 
 	// カメラの更新処理
 	m_pCamera->Update();
+
+	// タイトルカメラの更新処理
+	m_pTitle->Update();
 
 	// レーダーの更新処理
 	m_pRader->Update();
@@ -223,6 +238,9 @@ void CApplication::Uninit()
 	// ライトの終了処理
 	UninitLight();
 
+	// タイトルカメラの終了処理
+	m_pTitle->Uninit();
+
 	// カメラの終了処理
 	m_pCamera->Uninit();
 
@@ -258,6 +276,11 @@ void CApplication::Uninit()
 	{
 		delete m_pRader;
 		m_pRader = nullptr;
+	}
+	if (m_pTitle != nullptr)
+	{
+		delete m_pTitle;
+		m_pTitle = nullptr;
 	}
 	if (m_pInputKeyboard != nullptr)
 	{
@@ -378,8 +401,8 @@ void CApplication::ChangeMode()
 	{
 	case MODE_TITLE:
 		// カメラの初期化処理
-		m_pCamera->Init(D3DXVECTOR3(0.0f, 0.0f, -150.0f));
-
+		//m_pCamera->Init(D3DXVECTOR3(0.0f, 0.0f, -150.0f));
+		m_pTitle->Init(D3DXVECTOR3(0.0f, 0.0f, -150.0f));
 		m_pMode = new CTitle;
 		break;
 

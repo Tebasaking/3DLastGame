@@ -14,7 +14,7 @@
 class CObject2D :public CObject
 {
 public:
-	explicit CObject2D(int nPriority = LAYER_ONE);
+	explicit CObject2D(int nPriority = LAYER_FIVE);
 	virtual ~CObject2D();			//デストラクタ
 
 	//初期化処理

@@ -34,10 +34,11 @@ CCamera::CCamera() :
 	m_posV(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),					// 視点
 	m_posR(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),					// 注視点
 	m_rotMove(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),			 	// 移動方向
+	m_rot(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_quaternion(D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f)),	// クオータニオン
 	m_viewType(TYPE_CLAIRVOYANCE),							// 投影方法の種別
 	m_event(EVENT_NORMAL),
-	m_Dest(D3DXVECTOR3(0.0f,0.0f,0.0f)),
+	m_Dest(D3DXVECTOR3(0.0f, 0.0f, 0.0f)),
 	m_fDistance(0.0f),										// 視点から注視点までの距離
 	m_Destquaternion(D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f))
 {
@@ -133,10 +134,92 @@ void CCamera::Set()
 	D3DXMatrixInverse(&mtxTrans, NULL, &mtxTrans);					// 逆行列に計算
 	D3DXMatrixMultiply(&m_mtxView, &m_mtxView, &mtxTrans);			// 行列掛け算関数
 
-	// 向きの反映
+																	// 向きの反映
 	D3DXMatrixRotationQuaternion(&mtxRot, &m_quaternion);	// クオータニオンによる行列回転
 	D3DXMatrixInverse(&mtxRot, NULL, &mtxRot);				// 逆行列に計算
 	D3DXMatrixMultiply(&m_mtxView, &m_mtxView, &mtxRot);	// 行列掛け算関数(第2引数×第3引数第を１引数に格納)
+
+	// デバイスへのポインタの取得
+	LPDIRECT3DDEVICE9 pDevice = CApplication::GetRender()->GetDevice();
+
+	// ビューポートの適応
+	pDevice->SetViewport(&m_viewport);
+
+	// ビューマトリックスの設定
+	pDevice->SetTransform(D3DTS_VIEW, &m_mtxView);
+
+	// プロジェクションマトリックスの初期化
+	D3DXMatrixIdentity(&m_mtxProj);			// 行列初期化関数
+
+	switch (m_viewType)
+	{
+	case TYPE_CLAIRVOYANCE:
+		// プロジェクションマトリックスの作成(透視投影)
+		D3DXMatrixPerspectiveFovLH(&m_mtxProj,				// プロジェクションマトリックス
+			D3DXToRadian(60.0f),							// 視野角
+			(float)SCREEN_WIDTH / (float)SCREEN_HEIGHT,		// アスペクト比
+			CAMERA_NEAR,									// ニア
+			CAMERA_FUR);									// ファー
+		break;
+
+	case TYPE_PARALLEL:
+		// プロジェクションマトリックスの作成(平行投影)
+		D3DXMatrixOrthoLH(&m_mtxProj,						// プロジェクションマトリックス
+			(float)SCREEN_WIDTH * 5,						// 幅
+			(float)SCREEN_WIDTH * 5,						// 高さ
+			CAMERA_NEAR,									// ニア
+			CAMERA_FUR);									// ファー
+		break;
+
+	default:
+		assert(false);
+		break;
+	}
+
+	// プロジェクションマトリックスの設定
+	pDevice->SetTransform(D3DTS_PROJECTION, &m_mtxProj);
+}
+
+//=============================================================================
+// カメラの設定
+// Author : 冨所知生
+// 概要 : ビューマトリックスの設定
+//=============================================================================
+void CCamera::Set2()
+{
+	//// 揺れカウンターを減らす
+	//m_nCntFrame--;
+
+	//if (m_nCntFrame >= 0)
+	//{
+	//	D3DXVECTOR3 adjustPos = {};
+
+	//	adjustPos.x = FloatRandom(m_Magnitude, -m_Magnitude);
+	//	adjustPos.y = FloatRandom(m_Magnitude, -m_Magnitude);
+	//	adjustPos.z = FloatRandom(m_Magnitude, -m_Magnitude);
+
+	//	m_posV += adjustPos;
+	//	m_posR += adjustPos;
+	//}
+
+	// ワールドマトリックスの初期化
+	D3DXMatrixIdentity(&m_mtxView);			// 行列初期化関数
+
+	D3DXVECTOR3 vecUp(0.0f, 0.0f, 1.0f);
+
+	// ビューマトリックスの作成
+	D3DXMatrixLookAtLH(&m_mtxView, &m_posV, &m_posR, &vecUp);
+
+	D3DXMATRIX mtxRot, mtxTrans;
+
+	// 向きの反映
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, m_rot.y, m_rot.x, m_rot.z);			// 行列回転関数
+	D3DXMatrixMultiply(&m_mtxView, &m_mtxView, &mtxRot);						// 行列掛け算関数 
+
+	//	// 位置を反映
+	//	D3DXMatrixTranslation(&mtxTrans, m_posV.x, m_posV.y, m_posV.z);	// 行列移動関数
+	////	D3DXMatrixInverse(&mtxTrans, NULL, &mtxTrans);					// 逆行列に計算
+	//	D3DXMatrixMultiply(&m_mtxView, &m_mtxView, &mtxTrans);			// 行列掛け算関数
 
 	// デバイスへのポインタの取得
 	LPDIRECT3DDEVICE9 pDevice = CApplication::GetRender()->GetDevice();
@@ -164,7 +247,7 @@ void CCamera::Set()
 		// プロジェクションマトリックスの作成(平行投影)
 		D3DXMatrixOrthoLH(&m_mtxProj,						// プロジェクションマトリックス
 			(float)SCREEN_WIDTH * 5,						// 幅
-			(float)SCREEN_HEIGHT * 5,						// 高さ
+			(float)SCREEN_WIDTH * 5,						// 高さ
 			CAMERA_NEAR,									// ニア
 			CAMERA_FUR);									// ファー
 		break;

@@ -110,9 +110,9 @@ void CTarget::Update()
 			m_Size = 200.0f;
 		}
 		//ç≈è¨ÉTÉCÉY
-		else if (m_Size <= 0)
+		else if (m_Size <= 10.0f)
 		{
-			m_Size = 1.0f;
+			m_Size = 10.0f;
 		}
 
 		D3DXVECTOR3 pos = GetPosition();

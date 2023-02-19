@@ -39,6 +39,8 @@ HRESULT CBullet3D::Init(const D3DXVECTOR3 &pos)
 {
 	m_pos = pos;
 
+	m_fAngleLimit = 0;
+
 	m_MissileSpeed = 0;
 
 	m_pModel = new CModel3D;
@@ -202,7 +204,7 @@ void CBullet3D::Draw()
 // オブジェクトのクリエイト
 // 引数 : 射手からの距離、クォータニオン、目標、射手、誘導のタイミング
 //=====================================================================
-CBullet3D* CBullet3D::Create(const D3DXVECTOR3 &pos ,const D3DXQUATERNION &quaternion, CObject *object, CObject *Shooter, int val)
+CBullet3D* CBullet3D::Create(const D3DXVECTOR3 &pos ,const D3DXQUATERNION &quaternion, CObject *object, CObject *Shooter, int val, float Limit)
 {
 	int nNumCreate = m_nNumAll;
 
@@ -215,10 +217,12 @@ CBullet3D* CBullet3D::Create(const D3DXVECTOR3 &pos ,const D3DXQUATERNION &quate
 	{
 		pCBullet3D->m_TargetObj = object;
 		pCBullet3D->m_pShooter = Shooter;
-		pCBullet3D->Init(pCBullet3D->MtxPos(pos,quaternion, pShooter->GetPosition()));
+		pCBullet3D->Init(pCBullet3D->MtxPos(pos, quaternion, pShooter->GetPosition()));
 		pCBullet3D->SetRot(pShooter->GetRot());
 		pCBullet3D->SetQue(pShooter->GetQuaternion());
 		pCBullet3D->SetSearchValue(val);
+		pCBullet3D->SetAngleLimit(Limit);
+
 		CSound::PlaySound(CSound::SOUND_SE_MISSILE);
 	}
 
@@ -337,30 +341,33 @@ void CBullet3D::BulletMove()
 			D3DXVec3Normalize(&EnemyVec, &EnemyVec);
 
 			// 進行方向ベクトルから出した現在地から見たエネミーへの角度
-			float AdvanceRot = acos((MoveVec.x * EnemyVec.x) + (MoveVec.y * EnemyVec.z) + (MoveVec.z * EnemyVec.z));
+			float AdvanceRot = acos((MoveVec.x * EnemyVec.x) + (MoveVec.y * EnemyVec.y) + (MoveVec.z * EnemyVec.z));
 
-			if (AdvanceRot <= D3DX_PI * 0.25f)
+			if (AdvanceRot <= m_fAngleLimit)
 			{
+				m_state = LOCK_ON_STATE;
+
 				AdvanceRot = AdvanceRot * (180 * D3DX_PI);
 
-				D3DXVECTOR3 Vec = EnemyVec / AdvanceRot;
+				D3DXVECTOR3 Vec = EnemyVec - MoveVec;
 
 				// 1フレームに動く角度を設定する
-				float OneRadian = (1 * (180 / D3DX_PI));
+				float OneFrameRadian = (5 * (180 / D3DX_PI));
 
-				D3DXVec3Normalize(&Vec, &Vec);
+				/*D3DXVec3Normalize(&Vec, &Vec);*/
 
-				D3DXVECTOR3 A = Vec;
+				D3DXVECTOR3 AB = (Vec * D3DXVec3Length(&m_move)) / AdvanceRot * OneFrameRadian;
 
-				D3DXVECTOR3 AB = Vec *  OneRadian;
 				D3DXVec3Normalize(&AB, &AB);
 
-				//m_move = AB * m_MissileSpeed;
-
-				m_move = AB * m_MissileSpeed;
+				m_move += AB;
 
 				// 角度の設定
 				m_FllowRot = AtanRot(m_pos + m_move, m_pos);
+			}
+			else
+			{
+				m_state = IDOL_STATE;
 			}
 		}
 

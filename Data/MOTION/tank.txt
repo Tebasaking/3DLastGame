@@ -51,8 +51,8 @@ MOTIONSET
 	KEYSET			# --- << KEY : 1 / 2 >> ---
 		FRAME = 40
 		KEY	# ----- [ 0 ] -----
-			POS = 0.0 -1.0 0.0
-			ROT = -0.03 0.0 0.0
+			POS = 0.0 0.0 0.0
+			ROT = 0.0 0.0 0.0
 		END_KEY
 	END_KEYSET
 END_MOTIONSET

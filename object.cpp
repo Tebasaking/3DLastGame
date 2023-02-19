@@ -8,6 +8,7 @@
 #include "camera.h"
 #include "camera_player.h"
 #include "camera_radar.h"
+#include "camera_title.h"
 #include "application.h"
 #include <assert.h>
 
@@ -109,19 +110,28 @@ void CObject::DrawAll(Object_mode mode)
 	case NORMAL_MODE:
 		// カメラをアプリケーションから取得
 		pCamera = CApplication::GetCamera();
+		// カメラの設定
+		pCamera->Set();
 		break;
 
 	case RADAR_MODE:
 		// レーダー用カメラをアプリケーションから取得
 		pCamera = CApplication::GetRader();
+		// カメラの設定
+		pCamera->Set2();
+		break;
+
+	case TITLE_MODE:
+		// タイトル用カメラをアプリケーションから取得
+		pCamera = CApplication::GetTitleCamera();
+		// カメラの設定
+		pCamera->Set();
 		break;
 
 	default:
 		break;
 	}
 
-	// カメラの設定
-	pCamera->Set();
 
 	for (int nCnt = 0; nCnt < LAYER_MAX; nCnt++)
 	{
@@ -131,7 +141,7 @@ void CObject::DrawAll(Object_mode mode)
 
 			while (pBox != nullptr)
 			{
-				if (pBox->m_type != OBJECT_RADAR && pCamera->GetObjType() == NORMAL_MODE)
+				if (pBox->m_type != OBJECT_RADAR && (pCamera->GetObjType() == NORMAL_MODE || pCamera->GetObjType() == TITLE_MODE))
 				{
 					//描画処理
 					pBox->Draw();

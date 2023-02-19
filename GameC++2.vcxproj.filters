@@ -55,9 +55,6 @@
     <Filter Include="ソース ファイル\ゲーム\3D\Player">
       <UniqueIdentifier>{8b2ce853-b745-4672-bc5e-15e67151d20d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ソース ファイル\ゲーム\3D\ビルボード">
-      <UniqueIdentifier>{a8a76119-2339-4af6-9376-97fcb78c5fec}</UniqueIdentifier>
-    </Filter>
     <Filter Include="ソース ファイル\システム\カメラ">
       <UniqueIdentifier>{1ff30a97-b610-419f-afc4-c78e7a9ead24}</UniqueIdentifier>
     </Filter>
@@ -66,6 +63,12 @@
     </Filter>
     <Filter Include="ソース ファイル\ゲーム\3D\モデル">
       <UniqueIdentifier>{14e5c644-3d79-44db-a171-b27dcf03fd7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\ゲーム\3D\Title">
+      <UniqueIdentifier>{eb105d39-5076-458d-aa2c-bec45f04f664}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\ゲーム\3D\ビルボード">
+      <UniqueIdentifier>{a8a76119-2339-4af6-9376-97fcb78c5fec}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -225,6 +228,9 @@
     <ClCompile Include="model3D.cpp">
       <Filter>ソース ファイル\ゲーム\3D\モデル</Filter>
     </ClCompile>
+    <ClCompile Include="title_model.cpp">
+      <Filter>ソース ファイル\ゲーム\3D\Title</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="number.h">
@@ -382,6 +388,9 @@
     </ClInclude>
     <ClInclude Include="model3D.h">
       <Filter>ソース ファイル\ゲーム\3D\モデル</Filter>
+    </ClInclude>
+    <ClInclude Include="title_model.h">
+      <Filter>ソース ファイル\ゲーム\3D\Title</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

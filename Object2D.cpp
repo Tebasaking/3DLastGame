@@ -13,11 +13,11 @@
 //=========================================
 //コンストラクタ
 //=========================================
-CObject2D::CObject2D(int nPriority) : CObject(LAYER_ONE)
+CObject2D::CObject2D(int nPriority) : CObject(nPriority)
 {
 	m_pVtxBuff = nullptr;
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_col = D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f);
+	m_col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	m_texture = CTexture::TEXTURE_NONE;
 }
 
@@ -131,6 +131,10 @@ void CObject2D::Draw()
 	pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
 	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
 
+	pDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
+	pDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+	pDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
+
 	// 頂点フォーマットの設定
 	pDevice->SetFVF(FVF_VERTEX_2D);
 
@@ -142,6 +146,11 @@ void CObject2D::Draw()
 
 	//テクスチャの解除
 	pDevice->SetTexture(0, NULL);
+
+	// 元に戻す
+	pDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_SELECTARG1);
+	pDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
+	pDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
 
 	//アルファテストを無効
 	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
