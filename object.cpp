@@ -19,7 +19,9 @@ CObject *CObject::m_pCurrent[LAYER_MAX] = { nullptr };
 //=========================================
 //コンストラクタ
 //=========================================
-CObject::CObject(int nPriority /*= LAYER_ONE*/)
+CObject::CObject(int nPriority /*= LAYER_ONE*/):	
+m_pNext(nullptr),
+m_pPrev(nullptr)
 {
 	// オブジェクトを通常モードにする
 	m_objmode = MAX_MODE;
