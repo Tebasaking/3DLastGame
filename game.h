@@ -17,6 +17,8 @@ class CEnemy;
 class CRadar;
 class CScore;
 class CEnemy_Manager;
+class CAlert;
+class CPlayerUI;
 //=========================================
 // クラス
 //=========================================
@@ -36,6 +38,9 @@ public:
 
 	static CMesh *GetGround() { return m_pMesh[1]; }
 	static CEnemy_Manager *GetEM() { return m_pEnemyManager; }
+	static CPlayerManager *GetPM() { return m_pPlayerManager; }
+	static CAlert *GetAlert() { return m_pAlert; }
+	static CPlayerUI *GetPUI() { return m_PlayerUI; }
 	static bool GetFinish() { return m_bFinish; }
 	static void Finish() { m_bFinish = true; }
 	static CScore *GetScore() { return m_pScore; }
@@ -45,7 +50,9 @@ private:
 	static CMesh		  *m_pMesh[3];
 	static CPlayerManager *m_pPlayerManager;
 	static CEnemy_Manager *m_pEnemyManager;
+	static CPlayerUI	*m_PlayerUI;					// プレイヤーのUI
 	static CScore *m_pScore;
+	static CAlert *m_pAlert;							// アラート
 	static bool m_bFinish;
 	CRadar*				  m_pRadar;
 };

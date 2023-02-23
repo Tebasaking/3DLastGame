@@ -39,11 +39,11 @@
 const float CCameraRadar::CAMERA_NEAR = 30.0f;		// ニア
 const float CCameraRadar::CAMERA_FUR = 100000000.0f;	// ファー
 
-														//=============================================================================
-														// コンストラクタ
-														// Author	: 唐﨑結斗
-														// 概要		: インスタンス生成時に行う処理
-														//=============================================================================
+//=============================================================================
+// コンストラクタ
+// Author	: 唐﨑結斗
+// 概要		: インスタンス生成時に行う処理
+//=============================================================================
 CCameraRadar::CCameraRadar() :
 	m_nCntFly(0),
 	m_fRotMove(0.0f)										// 移動方向
@@ -119,12 +119,12 @@ void CCameraRadar::Update(void)
 	// 回転を行う。
 	Rotate();
 
-	// デバッグ用
-	CDebugProc::Print("=========== camera_radar ===========\n");
-	CDebugProc::Print("カメラの座標 : (%.1f,%.1f,%.1f) \n", m_posV.x, m_posV.y, m_posV.z);
-	CDebugProc::Print("カメラの座標R : (%.1f,%.1f,%.1f) \n", m_posR.x, m_posR.y, m_posR.z);
-	CDebugProc::Print("カメラの回転 : (%.2f,%.2f,%.2f) \n", GetRot().x, GetRot().y, GetRot().z);
-	CDebugProc::Print("====================================\n");
+	//// デバッグ用
+	//CDebugProc::Print("=========== camera_radar ===========\n");
+	//CDebugProc::Print("カメラの座標 : (%.1f,%.1f,%.1f) \n", m_posV.x, m_posV.y, m_posV.z);
+	//CDebugProc::Print("カメラの座標R : (%.1f,%.1f,%.1f) \n", m_posR.x, m_posR.y, m_posR.z);
+	//CDebugProc::Print("カメラの回転 : (%.2f,%.2f,%.2f) \n", GetRot().x, GetRot().y, GetRot().z);
+	//CDebugProc::Print("====================================\n");
 }
 
 //=============================================================================
@@ -152,8 +152,8 @@ void CCameraRadar::Rotate()
 	D3DXVECTOR3 Vec2;
 	D3DXVec3TransformCoord(&Vec2, &Vec1, &WorldMatrix);
 
-	CDebugProc::Print("Vec2 : (%.1f,%.1f,%.1f) \n", Vec2.x, Vec2.y, Vec2.z);
-	CDebugProc::Print("%.1f \n", atan2f(Vec2.x, Vec2.z));
+	//CDebugProc::Print("Vec2 : (%.1f,%.1f,%.1f) \n", Vec2.x, Vec2.y, Vec2.z);
+	//CDebugProc::Print("%.1f \n", atan2f(Vec2.x, Vec2.z));
 	SetRot(D3DXVECTOR3(0.0f, 0.0f, atan2f(Vec2.x, Vec2.z)));
 
 
@@ -183,7 +183,7 @@ void CCameraRadar::MouseMove(void)
 	CMouse *pMouse = CApplication::GetMouse();
 
 	// 回転のベクトルを設定。
-	m_Dest = D3DXVECTOR3(pMouse->GetMouseMove().y, pMouse->GetMouseMove().x, pMouse->GetMouseMove().z);
+	m_Dest = D3DXVECTOR3(pMouse->GetMouseCursorMove().y, pMouse->GetMouseCursorMove().x, pMouse->GetMouseCursorMove().z);
 
 	// クリックの情報を保管
 	bool hasRightClick = pMouse->GetPress(CMouse::MOUSE_KEY_RIGHT);

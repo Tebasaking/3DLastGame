@@ -36,7 +36,7 @@
 
 CDebugProc *CApplication::m_pDebug = nullptr;
 CRender *CApplication::m_pRender = nullptr;
-CInputKeyboard *CApplication::m_pInputKeyboard = nullptr;
+CInput *CApplication::m_pInput = nullptr;
 CPlayer *CApplication::m_pPlayer = nullptr;
 CEnemy *CApplication::m_pEnemy = nullptr;
 CTexture* CApplication::m_pTexture = nullptr;
@@ -80,7 +80,7 @@ HRESULT CApplication::Init(HINSTANCE hInstance,HWND hWnd)
 	m_pTexture = new CTexture;
 	m_pCamera = new CCameraPlayer;
 	m_pRader = new CCameraRadar;
-	m_pInputKeyboard = new CInputKeyboard;
+	m_pInput = new CInput;
 	pSound = new CSound;
 	m_pMouse = new CMouse;
 	m_pDebug = new CDebugProc;
@@ -102,7 +102,10 @@ HRESULT CApplication::Init(HINSTANCE hInstance,HWND hWnd)
 	// Model3Dの読み込み
 	CModel3D::InitModel();
 
-	if (FAILED(m_pInputKeyboard->Init(hInstance, hWnd)))
+	m_pInput = CInput::Create();
+
+	//入力処理の初期化処理
+	if (FAILED(m_pInput->Init(hInstance, hWnd)))
 	{
 		return E_FAIL;
 	}
@@ -137,7 +140,9 @@ HRESULT CApplication::Init(HINSTANCE hInstance,HWND hWnd)
 		// カメラの初期化設定2
 		m_pRader->SetObjMode(CObject::RADAR_MODE);
 		m_pRader->Init(D3DXVECTOR3(0.0f, 5000.0f, -150.0f));
-		m_pRader->SetViewSize(0, 0, SCREEN_WIDTH * 0.25f, SCREEN_HEIGHT * 0.5f);
+		//m_pRader->SetViewSize(25.0f, SCREEN_HEIGHT * 0.5f + 5.0f, SCREEN_WIDTH * 0.25f * 0.75f, SCREEN_HEIGHT * 0.5f * 0.75f);
+		m_pRader->SetViewSize(25.0f, SCREEN_HEIGHT - 285, SCREEN_WIDTH * 0.25f * 0.75f, SCREEN_HEIGHT * 0.5f * 0.75f);
+
 	}
 
 	// カメラの初期化設定
@@ -173,8 +178,8 @@ HRESULT CApplication::Init(HINSTANCE hInstance,HWND hWnd)
 //=========================================
 void CApplication::Update()
 {
-	// 入力処理の更新処理
-	m_pInputKeyboard->Update();
+	//入力処理の更新処理
+	m_pInput->Update();
 
 	// マウス処理の更新処理
 	m_pMouse->Update();
@@ -196,11 +201,6 @@ void CApplication::Update()
 
 	// レンダーの更新処理
 	m_pRender->Update();
-
-	//// ジョイパッドの更新処理
-	//m_pJoy->Update();
-
-	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
 }
 
 //=========================================
@@ -217,8 +217,8 @@ void CApplication::Draw()
 //=========================================
 void CApplication::Uninit()
 {
-	// 入力処理の終了処理
-	m_pInputKeyboard->Uninit();
+	//入力処理の終了処理
+	m_pInput->Uninit();
 
 	// マウス処理の終了処理
 	m_pMouse->Uninit();
@@ -282,11 +282,6 @@ void CApplication::Uninit()
 		delete m_pTitle;
 		m_pTitle = nullptr;
 	}
-	if (m_pInputKeyboard != nullptr)
-	{
-		delete m_pInputKeyboard;
-		m_pInputKeyboard = nullptr;
-	}
 	if (m_pJoy != nullptr)
 	{// 終了処理
 		m_pJoy->Uninit();
@@ -326,14 +321,6 @@ CEnemy *CApplication::GetEnemy()
 CTexture* CApplication::GetTexture()
 {
 	return m_pTexture;
-}
-
-//=========================================
-// キーボードの情報の取得
-//=========================================
-CInputKeyboard* CApplication::GetInputKeyboard()
-{
-	return m_pInputKeyboard;
 }
 
 //=========================================

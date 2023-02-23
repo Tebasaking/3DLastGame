@@ -12,14 +12,17 @@
 #pragma comment(lib,"d3dx9.lib")
 #pragma comment(lib,"winmm.lib")
 
+
 //*****************************************************************************
 // インクルード
 //*****************************************************************************
 #include "main.h"
 #include "application.h"
+#include <crtdbg.h>
 #include "debug_proc.h"
 #include <time.h>
 
+#define _CRTDBG_MAP_ALLOC
 //*****************************************************************************
 // 定数定義
 //*****************************************************************************
@@ -50,6 +53,7 @@ int g_nCountFPS;
 //=============================================================================
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE /*hPrevInstance*/, LPSTR /*lpCmdLine*/, int nCmdShow)
 {
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 
 	srand((unsigned int)time(NULL));
 

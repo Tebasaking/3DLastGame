@@ -128,7 +128,7 @@ void CObject2D::Draw()
 
 	//アルファテスト
 	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, TRUE);
-	pDevice->SetRenderState(D3DRS_ALPHAREF, 0);
+	pDevice->SetRenderState(D3DRS_ALPHAREF, 50);
 	pDevice->SetRenderState(D3DRS_ALPHAFUNC, D3DCMP_GREATER);
 
 	pDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);

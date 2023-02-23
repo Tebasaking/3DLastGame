@@ -153,7 +153,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="application.cpp" />
-    <ClCompile Include="ball.cpp" />
     <ClCompile Include="billboard.cpp" />
     <ClCompile Include="bullet3D.cpp" />
     <ClCompile Include="bullt.cpp" />
@@ -163,6 +162,7 @@
     <ClCompile Include="camera_title.cpp" />
     <ClCompile Include="camera_radar.cpp" />
     <ClCompile Include="debug_proc.cpp" />
+    <ClCompile Include="DirectInput.cpp" />
     <ClCompile Include="effect.cpp" />
     <ClCompile Include="enemy.cpp" />
     <ClCompile Include="enemy_manager.cpp" />
@@ -170,12 +170,15 @@
     <ClCompile Include="fade.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="input.cpp" />
+    <ClCompile Include="inputcontroller.cpp" />
+    <ClCompile Include="inputjoypad.cpp" />
     <ClCompile Include="inputkeyboard.cpp" />
     <ClCompile Include="joypad.cpp" />
     <ClCompile Include="light.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="meshfield.cpp" />
     <ClCompile Include="missile_alert.cpp" />
+    <ClCompile Include="missile_alert_manager.cpp" />
     <ClCompile Include="missile_locus.cpp" />
     <ClCompile Include="mode.cpp" />
     <ClCompile Include="model.cpp" />
@@ -191,8 +194,10 @@
     <ClCompile Include="particle.cpp" />
     <ClCompile Include="parts.cpp" />
     <ClCompile Include="player3D.cpp" />
+    <ClCompile Include="playerUI.cpp" />
     <ClCompile Include="player_manager.cpp" />
     <ClCompile Include="radar.cpp" />
+    <ClCompile Include="ranking.cpp" />
     <ClCompile Include="render.cpp" />
     <ClCompile Include="result.cpp" />
     <ClCompile Include="score.cpp" />
@@ -208,7 +213,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="application.h" />
-    <ClInclude Include="ball.h" />
     <ClInclude Include="billboard.h" />
     <ClInclude Include="bullet.h" />
     <ClInclude Include="bullet3D.h" />
@@ -218,6 +222,7 @@
     <ClInclude Include="camera_title.h" />
     <ClInclude Include="camera_radar.h" />
     <ClInclude Include="debug_proc.h" />
+    <ClInclude Include="DirectInput.h" />
     <ClInclude Include="effect.h" />
     <ClInclude Include="enemy.h" />
     <ClInclude Include="enemy_manager.h" />
@@ -225,12 +230,16 @@
     <ClInclude Include="fade.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="input.h" />
+    <ClInclude Include="inputcontroller.h" />
+    <ClInclude Include="inputjoypad.h" />
     <ClInclude Include="inputkeyboard.h" />
+    <ClInclude Include="inputkeydata.h" />
     <ClInclude Include="joypad.h" />
     <ClInclude Include="light.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="meshfield.h" />
     <ClInclude Include="missile_alert.h" />
+    <ClInclude Include="missile_alert_manager.h" />
     <ClInclude Include="missile_locus.h" />
     <ClInclude Include="mode.h" />
     <ClInclude Include="model.h" />
@@ -246,8 +255,10 @@
     <ClInclude Include="particle.h" />
     <ClInclude Include="parts.h" />
     <ClInclude Include="player3D.h" />
+    <ClInclude Include="playerUI.h" />
     <ClInclude Include="player_manager.h" />
     <ClInclude Include="radar.h" />
+    <ClInclude Include="ranking.h" />
     <ClInclude Include="render.h" />
     <ClInclude Include="result.h" />
     <ClInclude Include="score.h" />

@@ -118,9 +118,9 @@ void CRender::Update()
 	//更新処理
 	CObject::UpdateAll();
 
-	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
+	CInput *pKeyboard = CInput::GetKey();
 	//ワイヤーフレーム
-	if (pKeyboard->GetTrigger(DIK_F1))
+	if (pKeyboard->Trigger(DIK_F1))
 	{
 		m_Wire = !m_Wire;
 		m_pD3DDevice->SetRenderState(D3DRS_FILLMODE, m_Wire ? D3DFILL_WIREFRAME : D3DFILL_FORCE_DWORD);

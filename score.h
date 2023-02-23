@@ -37,6 +37,7 @@ public:
 
 	//クリエイト処理
 	static CScore* Create(const D3DXVECTOR3 &pos);
+	int GetScore() { return m_Score; }
 
 	//スコアの設定
 	void Set();
@@ -44,6 +45,7 @@ public:
 
 	// スコアの加算処理
 	void Add(int Score) { m_Score += Score; }
+	void ScoreSet(int Score) { m_Score = Score; }
 	void Load();
 	//void Ranking();
 

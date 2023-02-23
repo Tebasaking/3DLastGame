@@ -30,8 +30,8 @@
 #include "particle.h"
 #include "explosion.h"
 #include "effect.h"
-
-int BulletDelay = 0;
+#include "playerUI.h"
+#include "camera_player.h"
 
 //=========================================
 //コンストラクタ
@@ -43,6 +43,8 @@ CPlayer3D::CPlayer3D(int Priority) : CMotionModel3D(Priority)
 	m_quaternion = D3DXQUATERNION(1.0f, 1.0f, 1.0f, 1.0f);
 	m_Nearest_object = nullptr;
 	m_nNumHandParts = 10;
+	m_BulletHave = 15;
+	SetHP(3);
 }
 
 //=========================================
@@ -57,6 +59,8 @@ CPlayer3D::~CPlayer3D()
 //=========================================
 HRESULT CPlayer3D::Init(const D3DXVECTOR3 &pos)
 {
+	m_BulletDelay = 0;
+
 	m_pos = pos;
 
 	m_apModel[0] = new CModel3D;
@@ -75,38 +79,40 @@ HRESULT CPlayer3D::Init(const D3DXVECTOR3 &pos)
 
 	// プレイヤーをレーダー上に表示させる
 	// オブジェクトの取得
-	CObject *pObj = CObject::GetObjectTop();
-	CRadar *pRadar = nullptr;
-	bool bCheck = false;
-
-	//プレイヤーの座標を取得
-	while (pObj)
+	for (int nCnt = 0; nCnt < 5; nCnt++)
 	{
-		if (pObj != nullptr)
-		{
-			EObjType ObjType = pObj->GetObjectType();
+		CObject *pObj = CObject::GetObjectTop(nCnt);
+		CRadar *pRadar = nullptr;
+		bool bCheck = false;
 
-			if (ObjType == OBJECT_RADAR)
+		//プレイヤーの座標を取得
+		while (pObj)
+		{
+			if (pObj != nullptr)
 			{
-				pRadar = dynamic_cast<CRadar*> (pObj);
-				
-				if (pRadar != nullptr)
+				EObjType ObjType = pObj->GetObjectType();
+
+				if (ObjType == OBJECT_RADAR)
 				{
-					if (pRadar->GetType() == CRadar::RADAR_PLAYER)
+					pRadar = dynamic_cast<CRadar*> (pObj);
+
+					if (pRadar != nullptr)
 					{
-						bCheck = true;
-						break;
+						if (pRadar->GetType() == CRadar::RADAR_PLAYER)
+						{
+							bCheck = true;
+							break;
+						}
 					}
 				}
 			}
+			pObj = pObj->GetObjectNext();
 		}
-		pObj = pObj->GetObjectNext();
-	}
-
-	// レーダープレイヤーが生成されていなかったとき
-	if (!bCheck)
-	{
-		m_Radar = CRadar::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), GetObjectinfo(), CRadar::RADAR_PLAYER);
+		// レーダープレイヤーが生成されていなかったとき
+		if (!bCheck)
+		{
+			m_Radar = CRadar::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), GetObjectinfo(), CRadar::RADAR_PLAYER);
+		}
 	}
 	//=========================================
 	// 人型モデルの読み込み
@@ -147,20 +153,25 @@ void CPlayer3D::Update()
 	// 古い座標の設定
 	SetPosOld(m_pos);
 
-	switch (m_mode)
+	//if (m_state != DEATH_STATE)
 	{
-	case MODE_FLY:
-		// 飛行形態の更新処理
-		UpdateFly();
-		break;
+		switch (m_mode)
+		{
+		case MODE_FLY:
+			// 飛行形態の更新処理
+			UpdateFly();
+			break;
 
-	case MODE_ROBOT:
-		// 人型形態の更新処理
-		UpdateRob();
-		break;
+		case MODE_ROBOT:
+			// 人型形態の更新処理
+			UpdateRob();
+			break;
+		}
 	}
+	
+	CInput *pKeyboard = CInput::GetKey();
 
-	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
+	Death();
 
 	// ロックオン処理
 	LockOn();
@@ -174,6 +185,9 @@ void CPlayer3D::Update()
 	// 座標の設定
 	SetPosition(m_pos);
 
+	// 無敵判定の読み込み
+	InvincibleCheck();
+
 	// 飛行モデルの更新処理
 	for (int nCnt = 0; nCnt < 1; nCnt++)
 	{
@@ -186,10 +200,10 @@ void CPlayer3D::Update()
 	// モーションの更新処理
 	CMotionModel3D::Update();
 
-	// デバッグ用
-	CDebugProc::Print("=========== player_object ===========\n");
-	CDebugProc::Print("プレイヤーの座標 : (%.2f,%.2f,%.2f) \n", m_pos.x, m_pos.y, m_pos.z);
-	CDebugProc::Print("====================================\n");
+	//// デバッグ用
+	//CDebugProc::Print("=========== player_object ===========\n");
+	//CDebugProc::Print("プレイヤーの座標 : (%.2f,%.2f,%.2f) \n", m_pos.x, m_pos.y, m_pos.z);
+	//CDebugProc::Print("====================================\n");
 }
 
 //=========================================
@@ -284,8 +298,6 @@ CPlayer3D* CPlayer3D::Create(const D3DXVECTOR3 &pos)
 //=========================================
 void CPlayer3D::LockOn()
 {
-	CObject *object = CObject::GetObjectTop();
-
 	// 比較用最大サイズ
 	float MAX_SIZE = 0;
 
@@ -294,33 +306,37 @@ void CPlayer3D::LockOn()
 	// 一番大きいターゲットのオブジェクトを、
 	// 最も近いオブジェクトとして保存する。
 	//=========================================
-	while (object)
+	for (int nCnt = 0; nCnt < 5; nCnt++)
 	{
-		if (object != nullptr)
+		CObject *object = CObject::GetObjectTop(nCnt);
+		while (object)
 		{
-			EObjType ObjType = object->GetObjectType();
-
-			if (ObjType == OBJECT_TARGET)
+			if (object != nullptr)
 			{
-				CTarget *pTarget = (CTarget*)object;
+				EObjType ObjType = object->GetObjectType();
 
-				if (MAX_SIZE < pTarget->GetSize())
+				if (ObjType == OBJECT_TARGET)
 				{
-					// 比較用に現在の最大サイズを保存
-					MAX_SIZE = pTarget->GetSize();
+					CTarget *pTarget = (CTarget*)object;
 
-					// 最大サイズのオブジェクトの保存
-					m_Nearest_object = pTarget->GetTargetObject();
-	
-					pTarget->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
-				}
-				else
-				{
-					pTarget->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+					if (MAX_SIZE < pTarget->GetSize())
+					{
+						// 比較用に現在の最大サイズを保存
+						MAX_SIZE = pTarget->GetSize();
+
+						// 最大サイズのオブジェクトの保存
+						m_Nearest_object = pTarget->GetTargetObject();
+
+						pTarget->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+					}
+					else
+					{
+						pTarget->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+					}
 				}
 			}
+			object = object->GetObjectNext();
 		}
-		object = object->GetObjectNext();
 	}
 }
 
@@ -364,9 +380,9 @@ void CPlayer3D::UpdateFly()
 	m_pos.z += m_posResult.z / 5;
 	m_pos.y += m_posResult.y / 5;
 
-	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
+	CInput *pKeyboard = CInput::GetKey();
 
-	if (pKeyboard->GetPress(DIK_W))
+	if (pKeyboard->Press(DIK_W) || pKeyboard->Press(JOYPAD_R2))
 	{// 加速
 		if (m_MoveAmount <= 20.0f)
 		{ // プレイヤーを前に進める
@@ -433,15 +449,6 @@ void CPlayer3D::UpdateFly()
 			pEffect->SetMoveVec(D3DXVECTOR3(0.0f, FloatRandom(1.5f, -1.5f), FloatRandom(1.5f, -1.5f)));
 			pEffect->SetLife(5);
 			pEffect->SetRenderMode(CEffect::MODE_ADD);
-
-			/*if (FloatRandom(2.0f, -1.0f) >= 0.0f)
-			{
-				pEffect->SetRenderMode(CEffect::MODE_ADD);
-			}
-			else
-			{
-				pEffect->SetRenderMode(CEffect::MODE_NORMAL);
-			}*/
 
 			pEffect->SetColor(D3DXCOLOR(1.0f, FloatRandom(0.5f, 0.0f), 0.1f, 1.0f));
 
@@ -517,7 +524,14 @@ void CPlayer3D::UpdateRob()
 //=========================================
 void CPlayer3D::Bullet(D3DXVECTOR3 pos)
 {
-	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
+	CInput *pKeyboard = CInput::GetKey();
+
+	int MAX_DELAY = 100;
+
+	if (m_BulletDelay <= MAX_DELAY && m_BulletHave >= 0)
+	{// DelayがMAXになるまで加算する
+		m_BulletDelay++;
+	}
 
 	if (m_Nearest_object && m_mode == (CPlayer3D::PLAYER_MODE)CPlayerManager::GetMode())
 	{
@@ -527,23 +541,24 @@ void CPlayer3D::Bullet(D3DXVECTOR3 pos)
 
 			// クリックの情報を保管
 			bool hasLeftClick = pMouse->GetPress(CMouse::MOUSE_KEY_LEFT);
-	
-			if (hasLeftClick)
+			bool hasJoyPadA = pKeyboard->Trigger(JOYPAD_A,0);
+
+			if (hasLeftClick || hasJoyPadA)
 			{
-				BulletDelay++;
-
-				if (BulletDelay >= 10)
+				if (m_BulletDelay >= MAX_DELAY)
 				{
-					int BulletSpeed = 50;
+					if (m_Nearest_object != nullptr)
+					{
+						// 両翼から弾を発射する
+						CBullet3D::Create(D3DXVECTOR3(50.0f, 0.0f, 0.0f), m_quaternion, m_Nearest_object, this, 30, D3DX_PI * 0.25f);
+						CBullet3D::Create(D3DXVECTOR3(-50.0f, 0.0f, 0.0f), m_quaternion, m_Nearest_object, this, 30, D3DX_PI * 0.25f);
+					}
 
-					// 両翼から弾を発射する
-					CBullet3D::Create(D3DXVECTOR3(50.0f, 0.0f, 0.0f), m_quaternion, m_Nearest_object, this, 30, D3DX_PI * 0.25f);
-					CBullet3D::Create(D3DXVECTOR3(-50.0f, 0.0f, 0.0f), m_quaternion, m_Nearest_object, this, 30, D3DX_PI * 0.25f);
-
-					BulletDelay = 0;
+					m_BulletHave--;
+					m_BulletDelay = 0;
 				}
 			}
-			else if (pKeyboard->GetTrigger(DIK_SPACE))
+			else if (pKeyboard->Trigger(DIK_SPACE))
 			{
 				CBullet::Create(m_pos, m_quaternion, m_Nearest_object);
 			}
@@ -634,7 +649,7 @@ void CPlayer3D::Slash()
 		return;
 	}
 
-	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
+	CInput *pKeyboard = CInput::GetKey();
 	CMotion *pMotion = GetMotion();
 
 	CMouse *pMouse = CApplication::GetMouse();
@@ -668,45 +683,48 @@ void CPlayer3D::Slash()
 		m_pAttack->SetPos(pos);
 
 		// オブジェクトの取得
-		CObject *pObj = CObject::GetObjectTop();
-		CEnemy *pEnemy = nullptr;
-
-		D3DXVECTOR3 EnemyPos = {};
-		D3DXVECTOR3 EnemySize = {};
-
-		//プレイヤーの座標を取得
-		while (pObj)
+		for (int nCnt = 0; nCnt < 5; nCnt++)
 		{
-			if (pObj != nullptr)
+			CObject *pObj = CObject::GetObjectTop(nCnt);
+			CEnemy *pEnemy = nullptr;
+
+			D3DXVECTOR3 EnemyPos = {};
+			D3DXVECTOR3 EnemySize = {};
+
+			//プレイヤーの座標を取得
+			while (pObj)
 			{
-				EObjType ObjType = pObj->GetObjectType();
-
-				if (ObjType == OBJECT_ENEMY)
+				if (pObj != nullptr)
 				{
-					pEnemy = dynamic_cast<CEnemy*> (pObj);
+					EObjType ObjType = pObj->GetObjectType();
 
-					EnemyPos = pEnemy->GetPosition();
-					EnemySize = pEnemy->GetSize() * 10.0f;
+					if (ObjType == OBJECT_ENEMY)
+					{
+						pEnemy = dynamic_cast<CEnemy*> (pObj);
 
-					D3DXVECTOR3 size = m_pAttack->GetSize() * 5;
+						EnemyPos = pEnemy->GetPosition();
+						EnemySize = pEnemy->GetSize() * 10.0f;
 
-					D3DXVECTOR3 SizeTarget = pEnemy->GetSize();
+						D3DXVECTOR3 size = m_pAttack->GetSize() * 5;
 
-					if ((pos.z - size.z) < (EnemyPos.z + SizeTarget.z)
-						&& (pos.z + size.z) > (EnemyPos.z - SizeTarget.z)
-						&& (pos.x - size.x) < (EnemyPos.x + SizeTarget.x)
-						&& (pos.x + size.x) > (EnemyPos.x - SizeTarget.x)
-						&& (pos.y - size.y) < (EnemyPos.y + SizeTarget.y)
-						&& (pos.y + size.y) > (EnemyPos.y - SizeTarget.y))
-					{// モデル内にいる(XYZ軸)
-						pEnemy->ManageHP(-10);
-						// 弾が目標オブジェクトと衝突したら消滅する処理
-						CExplosion::Create(m_pos, m_quaternion);
-						break;
+						D3DXVECTOR3 SizeTarget = pEnemy->GetSize();
+
+						if ((pos.z - size.z) < (EnemyPos.z + SizeTarget.z)
+							&& (pos.z + size.z) > (EnemyPos.z - SizeTarget.z)
+							&& (pos.x - size.x) < (EnemyPos.x + SizeTarget.x)
+							&& (pos.x + size.x) > (EnemyPos.x - SizeTarget.x)
+							&& (pos.y - size.y) < (EnemyPos.y + SizeTarget.y)
+							&& (pos.y + size.y) > (EnemyPos.y - SizeTarget.y))
+						{// モデル内にいる(XYZ軸)
+							pEnemy->ManageHP(-10);
+							// 弾が目標オブジェクトと衝突したら消滅する処理
+							CExplosion::Create(m_pos, m_quaternion);
+							break;
+						}
 					}
 				}
+				pObj = pObj->GetObjectNext();
 			}
-			pObj = pObj->GetObjectNext();
 		}
 	}
 }
@@ -721,11 +739,11 @@ void CPlayer3D::Jump()
 		return;
 	}
 
-	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
+	CInput *pKeyboard = CInput::GetKey();
 	CCameraPlayer *pCamera = CApplication::GetCamera();
 	CMotion *pMotion = GetMotion();
 
-	if (pKeyboard->GetTrigger(DIK_SPACE) && !m_bMotion && !m_bJump)
+	if (pKeyboard->Trigger(DIK_SPACE) && !m_bMotion && !m_bJump)
 	{
 		CSound::PlaySound(CSound::SOUND_SE_JUMP);
 		// モーションの設定
@@ -743,28 +761,33 @@ void CPlayer3D::Jump()
 //=========================================
 void CPlayer3D::GroundCollison()
 {
-	// オブジェクトの取得
-	CObject *pMesh = CObject::GetObjectTop();
 	CMesh *pGround = nullptr;
 
-	//プレイヤーの座標を取得
-	while (pMesh)
+	// オブジェクトの取得
+	for (int nCnt = 0; nCnt < 5; nCnt++)
 	{
-		if (pMesh != nullptr)
+		// オブジェクトの取得
+		CObject *pMesh = CObject::GetObjectTop(nCnt);
+
+		//プレイヤーの座標を取得
+		while (pMesh)
 		{
-			EObjType ObjType = pMesh->GetObjectType();
-
-			if (ObjType == OBJECT_MESH)
+			if (pMesh != nullptr)
 			{
-				pGround = dynamic_cast<CMesh*> (pMesh);
+				EObjType ObjType = pMesh->GetObjectType();
 
-				if (pGround->GetType() == CMesh::TYPE_GROUND)
+				if (ObjType == OBJECT_MESH)
 				{
-					break;
+					pGround = dynamic_cast<CMesh*> (pMesh);
+
+					if (pGround->GetType() == CMesh::TYPE_GROUND)
+					{
+						break;
+					}
 				}
 			}
+			pMesh = pMesh->GetObjectNext();
 		}
-		pMesh = pMesh->GetObjectNext();
 	}
 
 	if (pGround != nullptr)
@@ -780,6 +803,14 @@ void CPlayer3D::GroundCollison()
 				}
 				m_bJump = false;
 				m_bCollision = true;
+			}
+			if (m_state == DEATH_STATE)
+			{
+				CExplosion::Create(m_pos, m_quaternion);
+				CApplication::GetCamera()->SetDeathGround();
+
+				// リザルト画面へ移動
+				CApplication::GetGame()->Finish();
 			}
 		}
 		else
@@ -797,7 +828,7 @@ void CPlayer3D::GroundCollison()
 //=========================================
 void CPlayer3D::Move()
 {
-	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
+	CInput *pKeyboard = CInput::GetKey();
 	CMotion *pMotion = GetMotion();
 
 	if (m_mode != (CPlayer3D::PLAYER_MODE)CPlayerManager::GetMode())
@@ -805,7 +836,7 @@ void CPlayer3D::Move()
 		return;
 	}
 
-	if ((pKeyboard->GetPress(DIK_W) || pKeyboard->GetPress(DIK_A) || pKeyboard->GetPress(DIK_D) || pKeyboard->GetPress(DIK_S)) && !m_bMotion && !m_bJump)
+	if ((pKeyboard->Press(DIK_W) || pKeyboard->Press(DIK_A) || pKeyboard->Press(DIK_D) || pKeyboard->Press(DIK_S)) && !m_bMotion && !m_bJump)
 	{
 		m_StepCnt++;
 		m_bMove = true;
@@ -826,5 +857,36 @@ void CPlayer3D::Move()
 	{
 		m_StepCnt = 0;
 		CSound::PlaySound(CSound::SOUND_SE_STEP);
+	}
+}
+
+//=========================================
+// 死亡の処理
+//=========================================
+void CPlayer3D::Death()
+{
+	int HP = GetHP();
+
+	if (HP <= 0)
+	{// 死亡状態を設定する
+		m_state = DEATH_STATE;
+		CApplication::GetCamera()->SetEvent(CCamera::EVENT_DEATH);
+	}
+}
+
+//=========================================
+// 無敵の処理
+//=========================================
+void CPlayer3D::InvincibleCheck()
+{
+	if (m_bInvincible)
+	{
+		m_InvincibleCnt++;
+
+		if (m_InvincibleCnt >= 120)
+		{
+			m_bInvincible = false;
+			m_InvincibleCnt = 0;
+		}
 	}
 }

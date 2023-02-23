@@ -70,12 +70,15 @@
     <Filter Include="ソース ファイル\ゲーム\3D\ビルボード">
       <UniqueIdentifier>{a8a76119-2339-4af6-9376-97fcb78c5fec}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\システム\Input">
+      <UniqueIdentifier>{c47974b4-be92-4a1a-9aa9-d9f346c7186f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\ゲーム\3D\Alert">
+      <UniqueIdentifier>{b25dd4dc-7954-4bb8-8f64-2c384d389d12}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="application.cpp">
-      <Filter>ソース ファイル\システム</Filter>
-    </ClCompile>
-    <ClCompile Include="input.cpp">
       <Filter>ソース ファイル\システム</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
@@ -103,9 +106,6 @@
       <Filter>ソース ファイル\ゲーム\2D</Filter>
     </ClCompile>
     <ClCompile Include="mouse.cpp">
-      <Filter>ソース ファイル\システム</Filter>
-    </ClCompile>
-    <ClCompile Include="inputkeyboard.cpp">
       <Filter>ソース ファイル\システム</Filter>
     </ClCompile>
     <ClCompile Include="move.cpp">
@@ -162,9 +162,6 @@
     <ClCompile Include="player3D.cpp">
       <Filter>ソース ファイル\ゲーム\3D\Player</Filter>
     </ClCompile>
-    <ClCompile Include="bullet3D.cpp">
-      <Filter>ソース ファイル\ゲーム\3D\ビルボード</Filter>
-    </ClCompile>
     <ClCompile Include="particle.cpp">
       <Filter>ソース ファイル\ゲーム\3D\ビルボード</Filter>
     </ClCompile>
@@ -189,13 +186,7 @@
     <ClCompile Include="target.cpp">
       <Filter>ソース ファイル\ゲーム\3D\ビルボード</Filter>
     </ClCompile>
-    <ClCompile Include="ball.cpp">
-      <Filter>ソース ファイル\ゲーム\3D</Filter>
-    </ClCompile>
     <ClCompile Include="meshfield.cpp">
-      <Filter>ソース ファイル\ゲーム\3D</Filter>
-    </ClCompile>
-    <ClCompile Include="missile_alert.cpp">
       <Filter>ソース ファイル\ゲーム\3D</Filter>
     </ClCompile>
     <ClCompile Include="missile_locus.cpp">
@@ -230,6 +221,36 @@
     </ClCompile>
     <ClCompile Include="title_model.cpp">
       <Filter>ソース ファイル\ゲーム\3D\Title</Filter>
+    </ClCompile>
+    <ClCompile Include="playerUI.cpp">
+      <Filter>ソース ファイル\ゲーム\3D\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="ranking.cpp">
+      <Filter>ソース ファイル\システム\モード</Filter>
+    </ClCompile>
+    <ClCompile Include="inputcontroller.cpp">
+      <Filter>ソース ファイル\システム\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="inputjoypad.cpp">
+      <Filter>ソース ファイル\システム\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectInput.cpp">
+      <Filter>ソース ファイル\システム\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="inputkeyboard.cpp">
+      <Filter>ソース ファイル\システム\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="input.cpp">
+      <Filter>ソース ファイル\システム\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="bullet3D.cpp">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClCompile>
+    <ClCompile Include="missile_alert.cpp">
+      <Filter>ソース ファイル\ゲーム\3D\Alert</Filter>
+    </ClCompile>
+    <ClCompile Include="missile_alert_manager.cpp">
+      <Filter>ソース ファイル\ゲーム\3D\Alert</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -267,12 +288,6 @@
       <Filter>ソース ファイル\システム</Filter>
     </ClInclude>
     <ClInclude Include="calculation.h">
-      <Filter>ソース ファイル\システム</Filter>
-    </ClInclude>
-    <ClInclude Include="input.h">
-      <Filter>ソース ファイル\システム</Filter>
-    </ClInclude>
-    <ClInclude Include="inputkeyboard.h">
       <Filter>ソース ファイル\システム</Filter>
     </ClInclude>
     <ClInclude Include="light.h">
@@ -323,9 +338,6 @@
     <ClInclude Include="player3D.h">
       <Filter>ソース ファイル\ゲーム\3D\Player</Filter>
     </ClInclude>
-    <ClInclude Include="bullet3D.h">
-      <Filter>ソース ファイル\ゲーム\3D\ビルボード</Filter>
-    </ClInclude>
     <ClInclude Include="particle.h">
       <Filter>ソース ファイル\ゲーム\3D\ビルボード</Filter>
     </ClInclude>
@@ -350,13 +362,7 @@
     <ClInclude Include="target.h">
       <Filter>ソース ファイル\ゲーム\3D\ビルボード</Filter>
     </ClInclude>
-    <ClInclude Include="ball.h">
-      <Filter>ソース ファイル\ゲーム\3D</Filter>
-    </ClInclude>
     <ClInclude Include="meshfield.h">
-      <Filter>ソース ファイル\ゲーム\3D</Filter>
-    </ClInclude>
-    <ClInclude Include="missile_alert.h">
       <Filter>ソース ファイル\ゲーム\3D</Filter>
     </ClInclude>
     <ClInclude Include="missile_locus.h">
@@ -391,6 +397,39 @@
     </ClInclude>
     <ClInclude Include="title_model.h">
       <Filter>ソース ファイル\ゲーム\3D\Title</Filter>
+    </ClInclude>
+    <ClInclude Include="playerUI.h">
+      <Filter>ソース ファイル\ゲーム\3D\Player</Filter>
+    </ClInclude>
+    <ClInclude Include="ranking.h">
+      <Filter>ソース ファイル\システム\モード</Filter>
+    </ClInclude>
+    <ClInclude Include="inputcontroller.h">
+      <Filter>ソース ファイル\システム\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="inputjoypad.h">
+      <Filter>ソース ファイル\システム\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="inputkeydata.h">
+      <Filter>ソース ファイル\システム\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectInput.h">
+      <Filter>ソース ファイル\システム\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="inputkeyboard.h">
+      <Filter>ソース ファイル\システム\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="input.h">
+      <Filter>ソース ファイル\システム\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="bullet3D.h">
+      <Filter>ソース ファイル\ゲーム\3D</Filter>
+    </ClInclude>
+    <ClInclude Include="missile_alert.h">
+      <Filter>ソース ファイル\ゲーム\3D\Alert</Filter>
+    </ClInclude>
+    <ClInclude Include="missile_alert_manager.h">
+      <Filter>ソース ファイル\ゲーム\3D\Alert</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

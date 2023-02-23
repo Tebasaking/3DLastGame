@@ -25,6 +25,7 @@ public:
 		ENEMY_IDOL,			// エネミーの待機状態
 		ENEMY_CAUTION,		// エネミーが警戒している
 		ENEMY_WARNNING,		// エネミーがプレイヤーを発見した状態
+		ENEMY_DEATH,
 		//見失った状態とかも作りたいけど余裕があれば。
 	};
 
@@ -95,6 +96,7 @@ private:
 	D3DXVECTOR3				m_PlayerPos;				// プレイヤーの座標
 	D3DXVECTOR3				m_posOld;
 	D3DXVECTOR3				m_DestMove;					// デスト
+	D3DXVECTOR3				m_move;						// ムーブ
 };
 
 #endif

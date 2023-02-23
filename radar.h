@@ -19,7 +19,8 @@ public:
 	{
 		RADAR_MAP,
 		RADAR_PLAYER,
-		RADAR_ENEMY
+		RADAR_ENEMY,
+		RADAR_FRAME
 	};
 
 	explicit CRadar(int nPriority = LAYER_FIVE);			// コンストラクタ

@@ -13,6 +13,9 @@
 #include <Windows.h>
 #include <tchar.h> // _T
 #include <d3dx9.h>
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+#include <assert.h>
 
 //‘O•ûéŒ¾
 class CRender;

@@ -45,6 +45,7 @@ public:
 	enum EVENT
 	{
 		EVENT_NORMAL,
+		EVENT_DEATH,
 		EVENT_FLY,		// イベント中のカメラ設定
 	};
 
@@ -65,6 +66,7 @@ public:
 	void SetViewType(VIEW_TYPE type) { m_viewType = type; }			// タイプの設定
 	void SetViewSize(DWORD X, DWORD Y, int fWidth, int fHeight);	// ビューポートの大きさ設定
 	void AddViewSize(DWORD X, DWORD Y, int fWidth, int fHeight);	// ビューポートの拡縮
+	void SetEvent(EVENT event) { m_event = event; }
 
 	// オブジェクトのモードの設定
 	void SetObjMode(CObject::Object_mode mode) { m_Objectmode = mode; }
@@ -84,6 +86,7 @@ public:
 	CObject::Object_mode GetObjType() { return m_Objectmode; }
 	const D3DXQUATERNION GetQuaternion() { return m_quaternion; }	// 視点角度の取得
 	D3DXVECTOR3 GetRot() { return m_rot; }
+	float GetDistance() { return m_fDistance; }
 
 protected:
 	//--------------------------------------------------------------------

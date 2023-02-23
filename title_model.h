@@ -55,7 +55,6 @@ private:
 	ModelType				m_type;						// タイプの設定
 	CModel3D*				m_apModel[MAX_PARTS];		// モデルの最大数
 	D3DXMATRIX				m_WorldMtx;					// ワールドマトリックス
-	D3DXVECTOR3				m_size;						// サイズ設定
 	D3DXVECTOR3				m_PlayerPos;				// プレイヤーの座標
 	D3DXVECTOR3				m_posOld;
 	D3DXVECTOR3				m_DestMove;					// デスト

@@ -23,8 +23,8 @@ public:
 
 	virtual HRESULT Init(const D3DXVECTOR3 &pos) override { return S_OK; }	//初期化処理
 	virtual void Uninit() override { Release(); }					//終了処理
-	virtual void Update() override {  }					//更新処理
-	virtual void Draw() override {};					//描画処理
+	virtual void Update() override {}					//更新処理
+	virtual void Draw() override {}						//描画処理
 
 private:
 	D3DXVECTOR3 m_pos;						//座標

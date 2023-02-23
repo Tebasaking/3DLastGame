@@ -463,6 +463,10 @@ void CModel3D::DrawMaterial()
 		case CApplication::MODE_GAME:
 			pCamera = CApplication::GetCamera();
 			break;
+
+		case CApplication::MODE_RESULT:
+			pCamera = CApplication::GetTitleCamera();
+			break;
 		}
 		break;
 	case true:
@@ -479,6 +483,7 @@ void CModel3D::DrawMaterial()
 
 	D3DXMATRIX m, mT, mR, mView, mProj;
 	D3DXVECTOR4 v, light_pos;
+
 	//==================================================================================
 	if (pEffect != NULL)
 	{
@@ -632,8 +637,8 @@ void CModel3D::Shadow()
 	D3DXMATRIX		mtxShadow = {};													// シャドウマトリックス
 	D3DXPLANE		planeField = {};												// 平面化用変数
 	D3DXVECTOR4		vecLight = D3DXVECTOR4(0.0f, 0.0f, 0.0f, 0.0f);					// ライト方向の逆ベクトル
-	D3DXVECTOR3		posShadow = D3DXVECTOR3(0.0f, 1.0f, 0.0f);;						// 影の位置
-	D3DXVECTOR3		norShadow = D3DXVECTOR3(0.0f, 1.0f, 0.0f);;						// 影の法線
+	D3DXVECTOR3		posShadow = D3DXVECTOR3(0.0f, 1.0f, 0.0f);						// 影の位置
+	D3DXVECTOR3		norShadow = D3DXVECTOR3(0.0f, 1.0f, 0.0f);						// 影の法線
 	extern D3DLIGHT9 g_light;	// カメラ情報
 
 	D3DXVECTOR3		light = g_light.Direction;

@@ -100,104 +100,6 @@ void CCameraTitle::Uninit(void)
 //=============================================================================
 void CCameraTitle::Update(void)
 {
-	if (m_event == EVENT_NORMAL)
-	{
-		// キーボードの取得
-		CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
-
-		JoyPadMove();	// ジョイパッド移動
-
-		m_mode = (CCameraTitle::CAMERA_TYPE)CPlayerManager::GetMode();
-
-		//if (CApplication::GetMode() == CApplication::MODE_GAME)
-		{
-			// 状態ごとに移動方法を変える
-			switch (m_mode)
-			{
-			case TYPE_FREE:
-				MouseMove();		// マウス移動
-				//FreeMove();			// 移動
-				break;
-
-			case TYPE_SHOULDER:
-				if (m_bWork)
-				{// マウスの移動を可能にする
-					MouseMove();
-				}
-
-				ShoulderMove();	// 肩越しモード
-
-				if (!m_bWork)
-				{// カメラワーク
-					CameraWork(D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f));
-				}
-
-				break;
-			}
-
-			//==================================================================================
-
-			// オブジェクトの取得
-			CObject *object = CObject::GetObjectTop();
-
-			D3DXVECTOR3 PlayerPos = {};
-			D3DXVECTOR3	PlayerRot = {};
-
-			//プレイヤーの座標を取得
-			while (object)
-			{
-				if (object != nullptr)
-				{
-					CObject::EObjType ObjType = object->GetObjectType();
-
-					if (ObjType == CObject::OBJECT_PLAYER)
-					{
-						PlayerPos = object->GetPosition();
-						PlayerRot = object->GetRot();
-						break;
-					}
-				}
-				object = object->GetObjectNext();
-			}
-
-			if (object != nullptr)
-			{
-				// エンターキーが押された
-				if (pKeyboard->GetTrigger(DIK_RETURN))
-				{
-					switch (m_mode)
-					{
-					case TYPE_FREE:
-						m_mode = TYPE_SHOULDER;
-						break;
-
-					case TYPE_SHOULDER:
-						m_bWork = false;
-
-						m_mode = TYPE_FREE;
-
-						// 1.0f浮かせる処理
-						m_posV.y += 100.0f;
-						VPosRotate();
-						m_posR.y += 100.0f;
-
-						// 飛行イベント開始
-						m_event = EVENT_FLY;
-
-						break;
-					}
-				}
-			}
-		}
-
-		D3DXVECTOR3 Result = m_Dest - m_rotMove;
-		m_rotMove += Result * 0.25f;
-	}
-	else
-	{
-		FlightEvent();
-	}
-
 	m_Destquaternion = D3DXQUATERNION(m_quaternion);
 
 	m_quaternion += (m_Destquaternion - m_quaternion) * 0.1f;
@@ -382,7 +284,7 @@ void CCameraTitle::Rotate()
 
 				D3DXQuaternionRotationAxis(&quaternion, &axis, 0.03f);	// 回転軸と回転角度を指定
 
-																		// クオータニオンのノーマライズ
+				// クオータニオンのノーマライズ
 				D3DXQuaternionNormalize(&quaternion, &quaternion);
 
 				m_Destquaternion *= quaternion;
@@ -406,7 +308,7 @@ void CCameraTitle::Rotate()
 //=============================================================================
 void CCameraTitle::FreeMove(void)
 {
-	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
+	CInput *pKeyboard = CInput::GetKey();
 	D3DXVECTOR3 move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
 	if (CApplication::GetMode() == CApplication::MODE_GAME)
@@ -421,7 +323,7 @@ void CCameraTitle::FreeMove(void)
 	}
 
 	//移動キーが押された
-	if (pKeyboard->GetPress(DIK_W))
+	if (pKeyboard->Press(DIK_W) || pKeyboard->Press(JOYPAD_R2))
 	{// 加速処理
 		MOVE_SPEED += 0.1f;
 		CAMERA_MOVE_SPEED += 0.1f;
@@ -487,7 +389,7 @@ void CCameraTitle::FreeMove(void)
 //=========================================
 void CCameraTitle::ShoulderMove()
 {
-	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
+	CInput *pKeyboard = CInput::GetKey();
 	D3DXVECTOR3 move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
 	// SEの停止
@@ -499,7 +401,7 @@ void CCameraTitle::ShoulderMove()
 	}
 
 	/* 移動キーが押された*/
-	if (pKeyboard->GetPress(DIK_W))
+	if (pKeyboard->Press(DIK_W) || pKeyboard->Press(JOYPAD_R2))
 	{
 		m_fDistance -= MOVE_SPEED;
 		VPosRotate();
@@ -507,7 +409,7 @@ void CCameraTitle::ShoulderMove()
 		RPosRotate();
 	}
 
-	if (pKeyboard->GetPress(DIK_A))
+	if (pKeyboard->Press(DIK_A))
 	{// 移動キーが押された
 		D3DXVECTOR3 Pythagoras = D3DXVECTOR3(m_posV.z - m_posR.z, 0.0f, m_posV.x - m_posR.x);
 
@@ -515,7 +417,7 @@ void CCameraTitle::ShoulderMove()
 		move.z += -Pythagoras.z;
 	}
 
-	if (pKeyboard->GetPress(DIK_S))
+	if (pKeyboard->Press(DIK_S))
 	{// 移動キーが押された
 		m_fDistance += MOVE_SPEED;
 		VPosRotate();
@@ -523,7 +425,7 @@ void CCameraTitle::ShoulderMove()
 		RPosRotate();
 	}
 
-	if (pKeyboard->GetPress(DIK_D))
+	if (pKeyboard->Press(DIK_D))
 	{// 移動キーが押された
 		D3DXVECTOR3 Pythagoras = D3DXVECTOR3(m_posV.z - m_posR.z, 0.0f, m_posV.x - m_posR.x);
 
@@ -604,7 +506,7 @@ void CCameraTitle::MouseMove(void)
 	CMouse *pMouse = CApplication::GetMouse();
 
 	// 回転のベクトルを設定。
-	m_Dest = D3DXVECTOR3(pMouse->GetMouseMove().y, pMouse->GetMouseMove().x, pMouse->GetMouseMove().z);
+	m_Dest = D3DXVECTOR3(pMouse->GetMouseCursorMove().y, pMouse->GetMouseCursorMove().x, pMouse->GetMouseCursorMove().z);
 
 	// クリックの情報を保管
 	bool hasRightClick = pMouse->GetPress(CMouse::MOUSE_KEY_RIGHT);

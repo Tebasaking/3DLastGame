@@ -8,13 +8,13 @@
 #include "title.h"
 #include "player3D.h"
 #include "enemy.h"
-#include "inputkeyboard.h"
 #include "fade.h"
 #include "texture.h"
 #include "meshfield.h"
 #include "sphere.h"
 #include "camera.h"
 #include "title_model.h"
+#include "input.h"
 
 CMesh* CTitle::m_pMesh[3] = {};
 //==================================================
@@ -43,9 +43,6 @@ HRESULT CTitle::Init(const D3DXVECTOR3 &pos)
 	m_pMesh[2] = CMesh::Create(D3DXVECTOR3(0.0f, -300.0f, 0.0f), CMesh::TYPE_WAVE);
 
 	CSphere *pSphere = CSphere::Create(D3DXVECTOR3(0.0f, -0.0f, 0.0f));
-/*
-	CRender *pRender = CApplication::GetRender();
-	pRender->SetFog(true, D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0001f));*/
 
 	// 陸
 	m_pMesh[1] = CMesh::Create(D3DXVECTOR3(0.0f, -400.0f, 0.0f), CMesh::TYPE_GROUND);
@@ -74,17 +71,17 @@ HRESULT CTitle::Init(const D3DXVECTOR3 &pos)
 //=========================================
 void CTitle::Update()
 {
-	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
+	CInput *pKeyboard = CInput::GetKey();
 
 	float X = SCREEN_WIDTH * 0.5f;
 	float Y = SCREEN_HEIGHT * 0.5f;
 
-	if (pKeyboard->GetTrigger(DIK_UP))
+	if (pKeyboard->Trigger(DIK_UP) || pKeyboard->Trigger(JOYPAD_UP))
 	{
 		pObject2D[m_Select]->SetScale(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
 		m_Select--;
 	}
-	if (pKeyboard->GetTrigger(DIK_DOWN))
+	if (pKeyboard->Trigger(DIK_DOWN) || pKeyboard->Trigger(JOYPAD_DOWN))
 	{
 		pObject2D[m_Select]->SetScale(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
 		m_Select++;
@@ -120,7 +117,7 @@ void CTitle::Update()
 	}
 
 	// モード変更
-	if (pKeyboard->GetTrigger(DIK_RETURN))
+	if (pKeyboard->Trigger(DIK_RETURN) || pKeyboard->Trigger(JOYPAD_A))
 	{
 		//モードの設定
 		CFade::SetFade(CApplication::MODE_GAME);

@@ -7,6 +7,7 @@
 #include "application.h"
 #include "render.h"
 #include "game.h"
+#include "playerUI.h"
 #include<string>
 
 //=========================================
@@ -42,6 +43,8 @@ HRESULT CScore::Init(const D3DXVECTOR3 &pos)
 	for (int nCnt = 0; nCnt < MAX_DIGITS; nCnt++)
 	{
 		m_pNumber[nCnt] = CNumber::Create(D3DXVECTOR3(pos.x + 50.0f * nCnt, pos.y, pos.z));
+		m_pNumber[nCnt]->SetScale(D3DXVECTOR3(40.0f, 40.0f, 0.0f));
+		m_pNumber[nCnt]->SetColor(D3DXCOLOR(0.0f, 0.6f, 0.0f, 1.0f));
 	}
 
 	m_Score = 1000;
@@ -57,6 +60,20 @@ HRESULT CScore::Init(const D3DXVECTOR3 &pos)
 void CScore::Update()
 {
 	Set();
+
+	bool bAlert = CApplication::GetGame()->GetPUI()->GetAlert();
+
+	for (int nCnt = 0; nCnt < MAX_DIGITS; nCnt++)
+	{
+		if (bAlert)
+		{
+			m_pNumber[nCnt]->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+		}
+		else
+		{
+			m_pNumber[nCnt]->SetColor(D3DXCOLOR(0.0f, 0.6f, 0.0f, 1.0f));
+		}
+	}
 }
 
 //=========================================

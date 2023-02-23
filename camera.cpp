@@ -98,8 +98,8 @@ void CCamera::Update(void)
 	m_quaternion += (m_Destquaternion - m_quaternion) * 0.1f;
 	D3DXQuaternionNormalize(&m_quaternion, &m_quaternion);
 
-	CDebugProc::Print("ƒJƒƒ‰‚ÌÀ•W : (%f,%f,%f) \n", m_posV.x, m_posV.y, m_posV.z);
-	CDebugProc::Print("ƒJƒƒ‰‚Ì‰ñ“] : (%f,%f,%f,%f) \n", m_quaternion.x, m_quaternion.y, m_quaternion.z, m_quaternion.w);
+	/*CDebugProc::Print("ƒJƒƒ‰‚ÌÀ•W : (%f,%f,%f) \n", m_posV.x, m_posV.y, m_posV.z);
+	CDebugProc::Print("ƒJƒƒ‰‚Ì‰ñ“] : (%f,%f,%f,%f) \n", m_quaternion.x, m_quaternion.y, m_quaternion.z, m_quaternion.w);*/
 }
 
 //=============================================================================
@@ -134,7 +134,7 @@ void CCamera::Set()
 	D3DXMatrixInverse(&mtxTrans, NULL, &mtxTrans);					// ‹ts—ñ‚ÉŒvZ
 	D3DXMatrixMultiply(&m_mtxView, &m_mtxView, &mtxTrans);			// s—ñŠ|‚¯ZŠÖ”
 
-																	// Œü‚«‚Ì”½‰f
+	// Œü‚«‚Ì”½‰f
 	D3DXMatrixRotationQuaternion(&mtxRot, &m_quaternion);	// ƒNƒI[ƒ^ƒjƒIƒ“‚É‚æ‚és—ñ‰ñ“]
 	D3DXMatrixInverse(&mtxRot, NULL, &mtxRot);				// ‹ts—ñ‚ÉŒvZ
 	D3DXMatrixMultiply(&m_mtxView, &m_mtxView, &mtxRot);	// s—ñŠ|‚¯ZŠÖ”(‘æ2ˆø”~‘æ3ˆø”‘æ‚ğ‚Pˆø”‚ÉŠi”[)

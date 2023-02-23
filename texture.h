@@ -20,28 +20,35 @@ class CTexture
 public: /* 定義 */
 	enum TEXTURE
 	{
-		TEXTURE_FIRE = 0,	// 仮画像1
-		TEXTURE_NUMBER,		// 仮画像2
-		TEXTURE_EXPLOSION,	// 爆発画像
-		TEXTURE_SKY,		// 空
-		TEXTURE_SEA,		// 海
-		TEXTURE_GROUND,		// 陸
-		TEXTURE_THUNDER,	// 戦闘機のテクスチャ
-		TEXTURE_TARGET,		// ターゲット
-		TEXTURE_TITLE,		// タイトル
-		TEXTURE_RESULT,		// リザルト
-		TEXTURE_RADAR_MAP,	// レーダーマップ
-		TEXTURE_FRAME,		// レーダーのフレーム
-		TEXTURE_ENEMY_TANK,	// タンク
-		TEXTURE_ENEMY_FLY,	// 戦闘機
-		TEXTURE_ARROW,		// 矢印
-		TEXTURE_WAVE,		// 波
-		TEXTURE_PARTIClE,	// パーティクル
-		TEXTURE_SMOKE,		// 煙
-		TEXTURE_TITLE_LOGO,	// タイトルロゴ
-		TEXTURE_TITLE_START,// スタート
-		TEXTURE_TITLE_TUTORIAL,	// チュートリアル
-		TEXTURE_TITLE_END,	// エンド
+		TEXTURE_TEST = 0,			// テストに使用する画像を入れるとこ
+		TEXTURE_FIRE,				// 仮画像1
+		TEXTURE_NUMBER,				// 仮画像2
+		TEXTURE_EXPLOSION,			// 爆発画像
+		TEXTURE_SKY,				// 空
+		TEXTURE_SEA,				// 海
+		TEXTURE_GROUND,				// 陸
+		TEXTURE_THUNDER,			// 戦闘機のテクスチャ
+		TEXTURE_TARGET,				// ターゲット
+		TEXTURE_TITLE,				// タイトル
+		TEXTURE_RESULT,				// リザルト
+		TEXTURE_RADAR_MAP,			// レーダーマップ
+		TEXTURE_FRAME,				// レーダーのフレーム
+		TEXTURE_ENEMY_TANK,			// タンク
+		TEXTURE_ENEMY_FLY,			// 戦闘機
+		TEXTURE_ARROW,				// 矢印
+		TEXTURE_WAVE,				// 波
+		TEXTURE_PARTIClE,			// パーティクル
+		TEXTURE_SMOKE,				// 煙
+		TEXTURE_TITLE_LOGO,			// タイトルロゴ
+		TEXTURE_TITLE_START,		// スタート
+		TEXTURE_TITLE_TUTORIAL,		// チュートリアル
+		TEXTURE_TITLE_END,			// エンド
+		TEXTURE_EXPLOSION2,			// 爆発テクスチャその2
+		TEXTURE_UI_SPEED_AND_ALT,	// プレイヤーのUIスピードと高度
+		TEXTURE_UI_WEAPON,			// プレイヤーの武器UI
+		TEXTURE_GAGE_BOX,			// リロードのゲージの箱
+		TEXTURE_GAGE,				// リロードのゲージ
+		TEXTURE_UI_ALERT,			// ミサイルのアラート
 		TEXTURE_MAX,
 		TEXTURE_NONE,	// 使用しない
 	};

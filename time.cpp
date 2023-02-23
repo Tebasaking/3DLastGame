@@ -7,6 +7,7 @@
 #include "inputkeyboard.h"
 #include "application.h"
 #include "game.h"
+#include "playerUI.h"
 #include "fade.h"
 #include <math.h>
 
@@ -48,6 +49,8 @@ HRESULT CTime::Init(const D3DXVECTOR3 &pos)
 	for (int nCnt = 0; nCnt < MAX_DIGITS; nCnt++)
 	{
 		m_pNumber[nCnt] = CNumber::Create(D3DXVECTOR3(m_pos.x + 50.0f * nCnt, m_pos.y, m_pos.z));
+		m_pNumber[nCnt]->SetScale(D3DXVECTOR3(40.0f, 40.0f, 0.0f));
+		m_pNumber[nCnt]->SetColor(D3DXCOLOR(0.0f,0.6f,0.0f,1.0f));
 	}
 
 	Set();
@@ -60,6 +63,20 @@ HRESULT CTime::Init(const D3DXVECTOR3 &pos)
 //=========================================
 void CTime::Update()
 {
+	bool bAlert = CApplication::GetGame()->GetPUI()->GetAlert();
+
+	for (int nCnt = 0; nCnt < MAX_DIGITS; nCnt++)
+	{
+		if (bAlert)
+		{
+			m_pNumber[nCnt]->SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+		}
+		else
+		{
+			m_pNumber[nCnt]->SetColor(D3DXCOLOR(0.0f, 0.6f, 0.0f, 1.0f));
+		}
+	}
+
 	if (!CGame::GetFinish())
 	{
 		// 計算結果の値
@@ -79,13 +96,12 @@ void CTime::Update()
 		// 時間が0以下になった時
 		if (m_ResultTime <= 0)
 		{
-
 			// ゲームを終了する
 			CGame::Finish();
 			Uninit();
 		}
 	}
-	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
+	CInput *pKeyboard = CInput::GetKey();
 }
 
 //=========================================
@@ -149,7 +165,7 @@ void CTime::Set()
 		int nNum0 = (int)pow(10, nCntNumber + 1);	// 桁数を10000000~の形にする
 		int nNum1 = (int)pow(10, nCntNumber);		// 桁数を上より一つ少ない同じ形にする
 
-													// 2桁目
+		// 2桁目
 		if (nCnt == 1)
 		{// 分
 		 // (m_Score % 10^X+1) / 10^X

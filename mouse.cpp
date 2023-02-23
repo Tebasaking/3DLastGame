@@ -12,8 +12,8 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "application.h"
 #include "mouse.h"
+#include "render.h" // スクリーンの大きさを取得するため
 
 //=============================================================================
 // コンストラクタ
@@ -22,10 +22,11 @@
 //=============================================================================
 CMouse::CMouse()
 {
+	m_device = nullptr;
+	m_isPosLock = false;
 	memset(&m_aKeyState, 0, sizeof(m_aKeyState));
 	memset(&m_aKeyStateTrigger, 0, sizeof(m_aKeyStateTrigger));
 	memset(&m_aKeyStateRelease, 0, sizeof(m_aKeyStateRelease));
-	m_isPosLock = false;
 }
 
 //=============================================================================
@@ -43,33 +44,22 @@ CMouse::~CMouse()
 // Author : 唐﨑結斗
 // 概要 : マウスのアクセス権を獲得できた場合、処理を継続する
 //=============================================================================
-HRESULT CMouse::Init(const HINSTANCE hInstance, const HWND hWnd)
+HRESULT CMouse::Init(HINSTANCE hInstance, HWND hWnd)
 {
-	// 親クラスのメンバ変数を取得
-	LPDIRECTINPUTDEVICE8 pDevice = GetInputDevice();
-	LPDIRECTINPUT8 pInput = GetInput();
-
-	// DirectInputオブジェクトの生成
-	if (FAILED(DirectInput8Create(hInstance, DIRECTINPUT_VERSION,
-		IID_IDirectInput8, (void**)&pInput, NULL)))
-	{
-		return E_FAIL;
-	}
-
 	// 入力デバイス（マウス）の生成
-	if (FAILED(pInput->CreateDevice(GUID_SysMouse, &pDevice, NULL)))
+	if (FAILED(m_pInput->CreateDevice(GUID_SysMouse, &m_device, NULL)))
 	{
 		return E_FAIL;
 	}
 
 	//データフォーマットを設定
-	if (FAILED(pDevice->SetDataFormat(&c_dfDIMouse2)))
+	if (FAILED(m_device->SetDataFormat(&c_dfDIMouse2)))
 	{
 		return E_FAIL;
 	}
 
 	// 協調モードを設定
-	if (FAILED(pDevice->SetCooperativeLevel(hWnd,
+	if (FAILED(m_device->SetCooperativeLevel(hWnd,
 		(DISCL_FOREGROUND | DISCL_NONEXCLUSIVE))))
 	{
 		return E_FAIL;
@@ -79,26 +69,24 @@ HRESULT CMouse::Init(const HINSTANCE hInstance, const HWND hWnd)
 	m_hWnd = hWnd;
 
 	// Deviceへのアクセス権を獲得
-	pDevice->Acquire();
-
-	// Deviceの設定
-	SetDevice(pDevice);
-
-	// インプットの設定
-	SetInput(pInput);
-
+	m_device->Acquire();
 	return S_OK;
 }
 
 //=============================================================================
 // 終了
-// Author : 唐﨑結斗
+// Author : Yuda Kaito
 // 概要 : マウスのアクセス権を解放し、デバイスとオブジェクトを解放する
 //=============================================================================
 void CMouse::Uninit(void)
 {
-	// インプットの終了
-	CInput::Uninit();
+	//入力デバイスの放棄
+	if (m_device != NULL)
+	{
+		m_device->Unacquire();		// アクセス権を放棄
+		m_device->Release();
+		m_device = NULL;
+	}
 }
 
 //=============================================================================
@@ -108,15 +96,12 @@ void CMouse::Uninit(void)
 //=============================================================================
 void CMouse::Update(void)
 {
-	// 親クラスのメンバ変数を取得
-	LPDIRECTINPUTDEVICE8 pDevice = GetInputDevice();
-
 	// 変数宣言
 	DIMOUSESTATE2 aKeyState;		// マウス入力情報
 	int nCntKey;
 
 	// 入力デバイスからデータを取得
-	if (SUCCEEDED(pDevice->GetDeviceState(sizeof(aKeyState), &aKeyState)))
+	if (SUCCEEDED(m_device->GetDeviceState(sizeof(aKeyState), &aKeyState)))
 	{
 		for (nCntKey = 0; nCntKey < MAX_MOUSE_KEY; nCntKey++)
 		{
@@ -133,11 +118,8 @@ void CMouse::Update(void)
 	else
 	{
 		// マウスへのアクセス権を獲得
-		pDevice->Acquire();
+		m_device->Acquire();
 	}
-
-	// Deviceの設定
-	SetDevice(pDevice);
 
 	if (m_isPosLock)
 	{
@@ -150,7 +132,7 @@ void CMouse::Update(void)
 // Author : 唐﨑結斗
 // 概要 : 引数のキーの情報を返す
 //=============================================================================
-bool CMouse::GetPress(int nKey)
+bool CMouse::GetPress(MOUSE_KEY nKey)
 {
 	return (m_aKeyState.rgbButtons[nKey] & 0x80) ? true : false;
 }
@@ -160,7 +142,7 @@ bool CMouse::GetPress(int nKey)
 // Author : 唐﨑結斗
 // 概要 : 引数のキーの情報を返す
 //=============================================================================
-bool CMouse::GetTrigger(int nKey)
+bool CMouse::GetTrigger(MOUSE_KEY nKey)
 {
 	return (m_aKeyStateTrigger.rgbButtons[nKey] & 0x80) ? true : false;
 }
@@ -170,7 +152,7 @@ bool CMouse::GetTrigger(int nKey)
 // Author : 唐﨑結斗
 // 概要 : 引数のキーの情報を返す
 //=============================================================================
-bool CMouse::GetRelease(int nKey)
+bool CMouse::GetRelease(MOUSE_KEY nKey)
 {
 	return (m_aKeyStateRelease.rgbButtons[nKey] & 0x80) ? true : false;
 }
@@ -180,7 +162,7 @@ bool CMouse::GetRelease(int nKey)
 // Author : 唐﨑結斗
 // 概要 : マウスカーソルの位置を取得し、数値を返す
 //=============================================================================
-D3DXVECTOR3 CMouse::GetMouseCursor(void)
+D3DXVECTOR3 CMouse::GetMouseCursorPos()
 {
 	// スクリーン座標上のマウスカーソルの位置の取得
 	GetCursorPos(&m_mouseCursor);
@@ -196,7 +178,7 @@ D3DXVECTOR3 CMouse::GetMouseCursor(void)
 // Author : 唐﨑結斗
 // 概要 : マウスホイールの移動量の数値を返す
 //=============================================================================
-int CMouse::GetMouseWheel(void)
+int CMouse::GetWheelPower(void)
 {
 	return (int)m_aKeyState.lZ;
 }
@@ -206,7 +188,7 @@ int CMouse::GetMouseWheel(void)
 // Author : 唐﨑結斗
 // 概要 : マウスの移動量の数値を返す
 //=============================================================================
-D3DXVECTOR3 CMouse::GetMouseMove(void)
+D3DXVECTOR3 CMouse::GetMouseCursorMove(void)
 {
 	return D3DXVECTOR3((float)(m_aKeyState.lX), (float)(m_aKeyState.lY), (float)(m_aKeyState.lZ));
 }
@@ -233,5 +215,6 @@ void CMouse::SetCursorPosLock()
 	pos.x += windowInfo.rcWindow.left;
 	pos.y += windowInfo.rcWindow.top + 35; //ウィンドウのタイトルバーの分（35px）をプラス
 
-	SetCursorPos(pos.x, pos.y);
+	SetCursorPos((int)pos.x, (int)pos.y);
 }
+

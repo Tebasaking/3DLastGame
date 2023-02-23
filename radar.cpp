@@ -38,11 +38,11 @@ HRESULT CRadar::Init(const D3DXVECTOR3 &pos)
 	CBillboard::Init(pos);
 	m_pos = pos;
 
-	//if (CApplication::GetMode() == CApplication::MODE_GAME)
-	//{
-		m_pBackGround = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.25f * 0.5f, SCREEN_HEIGHT * 0.5f * 0.5f, 0.0f), 0);
+	if (CApplication::GetMode() == CApplication::MODE_GAME)
+	{
+		m_pBackGround = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.25f * 0.5f - 15.0f, SCREEN_HEIGHT - 150, 0.0f), 0);
 		m_pBackGround->SetTexture(CTexture::TEXTURE_FRAME);
-		m_pBackGround->SetScale(D3DXVECTOR3(SCREEN_WIDTH * 0.25f * 0.5f, SCREEN_HEIGHT * 0.5f * 0.5f, 0.0f));
+		m_pBackGround->SetScale(D3DXVECTOR3(SCREEN_WIDTH * 0.25f * 0.5f * 0.75f, SCREEN_HEIGHT * 0.5f * 0.5f * 0.75f, 0.0f));
 		m_pBackGround->SetObjectType(OBJECT_RADAR);
 
 		switch (m_type)
@@ -73,7 +73,7 @@ HRESULT CRadar::Init(const D3DXVECTOR3 &pos)
 			// COLORê›íË
 			CBillboard::SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 		}
-	//}
+	}
 
 	return S_OK;
 }

@@ -47,45 +47,45 @@ void UninitLight(void)
 
 void UpdateLight(void)
 {
-	LPDIRECT3DDEVICE9 pDevice = CApplication::GetRender()->GetDevice();
+	//LPDIRECT3DDEVICE9 pDevice = CApplication::GetRender()->GetDevice();
 
-	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
+	//CInput *pKeyboard = CInput::GetKey();
 
-	if (pKeyboard->GetPress(DIK_LEFT))
-	{
-		g_light.Direction.x += 0.1f;
-	}
-	if (pKeyboard->GetPress(DIK_RIGHT))
-	{
-		g_light.Direction.x -= 0.1f;
-	}
+	//if (pKeyboard->Press(DIK_LEFT))
+	//{
+	//	g_light.Direction.x += 0.1f;
+	//}
+	//if (pKeyboard->GetPress(DIK_RIGHT))
+	//{
+	//	g_light.Direction.x -= 0.1f;
+	//}
 
-	g_light.Direction.x = NormalizeLight(g_light.Direction.x);
+	//g_light.Direction.x = NormalizeLight(g_light.Direction.x);
 
-	if (pKeyboard->GetPress(DIK_UP))
-	{
-		g_light.Direction.y -= 0.1f;
-	}
-	if (pKeyboard->GetPress(DIK_DOWN))
-	{
-		g_light.Direction.y += 0.1f;
-	}
+	//if (pKeyboard->Press(DIK_UP))
+	//{
+	//	g_light.Direction.y -= 0.1f;
+	//}
+	//if (pKeyboard->Press(DIK_DOWN))
+	//{
+	//	g_light.Direction.y += 0.1f;
+	//}
 
-	g_light.Direction.y = NormalizeLight(g_light.Direction.y);
+	//g_light.Direction.y = NormalizeLight(g_light.Direction.y);
 
-	if (pKeyboard->GetPress(DIK_F))
-	{
-		g_light.Direction.z -= 0.1f;
-	}
-	if (pKeyboard->GetPress(DIK_G))
-	{
-		g_light.Direction.z += 0.1f;
-	}
+	//if (pKeyboard->Press(DIK_F))
+	//{
+	//	g_light.Direction.z -= 0.1f;
+	//}
+	//if (pKeyboard->Press(DIK_G))
+	//{
+	//	g_light.Direction.z += 0.1f;
+	//}
 
-	g_light.Direction.z = NormalizeLight(g_light.Direction.z);
+	//g_light.Direction.z = NormalizeLight(g_light.Direction.z);
 
-	//ライトを設定する
-	pDevice->SetLight(0, &g_light);
+	////ライトを設定する
+	//pDevice->SetLight(0, &g_light);
 
 }
 

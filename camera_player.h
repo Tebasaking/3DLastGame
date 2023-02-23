@@ -28,6 +28,7 @@ public:
 		TYPE_SHOULDER,				// 肩越し視点状態
 		MAX_CAMERA_TYPE,			// カメラタイプの最大数
 	};
+
 public:
 	//--------------------------------------------------------------------
 	// コンストラクタとデストラクタ
@@ -43,6 +44,7 @@ public:
 	void Update(void) override;										// 更新
 	void Up(void);													// 上に上昇する
 	void SetUp(bool check) { m_bUp = check; }
+	void SetDeathGround() { m_bDeathGround = true; }
 
 	// floatを利用したカメラの制限(結構無理やり)
 	bool Limit_Used_Mouse();
@@ -54,6 +56,7 @@ public:
 	//--------------------------------------------------------------------
 	const D3DXVECTOR3 GetVec() { return m_VecGet;}					// マウスベクトルの取得
 	CAMERA_TYPE GetMode() { return m_mode; }						// カメラのモード情報の取得
+	float GetMoveSpeed() { return MOVE_SPEED; }
 
 private:
 	//--------------------------------------------------------------------
@@ -65,6 +68,7 @@ private:
 	void MouseMove();		// マウス移動を回転に代入
 	void JoyPadMove();		// ジョイパッド移動を回転に代入
 	void FlightEvent();		// フライトイベント
+	void Death();			// 死亡イベントの開始
 
 	//--------------------------------------------------------------------
 	// メンバ変数
@@ -86,6 +90,7 @@ private:
 	int					m_nCntCameraWork;	// カメラワークの終了までの時間
 
 	bool				m_bUp;				// 上昇しているかしていないか
+	bool				m_bDeathGround;		// 死亡衝突
 };
 
 #endif

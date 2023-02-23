@@ -38,6 +38,7 @@ public:
 
 	//スコアの設定
 	void Set(int nDigits);
+	// ナンバーの大きさの設定
 
 private:
 	int m_Score;			//スコアの値

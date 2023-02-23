@@ -8,7 +8,7 @@
 #include "player_manager.h"
 #include "application.h"
 #include "sound.h"
-#include "inputkeyboard.h"
+#include "input.h"
 
 CPlayerManager::PLAYER_MODE CPlayerManager::m_mode = MODE_FLY;
 CPlayer3D *CPlayerManager::m_pFly = nullptr;
@@ -58,10 +58,10 @@ HRESULT CPlayerManager::Init(const D3DXVECTOR3 &pos)
 void CPlayerManager::Update()
 {
 	// キーボードの取得
-	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
+	CInput *pKeyboard = CInput::GetKey();
 	
 	// エンターキーが押された
-	if (pKeyboard->GetTrigger(DIK_RETURN))
+	if (pKeyboard->Trigger(DIK_RETURN))
 	{
 		CSound::PlaySound(CSound::SOUND_SE_TRANSFORM);
 
@@ -75,6 +75,14 @@ void CPlayerManager::Update()
 //=========================================
 void CPlayerManager::Uninit()
 {
+	if (m_pFly != nullptr)
+	{
+		m_pFly->Uninit();
+	}
+	if (m_pRobot != nullptr)
+	{
+		m_pRobot->Uninit();
+	}
 }
 
 //=========================================

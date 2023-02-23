@@ -322,21 +322,6 @@ void CObject::SetPosition(const D3DXVECTOR3& pos)
 }
 
 //=========================================
-// オブジェクトのタイプを分類する
-//=========================================
-CObject *CObject::GetObjectType(CObject::EObjType type)
-{
-	CObject *pObject = CObject::GetObjectTop();
-
-	while (0)
-	{
-
-	}
-
-	return pObject;
-}
-
-//=========================================
 // HPを管理する
 //=========================================
 int CObject::ManageHP(int Value)
@@ -522,6 +507,41 @@ D3DXVECTOR3 CObject::MtxPos(D3DXVECTOR3 pos, D3DXQUATERNION qua, D3DXVECTOR3 Tar
 																	// クォータニオン(回転)の反映
 	D3DXMatrixRotationQuaternion(&mtxQua, &qua);					// クオータニオンによる行列回転
 	D3DXMatrixMultiply(&WorldMtx, &WorldMtx, &mtxQua);				// 行列掛け算関数(第2引数×第3引数第を１引数に格納)
+
+																	// 位置を反映
+	D3DXMatrixTranslation(&mtxTrans, TargetPos.x, TargetPos.y, TargetPos.z);		// 行列移動関数
+	D3DXMatrixMultiply(&WorldMtx, &WorldMtx, &mtxTrans);							// 行列掛け算関数
+
+																					// 行列から座標を取り出す
+	D3DXVECTOR3 MtxPos = D3DXVECTOR3(WorldMtx._41, WorldMtx._42, WorldMtx._43);
+
+	return MtxPos;
+}
+
+//===========================================================
+// 行列変換する処理
+// 概要 : 受け取ったposとmtxで行列計算する処理
+// 主な使用 : 座標を受け取った時
+// 引数 : ずらす座標の大きさ、Rot、目標座標
+//============================================================
+D3DXVECTOR3 CObject::MtxPosRot(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 TargetPos)
+{
+	// もしかして必要？ワールドマトリックス
+	D3DXMATRIX WorldMtx;
+
+	// 計算用マトリックス
+	D3DXMATRIX mtxBullet, mtxTrans, mtxRot;
+
+	// ワールドマトリックスの初期化
+	D3DXMatrixIdentity(&WorldMtx);
+
+	// 弾の座標を書き換える
+	D3DXMatrixTranslation(&mtxBullet, pos.x, pos.y, pos.z);			// 行列移動関数
+	D3DXMatrixMultiply(&WorldMtx, &WorldMtx, &mtxBullet);			// 行列掛け算関数
+
+	// 向きの反映
+	D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);			// 行列回転関数
+	D3DXMatrixMultiply(&WorldMtx, &WorldMtx, &mtxRot);						// 行列掛け算関数 
 
 																	// 位置を反映
 	D3DXMatrixTranslation(&mtxTrans, TargetPos.x, TargetPos.y, TargetPos.z);		// 行列移動関数

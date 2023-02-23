@@ -14,7 +14,7 @@
 
 class CModel3D;
 class CObject;
-class CAlert;
+class CMissileAlertManager;
 class CBullet3D : public CObject
 {
 public:
@@ -55,12 +55,15 @@ public:
 	// クォータニオンをオイラー角に変換する
 	D3DXVECTOR3 QuaternionChange();
 
+	// アラートを有効にするかどうかを取得
+	bool GetAlert() { return m_bAlert; }
+
 	// クリエイト処理
 	// 引数 : ずらす座標の大きさ、クォータニオン、目標オブジェクト情報、射手オブジェクト情報、誘導のタイミングをカウントする目標値
 	static CBullet3D* Create(const D3DXVECTOR3 &pos, const D3DXQUATERNION &quaternion, CObject *object, CObject *Shooter,int val,float Limit);
 
 private:
-	CAlert*					m_pAlert;					// ミサイルアラート
+	CMissileAlertManager*	m_pAlert;					// ミサイルアラート
 	CModel3D*				m_pModel;					// モデルの最大数
 	CObject*				m_TargetObj;				// ターゲットオブジェクト
 	CObject*				m_pShooter;					// シューター
@@ -83,6 +86,8 @@ private:
 	int						m_SearchValue;				// 探索カウントの目標値
 	int						m_MissileCnt;				// ミサイルカウント
 	int						m_LocusCnt;					// 爆発を表示するカウント
+
+	bool					m_bAlert;					// アラート
 };
 
 #endif

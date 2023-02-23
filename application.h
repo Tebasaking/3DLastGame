@@ -18,7 +18,7 @@ class CCamera;
 class CCameraPlayer;
 class CCameraRadar;
 class CMesh;
-class CInputKeyboard;
+class CInput;
 class CTarget;
 class CMouse;
 class CGame;
@@ -28,6 +28,7 @@ class CTexture3D;
 class CJoypad;
 class CSound;
 class CCameraTitle;
+class CInput;
 class CApplication
 {
 public:
@@ -61,22 +62,20 @@ public:
 	static CEnemy *GetEnemy();
 	static CPlayer *GetPlayer();
 	static CTexture* GetTexture();
-	static CCameraPlayer* GetCamera() { return m_pCamera; };
-	static CCameraTitle *GetTitleCamera() { return m_pTitle; }
-	static CCameraRadar* GetRader() { return m_pRader; }
-	static CInputKeyboard * GetInputKeyboard();
-	static CMouse *GetMouse() { return m_pMouse; }
-	static CGame *GetGame() { return m_pGame; }
-	static CMode *GetModeObject() { return m_pMode; }
-	static CTexture3D *GetTexture3D() { return m_pTexture3D; }
-	static CJoypad *GetJoy() { return m_pJoy; }
-	static CSound *GetSound() { return m_pSound; }
-	static LPD3DXEFFECT GetShader() { return m_pEffect; }
+	static CCameraPlayer* GetCamera()			{ return m_pCamera; };
+	static CCameraTitle *GetTitleCamera()		{ return m_pTitle; }
+	static CCameraRadar* GetRader()				{ return m_pRader; }
+	static CMouse *GetMouse()					{ return m_pMouse; }
+	static CGame *GetGame()						{ return m_pGame; }
+	static CMode *GetModeObject()				{ return m_pMode; }
+	static CTexture3D *GetTexture3D()			{ return m_pTexture3D; }
+	static CJoypad *GetJoy()					{ return m_pJoy; }
+	static CSound *GetSound()					{ return m_pSound; }
+	static LPD3DXEFFECT GetShader()				{ return m_pEffect; }
 
 private:
 	static CDebugProc		*m_pDebug;
 	static CRender			*m_pRender;
-	static CInputKeyboard	*m_pInputKeyboard;
 	static CTexture			*m_pTexture;
 	static CCameraPlayer	*m_pCamera;
 	static CCameraRadar		*m_pRader;
@@ -89,6 +88,7 @@ private:
 	static CJoypad			*m_pJoy;
 	static CSound			*m_pSound;
 	static CCameraTitle		*m_pTitle;
+	static CInput			*m_pInput;
 	static LPD3DXEFFECT		m_pEffect;			// シェーダー
 	bool					m_bCheckViewport;
 };

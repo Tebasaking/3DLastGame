@@ -15,7 +15,7 @@ public:
 	CAlert();			//コンストラクタ
 	virtual ~CAlert() override;			//デストラクタ
 
-											//初期化処理
+	//初期化処理
 	HRESULT Init(const D3DXVECTOR3 &pos) override;
 	// 更新処理
 	void Update(void) override;
@@ -24,7 +24,7 @@ public:
 	// 終了処理
 	void Uninit(void) override;
 	// クリエイト処理
-	static CAlert* Create(const D3DXVECTOR3 &pos, CObject *object);
+	static CAlert* Create(const D3DXVECTOR3 &pos);
 	// ターゲットを設定したいオブジェクト情報を保存
 	void SetObject(CObject *object) { pObject = object; }
 
@@ -32,12 +32,15 @@ public:
 	CObject *GetTargetObject() { return pObject; }
 	// サイズの取得
 	float GetSize() { return m_Size; }
+	// アラートの状態を取得
+	bool GetCheck() { return m_bCheck; }
 
 private:
 	float  m_Size;							// サイズ
 	static D3DXVECTOR3	m_TargetPos;		// 目標の座標
 	D3DXVECTOR3			m_pos;				// 現在の座標
 	CObject				*pObject;			// 目標のオブジェクト情報の保存先
+	bool				m_bCheck;			// アラートの状態を管理
 };
 
 #endif

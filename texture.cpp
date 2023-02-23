@@ -17,6 +17,7 @@
 //==================================================
 const char* CTexture::s_FileName[] =
 {// テクスチャのパス
+	"Data\\TEXTURE\\UITEST.png",
 	"Data\\TEXTURE\\bullet.png",	// 弾
 	"Data\\TEXTURE\\number001.png",						// ナンバー
 	"Data\\TEXTURE\\explosion000.png",
@@ -39,6 +40,12 @@ const char* CTexture::s_FileName[] =
 	"Data\\TEXTURE\\TITLE_START.png",
 	"Data\\TEXTURE\\TITLE_TUTORIAL.png",
 	"Data\\TEXTURE\\TITLE_END.png",
+	"Data\\TEXTURE\\Explosion001.png",
+	"Data\\TEXTURE\\UI_ALT_SPEED.png",
+	"Data\\TEXTURE\\UI_WEAPON.png",
+	"Data\\TEXTURE\\GAGE_BOX.png",
+	"Data\\TEXTURE\\GAGE.png",
+	"Data\\TEXTURE\\UI_MISSILE_ALERT.png"
 };
 
 static_assert(sizeof(CTexture::s_FileName) / sizeof(CTexture::s_FileName[0]) == CTexture::TEXTURE_MAX, "aho");
@@ -46,8 +53,7 @@ static_assert(sizeof(CTexture::s_FileName) / sizeof(CTexture::s_FileName[0]) == 
 //--------------------------------------------------
 // デフォルトコンストラクタ
 //--------------------------------------------------
-CTexture::CTexture() :
-	s_pTexture()
+CTexture::CTexture() : s_pTexture()
 {
 	memset(s_pTexture, 0, sizeof(s_pTexture));
 }

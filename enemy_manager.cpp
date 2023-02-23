@@ -209,7 +209,7 @@ void CEnemy_Manager::EnemyCreate(int Wave)
 	m_Wave[Wave].m_Timer++;
 	
 	// カメラの視点
-	CDebugProc::Print("エネミーカウント %d \n", m_Wave[Wave].m_Timer);
+	//CDebugProc::Print("エネミーカウント %d \n", m_Wave[Wave].m_Timer);
 }
 
 //=========================================

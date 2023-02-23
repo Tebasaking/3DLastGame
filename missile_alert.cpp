@@ -5,10 +5,13 @@
 //
 //=========================================
 #include "missile_alert.h"
+#include "missile_alert_manager.h"
 #include "camera.h"
 #include "application.h"
 #include "debug_proc.h"
 #include "bullet3D.h"
+#include "game.h"
+#include "playerUI.h"
 
 D3DXVECTOR3 CAlert::m_TargetPos = {};
 //=========================================
@@ -16,7 +19,7 @@ D3DXVECTOR3 CAlert::m_TargetPos = {};
 //=========================================
 CAlert::CAlert()
 {
-
+	SetObjectType(OBJECT_ALERT);
 }
 
 //=========================================
@@ -32,14 +35,16 @@ CAlert::~CAlert()
 //=========================================
 HRESULT CAlert::Init(const D3DXVECTOR3 &pos)
 {
+	m_bCheck = false;
+
 	//初期化処理
-	CObject2D::Init(pos);
+	CObject2D::Init(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f,0.0f));
 
 	// テクスチャの設定
-	CObject2D::SetTexture(CTexture::TEXTURE_ARROW);
+	CObject2D::SetTexture(CTexture::TEXTURE_UI_ALERT);
 
 	//サイズの設定
-	CObject2D::SetScale(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+	CObject2D::SetScale(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
 
 	// タイプ設定
 	//SetObjectType(OBJECT_TARGET);
@@ -52,111 +57,53 @@ HRESULT CAlert::Init(const D3DXVECTOR3 &pos)
 //=========================================
 void CAlert::Update()
 {
-	D3DXVECTOR3 BulletPos;			// エネミーの変換前座標
-	D3DXVECTOR3 PlayerPos;			// プレイヤーの座標
-
-	m_Size = 50.0f;
-
-	//プレイヤーの座標を取得
-	if (pObject != nullptr)
+	// 全てのアラートからアラートが起動しているものがあった時、bCheckをtrueにする。
+	for (int nCnt = 0; nCnt < 5; nCnt++)
 	{
-		// 目標の座標をスクリーン座標に変換する
-		BulletPos = pObject->GetPosition();
-		m_TargetPos = CApplication::WorldToScreen(BulletPos);
-	}
+		CObject *object = CObject::GetObjectTop(nCnt);
 
-	CObject *object = CObject::GetObjectTop();
-
-	//プレイヤーの座標を取得
-	while (object)
-	{
-		if (object != nullptr)
+		//プレイヤーの座標を取得
+		while (object)
 		{
-			EObjType ObjType = object->GetObjectType();
-
-			if (ObjType == OBJECT_PLAYER)
+			if (object != nullptr)
 			{
-				PlayerPos = object->GetPosition();
+				EObjType ObjType = object->GetObjectType();
 
-				break;
+				if (ObjType == OBJECT_ALERT_MANAGAER)
+				{
+					CMissileAlertManager *pAlert = dynamic_cast<CMissileAlertManager*> (object);
+
+					if (pAlert->GetAlert())
+					{
+						m_bCheck = true;
+						break;
+					}
+					else
+					{
+						m_bCheck = false;
+					}
+				}
 			}
+			object = object->GetObjectNext();
 		}
-		object = object->GetObjectNext();
+
+		if (m_bCheck)
+		{
+			break;
+		}
 	}
 
-	// TargetPosの制限
-	if (m_TargetPos.x >= 0.0f && m_TargetPos.x <= SCREEN_WIDTH &&
-		m_TargetPos.y >= 0.0f && m_TargetPos.y <= SCREEN_HEIGHT &&
-		m_TargetPos.z >= 0.0f)
+	if (m_bCheck)
 	{
-		//m_Size = 0.0f;
+		SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 	}
 	else
 	{
-		m_Size = 50.0f;
+		SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
 	}
-
-	//サイズの設定
-	CObject2D::SetScale(D3DXVECTOR3(m_Size, m_Size, 0.0f));
-
-	// アラートのX制限の始点
-	float ALERT_SCREEN_WIDTH_BEGIN = 300.0f;
-	// アラートのY制限の始点
-	float ALERT_SCREEN_HEIGHT_BEGIN = 500;
-
-	// アラートのX制限の終点
-	float ALERT_SCREEN_WIDTH_END = SCREEN_WIDTH - 300.0f;
-	// アラートのY制限の終点
-	float ALERT_SCREEN_HEIGHT_END = SCREEN_HEIGHT - 200.0f;
-
-	m_TargetPos.y *= 0.1f;
-	m_TargetPos.y += 500.0f;
-
-	// アラート始点制限
-	if (m_TargetPos.x >= ALERT_SCREEN_WIDTH_END)
-	{
-		m_TargetPos.x = ALERT_SCREEN_WIDTH_END - m_Size;
-	}
-	if (m_TargetPos.y <= ALERT_SCREEN_HEIGHT_BEGIN)
-	{
-		m_TargetPos.y = ALERT_SCREEN_HEIGHT_BEGIN + m_Size;
-	}
-
-	// 終点制限
-	if (m_TargetPos.x <= ALERT_SCREEN_WIDTH_BEGIN)
-	{
-		m_TargetPos.x = ALERT_SCREEN_WIDTH_BEGIN + m_Size;
-	}
-	if (m_TargetPos.y >= ALERT_SCREEN_HEIGHT_END)
-	{
-		m_TargetPos.y = ALERT_SCREEN_HEIGHT_END - m_Size;
-	}
-
-	// TargetPosとPlayerPosから角度を求める
-	D3DXVECTOR3 rot = AtanRot(m_TargetPos, PlayerPos);
-
-	// スクリーン座標に設定する
-	SetPosition(m_TargetPos);
-
-	SetRotation(rot);
-
-	// 例外処理
-	CBullet3D *pBullet = (CBullet3D*)pObject;
-
-	if (pBullet != nullptr)
-	{
-		if (pBullet->GetSpeed() >= 100)
-		{
-			SetScale(D3DXVECTOR3(0.0f,0.0f,0.0f));
-		}
-	}
-
-	EObjType obj = GetObjectType();
-	CAlert *pTagert = this;
-
-	CDebugProc::Print("missileの座標 x %.1f y ,%.1f,z %.1f \n", GetTest().x, GetTest().y, GetTest().z);
+	//CDebugProc::Print("missileの座標 x %.1f y ,%.1f,z %.1f \n", GetTest().x, GetTest().y, GetTest().z);
 	// カメラの視点
-	CDebugProc::Print("ターゲットのサイズ %f \n", m_Size);
+	//CDebugProc::Print("ターゲットのサイズ %f \n", m_Size);
 }
 
 //=========================================
@@ -204,7 +151,7 @@ void CAlert::Draw()
 //=========================================
 //オブジェクトのクリエイト
 //=========================================
-CAlert* CAlert::Create(const D3DXVECTOR3 &pos, CObject *object)
+CAlert* CAlert::Create(const D3DXVECTOR3 &pos)
 {
 	CAlert* pCAlert = nullptr;
 
@@ -214,9 +161,6 @@ CAlert* CAlert::Create(const D3DXVECTOR3 &pos, CObject *object)
 	{
 		pCAlert->Init(pos);
 	}
-
-	// ターゲットを設定するオブジェクトを取得
-	pCAlert->SetObject(object);
 
 	return pCAlert;
 }

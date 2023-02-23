@@ -62,16 +62,21 @@ HRESULT CTitleModel::Init(const D3DXVECTOR3 &pos)
 	// 古い座標の設定
 	SetPosOld(m_pos);
 
-	// サイズの設定
-	m_size = m_apModel[0]->GetMaterial()->size;
-
-	//大きさの設定
-	SetSize(m_size);
-
 	m_scale = 1.0f;
 
 	// モーションの初期化処理
 	CMotionModel3D::Init(pos);
+
+	if (m_type == ENEMY_GROUND)
+	{
+		//大きさの設定
+		SetSize(D3DXVECTOR3(2.0f,2.0f,2.0f));
+	}
+	else if (m_type == ENEMY_FLY)
+	{
+		//大きさの設定
+		SetSize(D3DXVECTOR3(1.0f, 1.0f, 1.0f));
+	}
 
 	return S_OK;
 }
@@ -99,23 +104,26 @@ void CTitleModel::Update()
 	m_pos = GetPosition();
 
 	// オブジェクトの取得
-	CObject *object = CObject::GetObjectTop();
-
-	//プレイヤーの座標を取得
-	while (object)
+	for (int nCnt = 0; nCnt < 5; nCnt++)
 	{
-		if (object != nullptr)
-		{
-			EObjType ObjType = object->GetObjectType();
+		CObject *object = CObject::GetObjectTop(nCnt);
 
-			if (ObjType == OBJECT_PLAYER)
+		//プレイヤーの座標を取得
+		while (object)
+		{
+			if (object != nullptr)
 			{
-				m_PlayerPos = object->GetPosition();
-				PlayerRot = object->GetRot();
-				break;
+				EObjType ObjType = object->GetObjectType();
+
+				if (ObjType == OBJECT_PLAYER)
+				{
+					m_PlayerPos = object->GetPosition();
+					PlayerRot = object->GetRot();
+					break;
+				}
 			}
+			object = object->GetObjectNext();
 		}
-		object = object->GetObjectNext();
 	}
 
 	D3DXVECTOR3 rot = GetRot();
@@ -125,7 +133,7 @@ void CTitleModel::Update()
 	//	m_state = ENEMY_WARNNING;
 	//}
 
-	float EnemySpeed = 15.0f;
+	float EnemySpeed = 5.0f;
 
 	// 移動量用
 	D3DXVECTOR3 move = move = D3DXVECTOR3(sinf(rot.y) * EnemySpeed,
@@ -174,6 +182,7 @@ void CTitleModel::Update()
 		if (m_type == ENEMY_GROUND)
 		{
 			move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+			rot.z = -D3DX_PI * 0.25f;
 		}
 	}
 
@@ -190,7 +199,7 @@ void CTitleModel::Update()
 	CMotionModel3D::Update();
 
 	// カメラの視点
-	CDebugProc::Print("エネミーのスクリーン座標 : (%.3f , %.3f , %.3f )\n", m_pos.x, m_pos.y, m_pos.z);
+	//CDebugProc::Print("エネミーのスクリーン座標 : (%.3f , %.3f , %.3f )\n", m_pos.x, m_pos.y, m_pos.z);
 }
 
 //=========================================
@@ -279,7 +288,7 @@ void CTitleModel::SetType(ModelType type)
 		break;
 
 	case ENEMY_GROUND:
-		SetMotion("data/MOTION/tank.txt");
+		SetMotion("data/MOTION/fly_motion.txt");
 		break;
 	}
 }

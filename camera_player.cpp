@@ -13,6 +13,7 @@
 //*****************************************************************************
 #include <assert.h>
 
+#include "input.h"
 #include "camera_player.h"
 #include "application.h"
 #include "input.h"
@@ -40,7 +41,9 @@ CCameraPlayer::CCameraPlayer() :
 	m_fRotMove(0.0f),										// 移動方向
 	m_nCntCameraWork(0),
 	m_Gravity(0),
-	m_nCntFly(0)
+	m_nCntFly(0),
+	m_Dest(D3DXVECTOR3(0.0f,0.0f,0.0f)),
+	m_axisVec(D3DXVECTOR3(0.0f,0.0f,0.0f))
 {
 }
 
@@ -64,15 +67,20 @@ HRESULT CCameraPlayer::Init(D3DXVECTOR3 pos)
 	CCamera::Init(pos);
 
 	m_posR = D3DXVECTOR3(0.0f, 1000.0f, 0.0f);
+	m_Dest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_Destquaternion = D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f);
 	m_quaternion = D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f);
 	m_rotMove = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_viewport.MinZ = 0.0f;
 	m_viewport.MaxZ = 1.0f;
+	m_bDeathGround = false;
 
 	// 視点と注視点の距離
 	D3DXVECTOR3 posDiss = m_posR - m_posV;
 	m_fDistance = sqrtf((posDiss.y * posDiss.y) + (posDiss.x * posDiss.x) + (posDiss.z * posDiss.z));
 
+	MOVE_SPEED = 5.0f;
+	m_event = EVENT_NORMAL;
 	m_mode = TYPE_FREE;
 
 	m_nCntMoveSound = 10000;
@@ -102,9 +110,7 @@ void CCameraPlayer::Update(void)
 	if (m_event == EVENT_NORMAL)
 	{
 		// キーボードの取得
-		CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
-
-		JoyPadMove();	// ジョイパッド移動
+		CInput *pKeyboard = CInput::GetKey();
 
 		m_mode = (CCameraPlayer::CAMERA_TYPE)CPlayerManager::GetMode();
 
@@ -114,6 +120,7 @@ void CCameraPlayer::Update(void)
 			switch (m_mode)
 			{
 			case TYPE_FREE:
+				JoyPadMove();	// ジョイパッド移動
 				MouseMove();		// マウス移動
 				FreeMove();			// 移動
 				break;
@@ -136,33 +143,38 @@ void CCameraPlayer::Update(void)
 
 			//==================================================================================
 
-			// オブジェクトの取得
-			CObject *object = CObject::GetObjectTop();
+			CObject *object = nullptr;
+			CObject *PlayerObject = nullptr;
 
-			D3DXVECTOR3 PlayerPos = {};
-			D3DXVECTOR3	PlayerRot = {};
-
-			//プレイヤーの座標を取得
-			while (object)
+			for (int nCnt = 0; nCnt < 5; nCnt++)
 			{
-				if (object != nullptr)
+				object = CObject::GetObjectTop(nCnt);
+
+				D3DXVECTOR3 PlayerPos = {};
+				D3DXVECTOR3	PlayerRot = {};
+
+				//プレイヤーの座標を取得
+				while (object)
 				{
-					CObject::EObjType ObjType = object->GetObjectType();
-
-					if (ObjType == CObject::OBJECT_PLAYER)
+					if (object != nullptr)
 					{
-						PlayerPos = object->GetPosition();
-						PlayerRot = object->GetRot();
-						break;
-					}
-				}
-				object = object->GetObjectNext();
-			}
+						CObject::EObjType ObjType = object->GetObjectType();
 
-			if (object != nullptr)
+						if (ObjType == CObject::OBJECT_PLAYER)
+						{
+							PlayerPos = object->GetPosition();
+							PlayerRot = object->GetRot();
+							PlayerObject = object;
+							break;
+						}
+					}
+					object = object->GetObjectNext();
+				}
+			}
+			if (PlayerObject != nullptr)
 			{
 				// エンターキーが押された
-				if (pKeyboard->GetTrigger(DIK_RETURN))
+				if (pKeyboard->Trigger(DIK_RETURN) || pKeyboard->Trigger(JOYPAD_X))
 				{
 					switch (m_mode)
 					{
@@ -192,17 +204,22 @@ void CCameraPlayer::Update(void)
 		D3DXVECTOR3 Result = m_Dest - m_rotMove;
 		m_rotMove += Result * 0.25f;
 	}
-	else
+	else if(m_event == EVENT_FLY)
 	{
 		FlightEvent();
+	}
+	else if (m_event == EVENT_DEATH)
+	{
+		// 死亡処理の読み込み
+		Death();
 	}
 
 	m_quaternion += (m_Destquaternion - m_quaternion) * 0.1f;
 	D3DXQuaternionNormalize(&m_quaternion, &m_quaternion);
 
-	CDebugProc::Print("camera_player\n");
-	CDebugProc::Print("カメラの座標 : (%f,%f,%f) \n", m_posV.x, m_posV.y, m_posV.z);
-	CDebugProc::Print("カメラの回転 : (%f,%f,%f,%f) \n", m_quaternion.x, m_quaternion.y, m_quaternion.z, m_quaternion.w);
+	//CDebugProc::Print("camera_player\n");
+	//CDebugProc::Print("カメラの座標 : (%f,%f,%f) \n", m_posV.x, m_posV.y, m_posV.z);
+	//CDebugProc::Print("カメラの回転 : (%f,%f,%f,%f) \n", m_quaternion.x, m_quaternion.y, m_quaternion.z, m_quaternion.w);
 }
 
 //=============================================================================
@@ -216,20 +233,20 @@ void CCameraPlayer::Rotate()
 	// 入力情報の取得
 	static const float MIN_MOUSE_MOVED = 2.0f;		// この値以上動かさないと反応しない
 
-	if (!(D3DXVec3Length(&m_rotMove) > MIN_MOUSE_MOVED) && !(D3DXVec3Length(&m_rotMove) < -MIN_MOUSE_MOVED))
-	{
-		return;
-	}
+	//if (!(D3DXVec3Length(&m_rotMove) > MIN_MOUSE_MOVED) && !(D3DXVec3Length(&m_rotMove) < -MIN_MOUSE_MOVED))
+	//{
+	//	return;
+	//}
 
-	// デッドゾーンの設定
-	if (m_rotMove.x >= -MIN_MOUSE_MOVED && m_rotMove.x <= MIN_MOUSE_MOVED)
-	{
-		m_rotMove.x = 0.0f;
-	}
-	if (m_rotMove.y >= -MIN_MOUSE_MOVED && m_rotMove.y <= MIN_MOUSE_MOVED)
-	{
-		m_rotMove.y = 0.0f;
-	}
+	//// デッドゾーンの設定
+	//if (m_rotMove.x >= -MIN_MOUSE_MOVED && m_rotMove.x <= MIN_MOUSE_MOVED)
+	//{
+	//	m_rotMove.x = 0.0f;
+	//}
+	//if (m_rotMove.y >= -MIN_MOUSE_MOVED && m_rotMove.y <= MIN_MOUSE_MOVED)
+	//{
+	//	m_rotMove.y = 0.0f;
+	//}
 
 	/* ↓指定した長さ以上で動かしてる↓ */
 
@@ -403,7 +420,7 @@ void CCameraPlayer::Rotate()
 //=============================================================================
 void CCameraPlayer::FreeMove(void)
 {
-	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
+	CInput *pKeyboard = CInput::GetKey();;
 	D3DXVECTOR3 move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
 	if (CApplication::GetMode() == CApplication::MODE_GAME)
@@ -419,7 +436,7 @@ void CCameraPlayer::FreeMove(void)
 	}
 
 	//移動キーが押された
-	if (pKeyboard->GetPress(DIK_W))
+	if (pKeyboard->Press(DIK_W) || pKeyboard->Press(JOYPAD_R2))
 	{// 加速処理
 		MOVE_SPEED += 0.1f;
 		CAMERA_MOVE_SPEED += 0.1f;
@@ -465,16 +482,19 @@ void CCameraPlayer::FreeMove(void)
 	// グラウンドの取得
 	CMesh *pGround = CGame::GetGround();
 
-	if (pGround != nullptr)
+	if (pGround != nullptr && m_event != EVENT_DEATH)
 	{// 陸の当たり判定
 		CPlayer3D *pPlayer = CPlayerManager::GetPlayer();
 
-		if (pPlayer->GetCollision())
+		if (pPlayer != nullptr)
 		{
-			m_posV.y = pPlayer->GetPosition().y + 50.0f;
+			if (pPlayer->GetCollision())
+			{
+				m_posV.y = pPlayer->GetPosition().y + 50.0f;
 
-			pGround->Collision(&m_posV);
-			m_posR.y = pPlayer->GetPosition().y;
+				pGround->Collision(&m_posV);
+				m_posR.y = pPlayer->GetPosition().y;
+			}
 		}
 	}
 }
@@ -485,7 +505,7 @@ void CCameraPlayer::FreeMove(void)
 //=========================================
 void CCameraPlayer::ShoulderMove()
 {
-	CInputKeyboard *pKeyboard = CApplication::GetInputKeyboard();
+	CInput *pKeyboard = CInput::GetKey();
 	D3DXVECTOR3 move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
 	// SEの停止
@@ -497,7 +517,7 @@ void CCameraPlayer::ShoulderMove()
 	}
 
 	/* 移動キーが押された*/
-	if (pKeyboard->GetPress(DIK_W))
+	if (pKeyboard->Press(DIK_W) || pKeyboard->Press(JOYPAD_R2))
 	{
 		m_fDistance -= MOVE_SPEED;
 		VPosRotate();
@@ -505,7 +525,7 @@ void CCameraPlayer::ShoulderMove()
 		RPosRotate();
 	}
 
-	if (pKeyboard->GetPress(DIK_A))
+	if (pKeyboard->Press(DIK_A))
 	{// 移動キーが押された
 		D3DXVECTOR3 Pythagoras = D3DXVECTOR3(m_posV.z - m_posR.z, 0.0f, m_posV.x - m_posR.x);
 
@@ -513,7 +533,7 @@ void CCameraPlayer::ShoulderMove()
 		move.z += -Pythagoras.z;
 	}
 
-	if (pKeyboard->GetPress(DIK_S))
+	if (pKeyboard->Press(DIK_S))
 	{// 移動キーが押された
 		m_fDistance += MOVE_SPEED;
 		VPosRotate();
@@ -521,7 +541,7 @@ void CCameraPlayer::ShoulderMove()
 		RPosRotate();
 	}
 
-	if (pKeyboard->GetPress(DIK_D))
+	if (pKeyboard->Press(DIK_D))
 	{// 移動キーが押された
 		D3DXVECTOR3 Pythagoras = D3DXVECTOR3(m_posV.z - m_posR.z, 0.0f, m_posV.x - m_posR.x);
 
@@ -563,7 +583,7 @@ void CCameraPlayer::ShoulderMove()
 
 	if (pGround != nullptr)
 	{
-		if (!m_bUp)
+		if (!m_bUp && pPlayer != nullptr)
 		{// 陸の当たり判定
 			if (pPlayer->GetCollision())
 			{
@@ -602,7 +622,7 @@ void CCameraPlayer::MouseMove(void)
 	CMouse *pMouse = CApplication::GetMouse();
 
 	// 回転のベクトルを設定。
-	m_Dest = D3DXVECTOR3(pMouse->GetMouseMove().y, pMouse->GetMouseMove().x, pMouse->GetMouseMove().z);
+	m_Dest = D3DXVECTOR3(pMouse->GetMouseCursorMove().y, pMouse->GetMouseCursorMove().x, pMouse->GetMouseCursorMove().z);
 
 	// クリックの情報を保管
 	bool hasRightClick = pMouse->GetPress(CMouse::MOUSE_KEY_RIGHT);
@@ -621,22 +641,21 @@ void CCameraPlayer::MouseMove(void)
 //=========================================
 void CCameraPlayer::JoyPadMove(void)
 {
-	CJoypad *pJoypad = CApplication::GetJoy();
+	// キーボードの取得
+	CInput *pJoypad = CInput::GetKey();
 
-	if (pJoypad->GetUseJoyPad() >= 1)
+	//if (pJoypad->GetUseJoyPad() >= 1)
 	{
-		// 回転のベクトルを設定。
-		m_Dest.x = pJoypad->GetStickAngle(CJoypad::JOYKEY_LEFT_STICK, 0) * pJoypad->GetStick(CJoypad::JOYKEY_LEFT_STICK, 0).y * 100.0f;
+		// ジョイパッドのスティックの傾きを取得
+		D3DXVECTOR3 MoveJoy = pJoypad->VectorMoveJoyStick(false, 0);
 
-		if ((pJoypad->GetStickAngle(CJoypad::JOYKEY_LEFT_STICK, 0) >= D3DX_PI * 0.25f && pJoypad->GetStickAngle(CJoypad::JOYKEY_LEFT_STICK, 0) <= D3DX_PI * 0.75f) ||
-			(pJoypad->GetStickAngle(CJoypad::JOYKEY_LEFT_STICK, 0) >= -D3DX_PI * 0.75f && pJoypad->GetStickAngle(CJoypad::JOYKEY_LEFT_STICK, 0) <= -D3DX_PI * 0.25f))
-		{
-			// 回転のベクトルを設定。
-			m_Dest.y = pJoypad->GetStick(CJoypad::JOYKEY_LEFT_STICK, 0).x * 100.0f;
-		}
+		// 回転のベクトルを設定。
+		m_rotMove = D3DXVECTOR3(MoveJoy.y, MoveJoy.x, MoveJoy.z);
 
 		Rotate();
 		VPosRotate();
+
+		CDebugProc::Print("test %f,%f,%f", MoveJoy.x, MoveJoy.y, MoveJoy.z);
 	}
 }
 
@@ -748,5 +767,28 @@ void CCameraPlayer::Up()
 	{
 		m_bUp = false;
 		m_nCntCameraWork = 0;
+	}
+}
+
+//=========================================
+// 死亡処理
+//=========================================
+void CCameraPlayer::Death()
+{
+	if (!m_bDeathGround)
+	{
+		MouseMove();		// マウス移動
+		FreeMove();			// 移動
+
+		D3DXVECTOR3 Result = m_Dest - m_rotMove;
+		m_rotMove += Result * 0.25f;
+
+		m_fDistance++;
+		MOVE_SPEED += 0.5f;
+
+		if (m_event == EVENT_DEATH)
+		{
+			CameraWork(D3DXQUATERNION(D3DX_PI * 0.25f, 0.0f, 0.0f, 1.0f));
+		}
 	}
 }

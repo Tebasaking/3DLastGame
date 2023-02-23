@@ -26,7 +26,9 @@ public:
 		OBJECT_TARGET,		// ターゲット
 		OBJECT_EMPTY,		// 設定されていない
 		OBJECT_FADE,
+		OBJECT_ALERT,		// アラート
 		OBJECT_EFFECT,		// エフェクト
+		OBJECT_ALERT_MANAGAER,	// アラートのマネージャ―専用、急ごしらえ
 //		OBJECT_BILLBOARD,	// ビルボード
 		OBJECT_MAX
 	};
@@ -80,7 +82,7 @@ public:
 	int		GetHP() { return m_HP; }
 	bool	GetTargeting() { return m_Targeting; }
 	bool	GetCollision() { return m_Collision; }
-	static  CObject *GetObjectTop() { return m_pTop[0]; }
+	static  CObject *GetObjectTop(int nPriority) { return m_pTop[nPriority]; }
 	static  CObject *GetObjectType(CObject::EObjType type);
 	CObject *GetObjectNext() { return m_pNext; }
 	EObjType GetObjectType() { return m_type; }
@@ -110,6 +112,8 @@ public:
 
 	// 引数 : ずらす座標の大きさ、クォータニオン、目標座標
 	D3DXVECTOR3 MtxPos(D3DXVECTOR3 pos, D3DXQUATERNION qua, D3DXVECTOR3 TargetPos);
+	// 引数 : ずらす座標の大きさ、角度、目標座標
+	D3DXVECTOR3 MtxPosRot(D3DXVECTOR3 pos, D3DXVECTOR3 rot, D3DXVECTOR3 TargetPos);
 	// 引数 : 座標、古い座標、目標座標、サイズ、目標サイズ、押し返すか返さないか
 	bool Collision(CObject *Target, bool bExtrude);
 	// 引数: 目標の座標 、 扇の中心 、 範囲(角度) 、長さ , 方向(角度)

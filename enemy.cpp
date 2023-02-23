@@ -18,6 +18,10 @@
 #include "radar.h"
 #include "bullet3D.h"
 #include "enemy_manager.h"
+#include "explosion.h"
+#include "effect.h"
+#include "player3D.h"
+#include "player_manager.h"
 
 //=========================================
 //グローバル変数
@@ -54,6 +58,7 @@ HRESULT CEnemy::Init(const D3DXVECTOR3 &pos)
 	m_apModel[0]->SetModelID(3);
 	m_apModel[0]->Init();
 	m_apModel[0]->SetPos(pos);
+	m_state = ENEMY_WARNNING;
 
 	m_pos = pos;
 
@@ -117,24 +122,30 @@ void CEnemy::Update()
 	// 座標の取得
 	m_pos = GetPosition();
 
-	// オブジェクトの取得
-	CObject *object = CObject::GetObjectTop();
+	CObject *object = nullptr;
+	CObject *PlayerObj = nullptr;
 
-	//プレイヤーの座標を取得
-	while(object)
+	for (int nCnt = 0; nCnt < 5; nCnt++)
 	{
-		if (object != nullptr)
-		{
-			EObjType ObjType = object->GetObjectType();
+		object = CObject::GetObjectTop(nCnt);
 
-			if (ObjType == OBJECT_PLAYER)
+		//プレイヤーの座標を取得
+		while (object)
+		{
+			if (object != nullptr)
 			{
-				m_PlayerPos = object->GetPosition();
-				PlayerRot = object->GetRot();
-				break;
+				EObjType ObjType = object->GetObjectType();
+
+				if (ObjType == OBJECT_PLAYER)
+				{
+					m_PlayerPos = object->GetPosition();
+					PlayerRot = object->GetRot();
+					PlayerObj = object;
+					break;
+				}
 			}
+			object = object->GetObjectNext();
 		}
-		object = object->GetObjectNext();
 	}
 
 	Search();
@@ -146,12 +157,7 @@ void CEnemy::Update()
 	//	m_state = ENEMY_WARNNING;
 	//}
 
-	float EnemySpeed = 5.0f;
-
-	// 移動量用
-	D3DXVECTOR3 move = move = D3DXVECTOR3(sinf(rot.y) * EnemySpeed,
-		-(rot.x * EnemySpeed),
-		cosf(rot.y) * EnemySpeed);
+	float EnemySpeed = 8.0f;
 
 	//=========================================
 	// エネミーの現在の状態
@@ -166,13 +172,13 @@ void CEnemy::Update()
 		if (m_type == ENEMY_FLY)
 		{
 			// 移動量
-			move = D3DXVECTOR3(sinf(rot.y) * EnemySpeed,
+			m_move = D3DXVECTOR3(sinf(rot.y) * EnemySpeed,
 				-(rot.x * EnemySpeed),
 				cosf(rot.y) * EnemySpeed);
 
 			m_CntWar++;
 		}
-		if (m_CntWar >= 120 + (int)FloatRandom(100,0))
+		if (m_CntWar >= 120 + (int)FloatRandom(1200,100))
 		{
 			m_CntWar = 0;
 			m_state = ENEMY_WARNNING;
@@ -186,7 +192,7 @@ void CEnemy::Update()
 		if (m_type == ENEMY_FLY)
 		{
 			// 移動量
-			move = D3DXVECTOR3(sinf(rot.y) * EnemySpeed,
+			m_move = D3DXVECTOR3(sinf(rot.y) * EnemySpeed,
 				-(rot.x * EnemySpeed),
 				cosf(rot.y) * EnemySpeed);
 		}
@@ -197,13 +203,13 @@ void CEnemy::Update()
 
 			if (!pGround->Collision(&CollisionCheck))
 			{
-				move = D3DXVECTOR3(sinf(rot.y) * EnemySpeed,
+				m_move = D3DXVECTOR3(sinf(rot.y) * EnemySpeed,
 					-10.0f,
 					cosf(rot.y) * EnemySpeed);
 			}
 			else
 			{
-				move = D3DXVECTOR3(sinf(rot.y) * EnemySpeed,
+				m_move = D3DXVECTOR3(sinf(rot.y) * EnemySpeed,
 					-0.0f,
 					cosf(rot.y) * EnemySpeed);
 			}
@@ -227,7 +233,7 @@ void CEnemy::Update()
 		// ベクトルを算出
 		D3DXVECTOR3 MoveVec = {};
 
-		D3DXVec3Normalize(&MoveVec, &move);
+		D3DXVec3Normalize(&MoveVec, &m_move);
 		D3DXVec3Normalize(&EnemyVec, &EnemyVec);
 
 		// 進行方向ベクトルから出した現在地から見たエネミーへの角度
@@ -247,12 +253,12 @@ void CEnemy::Update()
 		D3DXVECTOR3 AB = Vec *  OneRadian;
 		D3DXVec3Normalize(&AB, &AB);
 
-		//m_move = AB * m_MissileSpeed;
+		//m_m_move = AB * m_MissileSpeed;
 
-		move = AB * EnemySpeed;
+		m_move = AB * EnemySpeed;
 
 		// 角度の設定
-		D3DXVECTOR3 rotDest = AtanRot(m_pos + move, m_pos);
+		D3DXVECTOR3 rotDest = AtanRot(m_pos + m_move, m_pos);
 		rotDest.x -= D3DX_PI * 0.5f;
 		rotDest.z += D3DX_PI;
 
@@ -265,28 +271,28 @@ void CEnemy::Update()
 
 		rot = NormalizeRotXYZ(rot);
 
-		// アタックカウントを進める
 		m_AttackCount++;
 
 		// 飛行機だけ移動させる
 		if (m_type == ENEMY_FLY)
 		{
-			move = D3DXVECTOR3(sinf(rot.y) * EnemySpeed,
+			m_move = D3DXVECTOR3(sinf(rot.y) * EnemySpeed,
 				-(rot.x * EnemySpeed),
 				cosf(rot.y) * EnemySpeed);
 		}
 		else if (m_type == ENEMY_GROUND)
 		{
-			move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+			m_move = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 		}
 
 		if (AdvanceRot <= D3DX_PI * 0.25f)
 		{
 			// アタックカウントが300~400以上の時
-			if (object != nullptr && m_AttackCount >= 300 + FloatRandom(100,0))
+			if (PlayerObj != nullptr && m_AttackCount >= 300 + FloatRandom(200,0))
 			{
 				// プレイヤーに対してミサイルを発射する
-				Bullet(object);
+				Bullet(PlayerObj);
+
 				if (m_type == ENEMY_FLY)
 				{
 					// エネミーの状態を待機状態にする
@@ -297,7 +303,7 @@ void CEnemy::Update()
 	}
 
 	// 移動量を加算する
-	m_pos += move;
+	m_pos += m_move;
 
 	if (pGround != nullptr)
 	{
@@ -305,8 +311,23 @@ void CEnemy::Update()
 		{
 			D3DXVECTOR3 GroundPos = m_pos;
 			GroundPos.y -= 100.0f;
+
 			// 陸の当たり判定
-			pGround->Collision(&GroundPos);
+			if (pGround->Collision(&GroundPos) && m_state == ENEMY_DEATH)
+			{
+				CExplosion::Create(m_pos, m_quaternion);
+
+				// エネミーの総数
+				((CGame*)CApplication::GetModeObject())->DeleteEnemy(this);
+
+				CApplication::GetGame()->GetEM()->Death(this);
+
+				CGame::Add(100);
+
+				// 初期化
+				CEnemy::Uninit();
+			}
+
 			m_pos.y = GroundPos.y + 100.0f;
 		}
 		else if (m_type == ENEMY_GROUND)
@@ -319,6 +340,53 @@ void CEnemy::Update()
 			{
 				m_pos.y = GroundPos.y;
 			}
+		}
+	}
+
+	//死亡状態の判定
+	if (m_state == ENEMY_DEATH)
+	{
+		// 角度の設定
+		D3DXVECTOR3 rotDest = D3DXVECTOR3(D3DX_PI * 0.5f, rot.y, rot.z);
+		D3DXVECTOR3 rotResult = rotDest - rot;
+
+		rotResult = NormalizeRotXYZ(rotResult);
+
+		// 回転の加算
+		rot += rotResult * 0.01f;
+
+		float EnemySpeed = 5.0f;
+
+		m_move = D3DXVECTOR3(sinf(rot.y) * EnemySpeed,
+			-(rot.x * EnemySpeed),
+			cosf(rot.y) * EnemySpeed);
+
+		// プレイヤーの後ろを求める
+		D3DXVECTOR3 BackPos = MtxPosRot(D3DXVECTOR3(0.0f, 0.0f, -50.0f), rot, m_pos);
+
+		auto FloatRandom = [](float fMax, float fMin)
+		{
+			return ((rand() / (float)RAND_MAX) * (fMax - fMin)) + fMin;
+		};
+
+		for (int i = 0; i < 10; i++)
+		{
+			D3DXVECTOR3 pos = GetPosition();
+
+			pos.x += FloatRandom(2.5f, -2.5f);
+			pos.y += FloatRandom(2.5f, -2.5f);
+			pos.z += FloatRandom(2.5f, -2.5f);
+
+			CEffect *pEffect = CEffect::Create(D3DXVECTOR3(pos.x + FloatRandom(1.0f, -1.0f), pos.y, pos.z + FloatRandom(1.0f, -1.0f)), 0, 0, CTexture::TEXTURE_PARTIClE);
+			pEffect->SetSize(D3DXVECTOR3(15.0f, 15.0f, 0.0f));
+			pEffect->SetMoveVec(D3DXVECTOR3(0.0f, FloatRandom(1.5f, -1.5f), FloatRandom(10.5f, -10.5f)));
+			pEffect->SetLife(25);
+			pEffect->SetRenderMode(CEffect::MODE_ADD);
+
+			pEffect->SetColor(D3DXCOLOR(1.0f, FloatRandom(0.5f, 0.0f), 0.1f, 1.0f));
+
+			pEffect->SetTex(CTexture::TEXTURE_PARTIClE);
+			pEffect->SetQuaternion(m_quaternion);
 		}
 	}
 
@@ -338,7 +406,7 @@ void CEnemy::Update()
 	CMotionModel3D::Update();
 
 	// カメラの視点
-	CDebugProc::Print("エネミーのスクリーン座標 : (%.3f , %.3f , %.3f )\n", m_pos.x, m_pos.y, m_pos.z);
+	//CDebugProc::Print("エネミーのスクリーン座標 : (%.3f , %.3f , %.3f )\n", m_pos.x, m_pos.y, m_pos.z);
 }
 
 //=========================================
@@ -348,12 +416,6 @@ void CEnemy::Uninit()
 {
 	// モデルの解放
 	m_apModel[0]->Uninit();
-
-	// ターゲットの終了処理
-	m_Target->Uninit();
-
-	// レーダーの終了処理
-	m_Radar->Uninit();
 
 	// モーションの終了処理
 	CMotionModel3D::Uninit();
@@ -406,17 +468,23 @@ void CEnemy::Death()
 {
 	int nLife = GetHP();
 
-	if (nLife <= 0)
+	if (nLife <= 0 && m_state != ENEMY_DEATH)
 	{
-		// エネミーの総数
-		((CGame*)CApplication::GetModeObject())->DeleteEnemy(this);
+		CApplication::GetGame()->GetPM()->GetPlayer()->AddBullet();
 
-		CApplication::GetGame()->GetEM()->Death(this);
-		
-		CGame::Add(100);
+		if (m_Target != nullptr)
+		{
+			// ターゲットの終了処理
+			m_Target->Uninit();
+		}
 
-		// 初期化
-		CEnemy::Uninit();
+		if (m_Radar != nullptr)
+		{
+			// レーダーの終了処理
+			m_Radar->Uninit();
+		}
+
+		m_state = ENEMY_DEATH;
 	}
 }
 
@@ -451,8 +519,8 @@ CEnemy* CEnemy::Create(const D3DXVECTOR3 &pos, const EnemyType &type,const int &
 void CEnemy::Bullet(CObject *obj)
 {
 	// 両翼から弾を発射する
-	CBullet3D::Create(D3DXVECTOR3(50.0f, 50.0f, 0.0f), m_quaternion, obj, this, 60 , D3DX_PI * 0.15f);
-	CBullet3D::Create(D3DXVECTOR3(-50.0f, 50.0f, 0.0f), m_quaternion, obj, this, 60 , D3DX_PI * 0.15f);
+	CBullet3D::Create(D3DXVECTOR3(50.0f, 50.0f, 0.0f), m_quaternion, obj, this, 60 , D3DX_PI * 0.1f);
+	CBullet3D::Create(D3DXVECTOR3(-50.0f, 50.0f, 0.0f), m_quaternion, obj, this, 60 , D3DX_PI * 0.1f);
 
 	m_AttackCount = 0;
 }
@@ -462,22 +530,24 @@ void CEnemy::Bullet(CObject *obj)
 //=========================================
 void CEnemy::EnemyCollision()
 {
-	// オブジェクトの取得
-	CObject *object = CObject::GetObjectTop();
-
-	//プレイヤーの座標を取得
-	while (object)
+	for (int nCnt = 0; nCnt < 5; nCnt++)
 	{
-		if (object != nullptr)
-		{
-			EObjType ObjType = object->GetObjectType();
+		CObject *object = CObject::GetObjectTop(nCnt);
 
-			if (ObjType == OBJECT_ENEMY && object != this)
+		//プレイヤーの座標を取得
+		while (object)
+		{
+			if (object != nullptr)
 			{
-				SetCollision(Collision(object, true));
+				EObjType ObjType = object->GetObjectType();
+
+				if (ObjType == OBJECT_ENEMY && object != this)
+				{
+					SetCollision(Collision(object, true));
+				}
 			}
+			object = object->GetObjectNext();
 		}
-		object = object->GetObjectNext();
 	}
 }
 
@@ -506,14 +576,14 @@ void CEnemy::SetType(EnemyType type)
 //=========================================
 void CEnemy::Search()
 {
-	// 視点と注視点の距離
-	D3DXVECTOR3 posDiss = m_pos - m_PlayerPos;
-	float fDistance = sqrtf((posDiss.y * posDiss.y) + (posDiss.x * posDiss.x) + (posDiss.z * posDiss.z));
+	//// 視点と注視点の距離
+	//D3DXVECTOR3 posDiss = m_pos - m_PlayerPos;
+	//float fDistance = sqrtf((posDiss.y * posDiss.y) + (posDiss.x * posDiss.x) + (posDiss.z * posDiss.z));
 
-	if (fDistance >= -1000.0f && fDistance <= 1000.0f)
-	{// エネミーを敵対状態にする
-		m_state = ENEMY_WARNNING;
-	}
+	//if ((fDistance >= -1000.0f && fDistance <= 1000.0f ) && m_state != ENEMY_DEATH)
+	//{// エネミーを敵対状態にする
+	//	m_state = ENEMY_WARNNING;
+	//}
 }
 
 //=========================================

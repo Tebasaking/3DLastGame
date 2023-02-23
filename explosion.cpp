@@ -12,7 +12,7 @@
 #include "sound.h"
 
 const int CExplosion::ANIM_SPEED = 10;
-const int CExplosion::ANIM_MAX = 8;
+const int CExplosion::ANIM_MAX = 7;
 //=========================================
 //コンストラクタ
 //=========================================
@@ -44,9 +44,9 @@ HRESULT CExplosion::Init(const D3DXVECTOR3 &pos)
 	CBillboard::SetSize(D3DXVECTOR3(150.0f,150.0f,0.0f));
 
 	// テクスチャの設定
-	CBillboard::SetTexture(CTexture::TEXTURE_EXPLOSION);
+	CBillboard::SetTexture(CTexture::TEXTURE_EXPLOSION2);
 
-	SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+	SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 
 	// 体力の設定
 	SetHP(100);

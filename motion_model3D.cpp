@@ -119,11 +119,16 @@ void CMotionModel3D::Update()
 //=============================================================================
 void CMotionModel3D::Draw()
 {
+	if (this == nullptr)
+	{
+		return;
+	}
+
 	// デバイスの取得
 	LPDIRECT3DDEVICE9 pDevice = CApplication::GetRender()->GetDevice();
 
 	// 計算用マトリックス
-	D3DXMATRIX mtxWorld, mtxRot, mtxTrans;
+	D3DXMATRIX mtxWorld, mtxRot, mtxTrans, mtxScaling;
 
 	// 描画の終了
 	pDevice->EndScene();
@@ -134,6 +139,14 @@ void CMotionModel3D::Draw()
 	{
 		// ワールドマトリックスの初期化
 		D3DXMatrixIdentity(&mtxWorld);											// 行列初期化関数
+
+		if (CApplication::GetMode() == CApplication::MODE_TITLE)
+		{// タイトルだけサイズを適応する
+			m_size = GetSize();
+			// サイズの反映
+			D3DXMatrixScaling(&mtxScaling, m_size.x, m_size.y, m_size.z);
+			D3DXMatrixMultiply(&mtxWorld, &mtxWorld, &mtxScaling);					// 行列掛け算関数
+		}
 
 		// 向きの反映
 		D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, rot.x, rot.z);			// 行列回転関数

@@ -13,7 +13,7 @@
 //=========================================
 //コンストラクタ
 //=========================================
-CBillboard::CBillboard(int nPriority)
+CBillboard::CBillboard(int nPriority) : CObject(nPriority)
 {
 	m_pVtxBuff = nullptr;
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -121,7 +121,8 @@ void CBillboard::Draw()
 	// テクスチャの設定
 	pDevice->SetTexture(0, pTexture->GetTexture(m_texture));
 
-	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);				// カリングの設定
+	// カリングの設定
+	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
 	
 	pDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
 	pDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
@@ -177,17 +178,10 @@ void CBillboard::Draw()
 	// ビルボード描画
 	pDevice->DrawPrimitive(D3DPT_TRIANGLESTRIP, 0, 2);
 
-	//デバイス設定の初期化
-	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
-	pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
-	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
-
-	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);				// カリングの設定
+	// カリングの設定
+	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 	// ライトを有効	
 	pDevice->SetRenderState(D3DRS_LIGHTING, TRUE);
-	
-	// Zテストの終了
-	pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESSEQUAL);
 
 	// αテストの終了
 	pDevice->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE);
@@ -212,7 +206,7 @@ CBillboard* CBillboard::Create(const D3DXVECTOR3 &pos)
 
 	CBillboard* pCBillboard = nullptr;
 
-	pCBillboard = new CBillboard;
+	pCBillboard = new CBillboard(LAYER_FIVE);
 
 	if (pCBillboard != nullptr)
 	{

@@ -16,6 +16,8 @@
 #include "camera_player.h"
 #include "calculation.h"
 #include "missile_locus.h"
+#include "missile_alert_manager.h"
+#include "player3D.h"
 
 //=========================================
 //コンストラクタ
@@ -69,7 +71,7 @@ HRESULT CBullet3D::Init(const D3DXVECTOR3 &pos)
 	{// 狙われたターゲットがプレイヤーだった場合のみ生成する
 		m_pAlert = nullptr;
 
-		m_pAlert = CAlert::Create(m_pos,this);
+		m_pAlert = CMissileAlertManager::Create(this);
 
 		m_pAlert->SetObject(this);
 	}
@@ -107,13 +109,24 @@ void CBullet3D::Update()
 		// 弾が目標オブジェクトと衝突したら消滅する処理
 		CExplosion::Create(m_TargetObj->GetPosition(), m_quaternion);
 		Uninit();
-		m_TargetObj->ManageHP(-5);
 
 		if (m_TargetObj->GetObjectType() == OBJECT_ENEMY)
 		{// エネミーのステートを変化する
 			CEnemy* pEnemy = (CEnemy*)m_TargetObj;
 
 			pEnemy->SetState(CEnemy::ENEMY_WARNNING);
+			
+			m_TargetObj->ManageHP(-5);
+		}
+		else if (m_TargetObj->GetObjectType() == OBJECT_PLAYER)
+		{
+			CPlayer3D *pPlayer = (CPlayer3D*)m_TargetObj;
+
+			if (!pPlayer->GetInvincible())
+			{// 無敵判定
+				m_TargetObj->ManageHP(-1);
+				pPlayer->SetInvincible();
+			}
 		}
 		if (m_TargetObj->GetObjectType() == OBJECT_PLAYER)
 		{
@@ -266,8 +279,8 @@ D3DXVECTOR3 CBullet3D::LockOn()
 	sub.x = sinf(m_FllowRot.x) * sinf(m_FllowRot.y) * m_MissileSpeed;
 	sub.y = cosf(m_FllowRot.x)  * m_MissileSpeed;
 
-	CDebugProc::Print("BulletPos.y %.1f\n", BulletPos.y);
-	CDebugProc::Print("distance.y %.1f\n",distance.y);
+	//CDebugProc::Print("BulletPos.y %.1f\n", BulletPos.y);
+	//CDebugProc::Print("distance.y %.1f\n",distance.y);
 
 	return sub;
 }
@@ -279,7 +292,6 @@ void CBullet3D::BulletMove()
 {
 	if (m_TargetObj != nullptr)
 	{
-		//m_MissileSpeed = 30.0f;
 		// 徐々にミサイルのスピードを速くする
 		if (m_MissileSpeed <= 0.3f)
 		{
@@ -287,7 +299,7 @@ void CBullet3D::BulletMove()
 		}
 		else
 		{
-			m_MissileSpeed += 1.0f;
+			m_MissileSpeed += 1.5f;
 		}
 
 		// 目標のマトリックスを取得
@@ -352,7 +364,7 @@ void CBullet3D::BulletMove()
 				D3DXVECTOR3 Vec = EnemyVec - MoveVec;
 
 				// 1フレームに動く角度を設定する
-				float OneFrameRadian = (5 * (180 / D3DX_PI));
+				float OneFrameRadian = (8 * (180 / D3DX_PI));
 
 				/*D3DXVec3Normalize(&Vec, &Vec);*/
 
@@ -367,6 +379,7 @@ void CBullet3D::BulletMove()
 			}
 			else
 			{
+				m_bAlert = true;
 				m_state = IDOL_STATE;
 			}
 		}

@@ -65,27 +65,30 @@ void CTarget::Update()
 		m_TargetPos.y >= 0.0f && m_TargetPos.y <= SCREEN_HEIGHT &&
 		m_TargetPos.z >= 0.0f)
 	{
-		CObject *object = CObject::GetObjectTop();
-
-		//プレイヤーの座標を取得
-		while (object)
+		for (int nCnt = 0; nCnt < 5; nCnt++)
 		{
-			if (object != nullptr)
+			CObject *object = CObject::GetObjectTop(nCnt);
+
+			//プレイヤーの座標を取得
+			while (object)
 			{
-				EObjType ObjType = object->GetObjectType();
-
-				if (ObjType == OBJECT_PLAYER)
+				if (object != nullptr)
 				{
-					PlayerPos = object->GetPosition();
+					EObjType ObjType = object->GetObjectType();
 
-					if (PlayerPos.x > 0.0f || PlayerPos.x < 0.0f)
+					if (ObjType == OBJECT_PLAYER)
 					{
-						int nCnt = 0;
+						PlayerPos = object->GetPosition();
+
+						if (PlayerPos.x > 0.0f || PlayerPos.x < 0.0f)
+						{
+							int nCnt = 0;
+						}
+						break;
 					}
-					break;
 				}
+				object = object->GetObjectNext();
 			}
-			object = object->GetObjectNext();
 		}
 
 		//プレイヤーとエネミーの距離
@@ -131,17 +134,17 @@ void CTarget::Update()
 		CObject2D::SetScale(D3DXVECTOR3(0.0f,0.0f,0.0f));
 	}
 
-	// オブジェクトが死亡していた時
-	if (pObject == nullptr)
-	{
-		Uninit();
-	}
+	//// オブジェクトが死亡していた時
+	//if (pObject == nullptr)
+	//{
+	//	Uninit();
+	//}
 
-	EObjType obj = GetObjectType();
-	CTarget *pTagert = this;
+	//EObjType obj = GetObjectType();
+	//CTarget *pTagert = this;
 
 	// カメラの視点
-	CDebugProc::Print("ターゲットのサイズ %f \n", m_Size);
+	//CDebugProc::Print("ターゲットのサイズ %f \n", m_Size);
 }
 
 //=========================================
