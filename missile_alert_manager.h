@@ -22,7 +22,7 @@ public:
 	// •`‰æˆ—
 	void Draw(void) override {}
 	// I—¹ˆ—
-	void Uninit(void) override { Release(); }
+	void Uninit(void) override { m_bAlert = false;  Release(); }
 
 	void SetObject(CObject *Obj) { pObject = Obj; }
 	void SetAlert(bool bAlt) { m_bAlert = bAlt; }

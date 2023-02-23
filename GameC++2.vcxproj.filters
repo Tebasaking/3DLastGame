@@ -255,6 +255,15 @@
     <ClCompile Include="precompile.cpp">
       <Filter>ソース ファイル\システム</Filter>
     </ClCompile>
+    <ClCompile Include="time_over.cpp">
+      <Filter>ソース ファイル\システム\モード</Filter>
+    </ClCompile>
+    <ClCompile Include="game_over.cpp">
+      <Filter>ソース ファイル\システム\モード</Filter>
+    </ClCompile>
+    <ClCompile Include="tutorial.cpp">
+      <Filter>ソース ファイル\システム\モード</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="number.h">
@@ -436,6 +445,15 @@
     </ClInclude>
     <ClInclude Include="precompile.h">
       <Filter>ソース ファイル\システム</Filter>
+    </ClInclude>
+    <ClInclude Include="time_over.h">
+      <Filter>ソース ファイル\システム\モード</Filter>
+    </ClInclude>
+    <ClInclude Include="game_over.h">
+      <Filter>ソース ファイル\システム\モード</Filter>
+    </ClInclude>
+    <ClInclude Include="tutorial.h">
+      <Filter>ソース ファイル\システム\モード</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

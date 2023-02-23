@@ -19,9 +19,9 @@ CObject *CObject::m_pCurrent[LAYER_MAX] = { nullptr };
 //=========================================
 //コンストラクタ
 //=========================================
-CObject::CObject(int nPriority /*= LAYER_ONE*/):	
+CObject::CObject(int nPriority /*= LAYER_ONE*/)/*:	
 m_pNext(nullptr),
-m_pPrev(nullptr)
+m_pPrev(nullptr)*/
 {
 	// オブジェクトを通常モードにする
 	m_objmode = MAX_MODE;
@@ -165,25 +165,28 @@ void CObject::UninitAll()
 {
 	for (int nCnt = 0; nCnt < LAYER_MAX; nCnt++)
 	{
-		if (m_pTop[nCnt] != nullptr)
-		{
+	/*	if (m_pTop[nCnt] != nullptr)
+		{*/
 			CObject *pDeleteBox = m_pTop[nCnt];
 
 			while (pDeleteBox != nullptr)
 			{
 				CObject *pSaveBox = pDeleteBox->m_pNext;
 
-				pDeleteBox->Uninit();
+				if (!pDeleteBox->m_DeathFlag)
+				{
+					pDeleteBox->Uninit();
+				}
 
 				pDeleteBox = pSaveBox;
 			}
-		}
+		//}
 	}
 
 	for (int nCnt = 0; nCnt < LAYER_MAX; nCnt++)
 	{
-		if (m_pTop[nCnt] != nullptr)
-		{
+		/*if (m_pTop[nCnt] != nullptr)
+		{*/
 			CObject *pBox = m_pTop[nCnt];
 
 			while (pBox != nullptr)
@@ -194,10 +197,17 @@ void CObject::UninitAll()
 				{
 					pBox->DFlagDelete();
 				}
+				else
+				{
+					assert(false);
+				}
 
 				pBox = pObjectNext;
 			}
-		}
+
+			m_pTop[nCnt] = nullptr;
+			m_pCurrent[nCnt] = nullptr;
+		//}
 	}
 }
 

@@ -33,6 +33,8 @@
 #include "model3D.h"
 #include "texture3D.h"
 #include "joypad.h"
+#include "time_over.h"
+#include "game_over.h"
 
 CDebugProc *CApplication::m_pDebug = nullptr;
 CRender *CApplication::m_pRender = nullptr;
@@ -273,9 +275,12 @@ void CApplication::Uninit()
 	if (m_pMode != nullptr)
 	{
 		m_pMode->Uninit();
-		delete m_pMode;
-		m_pMode = nullptr;
+		//delete m_pMode;
+		//m_pMode = nullptr;
 	}
+
+	// オブジェクトの終了処理
+	CObject::UninitAll();
 
 	// モデルの終了処理
 	CModel3D::UninitModel();
@@ -397,6 +402,18 @@ void CApplication::ChangeMode()
 		// カメラの初期化処理
 		m_pCamera->Init(D3DXVECTOR3(0.0f, 1000.0f, -150.0f));
 		m_pMode = new CResult;
+		break;
+
+	case MODE_TIME_OVER:
+		m_pTitle->Init(D3DXVECTOR3(0.0f, 0.0f, -150.0f));
+		// タイムオーバーの初期化処理
+		m_pMode = new CTimeOver;
+		break;
+
+	case MODE_GAME_OVER:
+		m_pTitle->Init(D3DXVECTOR3(0.0f, 0.0f, -150.0f));
+		// ゲームオーバーの初期化処理
+		m_pMode = new CGameOver;
 		break;
 
 	default:

@@ -25,7 +25,7 @@ class CPlayerUI : public CObject
 		GREEN,
 	};
 public:
-	explicit CPlayerUI(int nPriority = LAYER_FIVE);
+	explicit CPlayerUI(int nPriority = LAYER_ONE);
 	~CPlayerUI();
 
 	virtual HRESULT Init(const D3DXVECTOR3 &pos) override;	// ‰Šú‰»ˆ—

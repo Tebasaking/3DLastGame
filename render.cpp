@@ -198,6 +198,18 @@ void CRender::Draw()
 			CObject::DrawAll(CObject::TITLE_MODE);
 			break;
 		}
+		case CApplication::MODE_GAME_OVER:
+		{
+			// •`‰æˆ—
+			CObject::DrawAll(CObject::TITLE_MODE);
+			break;
+		}
+		case CApplication::MODE_TIME_OVER:
+		{
+			// •`‰æˆ—
+			CObject::DrawAll(CObject::TITLE_MODE);
+			break;
+		}
 
 		}
 

@@ -36,6 +36,7 @@ CTitle::~CTitle()
 //=========================================
 HRESULT CTitle::Init(const D3DXVECTOR3 &pos)
 {
+	m_bFade = false;
 	m_Select = 1;
 
 	// 海
@@ -76,44 +77,47 @@ void CTitle::Update()
 	float X = SCREEN_WIDTH * 0.5f;
 	float Y = SCREEN_HEIGHT * 0.5f;
 
-	if (pKeyboard->Trigger(DIK_UP) || pKeyboard->Trigger(JOYPAD_UP))
+	if (!m_bFade)
 	{
-		pObject2D[m_Select]->SetScale(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
-		m_Select--;
-	}
-	if (pKeyboard->Trigger(DIK_DOWN) || pKeyboard->Trigger(JOYPAD_DOWN))
-	{
-		pObject2D[m_Select]->SetScale(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
-		m_Select++;
-	}
+		if (pKeyboard->Trigger(DIK_UP) || pKeyboard->Trigger(JOYPAD_UP))
+		{
+			pObject2D[m_Select]->SetScale(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
+			m_Select--;
+		}
+		if (pKeyboard->Trigger(DIK_DOWN) || pKeyboard->Trigger(JOYPAD_DOWN))
+		{
+			pObject2D[m_Select]->SetScale(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
+			m_Select++;
+		}
 
-	if (m_Select == 0)
-	{
-		m_Select = 3;
-	}
-	else if (m_Select == 4)
-	{
-		m_Select = 1;
-	}
+		if (m_Select == 0)
+		{
+			m_Select = 3;
+		}
+		else if (m_Select == 4)
+		{
+			m_Select = 1;
+		}
 
-	if (!m_bSelect)
-	{
-		m_SelectCnt++;
-	}
-	else
-	{
-		m_SelectCnt--;
-	}
+		if (!m_bSelect)
+		{
+			m_SelectCnt++;
+		}
+		else
+		{
+			m_SelectCnt--;
+		}
 
-	pObject2D[m_Select]->SetScale(D3DXVECTOR3(X + m_SelectCnt,Y + m_SelectCnt,0.0f));
+		pObject2D[m_Select]->SetScale(D3DXVECTOR3(X + m_SelectCnt, Y + m_SelectCnt, 0.0f));
 
-	if (m_SelectCnt == 30)
-	{
-		m_bSelect = true;
-	}
-	else if (m_SelectCnt == 0)
-	{
-		m_bSelect = false;
+		if (m_SelectCnt == 30)
+		{
+			m_bSelect = true;
+		}
+		else if (m_SelectCnt == 0)
+		{
+			m_bSelect = false;
+		}
 	}
 
 	// モード変更
@@ -121,5 +125,11 @@ void CTitle::Update()
 	{
 		//モードの設定
 		CFade::SetFade(CApplication::MODE_GAME);
+
+		for (int nCnt = 0; nCnt < 4; nCnt++)
+		{
+			pObject2D[nCnt]->SetScale(D3DXVECTOR3(0.0f,0.0f,0.0f));
+			m_bFade = true;
+		}
 	}
 }

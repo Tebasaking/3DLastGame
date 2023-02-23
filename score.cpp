@@ -33,7 +33,7 @@ HRESULT CScore::Init(const D3DXVECTOR3 &pos)
 	CObject2D::Init(pos);
 
 	//サイズの設定
-	CObject2D::SetSize(D3DXVECTOR3(0.0f, 0.0f,0.0f));
+	CObject2D::SetSize(D3DXVECTOR3(44.0f, 44.0f,0.0f));
 
 	//// テクスチャの設定
 	//CObject2D::SetTexture(CTexture::TEXTURE_NONE);
@@ -43,7 +43,7 @@ HRESULT CScore::Init(const D3DXVECTOR3 &pos)
 	for (int nCnt = 0; nCnt < MAX_DIGITS; nCnt++)
 	{
 		m_pNumber[nCnt] = CNumber::Create(D3DXVECTOR3(pos.x + 50.0f * nCnt, pos.y, pos.z));
-		m_pNumber[nCnt]->SetScale(D3DXVECTOR3(40.0f, 40.0f, 0.0f));
+		m_pNumber[nCnt]->SetScale(D3DXVECTOR3(m_NumSize.x, m_NumSize.y, 0.0f));
 		m_pNumber[nCnt]->SetColor(D3DXCOLOR(0.0f, 0.6f, 0.0f, 1.0f));
 	}
 
@@ -60,6 +60,12 @@ HRESULT CScore::Init(const D3DXVECTOR3 &pos)
 void CScore::Update()
 {
 	Set();
+
+	if (CApplication::GetMode() != CApplication::MODE_GAME)
+	{
+
+		return;
+	}
 
 	bool bAlert = CApplication::GetGame()->GetPUI()->GetAlert();
 
@@ -96,7 +102,7 @@ void CScore::Draw()
 //=========================================
 //オブジェクトのクリエイト
 //=========================================
-CScore* CScore::Create(const D3DXVECTOR3 &pos)
+CScore* CScore::Create(const D3DXVECTOR3 &pos,D3DXVECTOR3 Numsize)
 {
 	CScore* pCScore = nullptr;
 
@@ -104,6 +110,7 @@ CScore* CScore::Create(const D3DXVECTOR3 &pos)
 
 	if (pCScore != nullptr)
 	{
+		pCScore->ScoreSizeSet(Numsize);
 		pCScore->Init(pos);
 	}
 
@@ -139,48 +146,9 @@ void CScore::SetCor(D3DXCOLOR col)
 }
 
 //=========================================
-// 読み込み
+// 大きさの設定
 //=========================================
-void CScore::Load()
+void CScore::ScoreSizeSet(D3DXVECTOR3 size)
 {
-	LPDIRECT3DDEVICE9 pDevice;
-	pDevice = CApplication::GetRender()->GetDevice();
-
-	FILE*fp = fopen("data\\TXT\\Ranking.txt", "r");		//ファイル読み込み
-	const int lenLine = 1024;							//1単語の最大数
-
-	for (int i = 0; i < MAX_RANK; i++)
-	{
-		if (fp != NULL)
-		{
-			fscanf(fp, "%d", &m_apScore[i]);	//読み込んだ文字ごとに設定する
-		}
-	}
-
-	fclose(fp);
+	m_NumSize = size;
 }
-
-////=========================================
-//// ランキングの並び替え
-////=========================================
-//void CScore::Ranking()
-//{
-//	int nSave;
-//	m_nRankUpdate = -1;
-//	m_nTimerRanking = 0;
-//	if (m_Time <= m_apScore[0])
-//	{//比較
-//		m_nRankUpdate++;
-//		m_apScore[0];
-//		for (int i = 0; i < MAX_RANK - 1; i++)
-//		{
-//			if (m_apScore[i] > m_apScore[i + 1])
-//			{//並べ替え
-//				nSave = m_apScore[i + 1];
-//				m_apScore[i + 1] = m_apScore[i];
-//				m_apScore[i] = nSave;
-//				m_nRankUpdate++;
-//			}
-//		}
-//	}
-//}

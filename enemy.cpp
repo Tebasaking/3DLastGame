@@ -322,8 +322,6 @@ void CEnemy::Update()
 
 				CApplication::GetGame()->GetEM()->Death(this);
 
-				CGame::Add(100);
-
 				// 初期化
 				CEnemy::Uninit();
 			}
@@ -396,8 +394,11 @@ void CEnemy::Update()
 	// エネミーの当たり判定
 	EnemyCollision();
 
-	// エネミーの回転の設定
-	m_apModel[0]->SetRot(rot);
+	if (m_apModel[0] != nullptr)
+	{
+		// エネミーの回転の設定
+		m_apModel[0]->SetRot(rot);
+	}
 
 	// 回転の設定
 	SetRotation(rot);
@@ -416,6 +417,8 @@ void CEnemy::Uninit()
 {
 	// モデルの解放
 	m_apModel[0]->Uninit();
+	delete m_apModel[0];
+	m_apModel[0] = nullptr;
 
 	// モーションの終了処理
 	CMotionModel3D::Uninit();
@@ -453,7 +456,10 @@ void CEnemy::Draw()
 	pDevice->SetTransform(D3DTS_WORLD, &m_WorldMtx);
 
 	// 初期化
-	m_apModel[0]->Draw();
+	if (m_apModel[0] != nullptr)
+	{
+		m_apModel[0]->Draw();
+	}
 
 	// モーションの描画処理
 	CMotionModel3D::Draw();
@@ -471,6 +477,8 @@ void CEnemy::Death()
 	if (nLife <= 0 && m_state != ENEMY_DEATH)
 	{
 		CApplication::GetGame()->GetPM()->GetPlayer()->AddBullet();
+
+		CGame::Add(1000);
 
 		if (m_Target != nullptr)
 		{

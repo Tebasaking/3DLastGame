@@ -96,8 +96,9 @@ void CTime::Update()
 		// ŽžŠÔ‚ª0ˆÈ‰º‚É‚È‚Á‚½Žž
 		if (m_ResultTime <= 0)
 		{
+			CGame::Add(5000);
 			// ƒQ[ƒ€‚ðI—¹‚·‚é
-			CGame::Finish();
+			CGame::Finish2();
 			Uninit();
 		}
 	}

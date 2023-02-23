@@ -112,7 +112,6 @@ private:
 
 	CModel3D*				m_apModel[MAX_PARTS];		// モデルの最大数
 	CModel3D*				m_pRobot;					// ロボットのモデル読み込み
-	CModel3D*				m_pAttack;					// 攻撃オブジェクト情報
 	D3DXMATRIX				m_WorldMtx;					// ワールドマトリックス
 	D3DXVECTOR3				m_MouseMove;				// マウスの移動処理
 	D3DXVECTOR3				m_changeRot;				// 変換した角度の値

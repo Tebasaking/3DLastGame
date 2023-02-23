@@ -65,7 +65,7 @@ CCameraPlayer::~CCameraPlayer()
 HRESULT CCameraPlayer::Init(D3DXVECTOR3 pos)
 {
 	CCamera::Init(pos);
-
+	DefPos = pos;
 	m_posR = D3DXVECTOR3(0.0f, 1000.0f, 0.0f);
 	m_Dest = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_Destquaternion = D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f);
@@ -107,6 +107,19 @@ void CCameraPlayer::Uninit(void)
 //=============================================================================
 void CCameraPlayer::Update(void)
 {
+	if (m_posV.x <= -10000 || m_posV.x >= 10000)
+	{
+		m_posV = DefPos;
+		m_posR = D3DXVECTOR3(0.0f, 1000.0f, 0.0f);
+	}
+	else if (m_posV.z <= -10000 || m_posV.z >= 10000)
+	{
+		m_posV = DefPos;
+		m_posR = D3DXVECTOR3(0.0f, 1000.0f, 0.0f);
+	}
+
+	CDebugProc::Print("%f,%f,%f", m_posV.x, m_posV.y, m_posV.z);
+
 	if (m_event == EVENT_NORMAL)
 	{
 		// キーボードの取得

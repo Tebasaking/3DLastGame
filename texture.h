@@ -49,6 +49,9 @@ public: /* 定義 */
 		TEXTURE_GAGE_BOX,			// リロードのゲージの箱
 		TEXTURE_GAGE,				// リロードのゲージ
 		TEXTURE_UI_ALERT,			// ミサイルのアラート
+		TEXTURE_RANKING,			// ランキングの画像
+		TEXTURE_GAME_OVER,			// ゲームオーバーの画像
+		TEXTURE_TIME_OVER,			// タイムオーバーの画像
 		TEXTURE_MAX,
 		TEXTURE_NONE,	// 使用しない
 	};

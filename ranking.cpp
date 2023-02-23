@@ -36,7 +36,7 @@ HRESULT CRanking::Init()
 {
 	for (int nCnt = 0; nCnt < MAX_RANK; nCnt++)
 	{
-		m_apScore[nCnt] = CScore::Create(D3DXVECTOR3(470.0f, 190.0f + 119.0f*nCnt, 0.0f));
+		m_apScore[nCnt] = CScore::Create(D3DXVECTOR3(470.0f, 200.0f + 150.0f * nCnt, 0.0f),D3DXVECTOR3(50.0f,50.0f,0.0f));
 	}
 	Load();
 	Ranking();
@@ -50,11 +50,11 @@ HRESULT CRanking::Init()
 //=========================================
 void CRanking::Update()
 {
-	//if (m_nRankUpdate != -1)
-	//{
-	//	//F‚Ìİ’è
-	//	m_apScore[m_nRankUpdate]->SetCor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
-	//}
+	if (m_nRankUpdate != -1)
+	{
+		//F‚Ìİ’è
+		m_apScore[m_nRankUpdate]->SetCor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+	}
 }
 
 //=========================================
@@ -148,8 +148,7 @@ void CRanking::Ranking()
 		m_apScore[MAX_RANK - 1]->ScoreSet(m_Score);
 
 		//¸‡‚É•À‚Ñ•Ï‚¦‚é
-		std::vector<int> rank = { m_apScore[0]->GetScore(), m_apScore[1]->GetScore(), m_apScore[2]->GetScore(),
-			m_apScore[3]->GetScore(), m_apScore[4]->GetScore() };
+		std::vector<int> rank = { m_apScore[0]->GetScore(), m_apScore[1]->GetScore(), m_apScore[2]->GetScore() };
 
 		std::sort(rank.begin(), rank.end());
 

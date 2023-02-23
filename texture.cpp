@@ -45,7 +45,10 @@ const char* CTexture::s_FileName[] =
 	"Data\\TEXTURE\\UI_WEAPON.png",
 	"Data\\TEXTURE\\GAGE_BOX.png",
 	"Data\\TEXTURE\\GAGE.png",
-	"Data\\TEXTURE\\UI_MISSILE_ALERT.png"
+	"Data\\TEXTURE\\UI_MISSILE_ALERT.png",
+	"Data\\TEXTURE\\Ranking000.png",
+	"Data\\TEXTURE\\TIME_OVER.png",
+	"Data\\TEXTURE\\GAME_OVER.png",
 };
 
 static_assert(sizeof(CTexture::s_FileName) / sizeof(CTexture::s_FileName[0]) == CTexture::TEXTURE_MAX, "aho");

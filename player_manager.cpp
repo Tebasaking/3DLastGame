@@ -78,10 +78,12 @@ void CPlayerManager::Uninit()
 	if (m_pFly != nullptr)
 	{
 		m_pFly->Uninit();
+		m_pFly = nullptr;
 	}
 	if (m_pRobot != nullptr)
 	{
 		m_pRobot->Uninit();
+		m_pRobot = nullptr;
 	}
 }
 

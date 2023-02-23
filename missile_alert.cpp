@@ -111,6 +111,8 @@ void CAlert::Update()
 //=========================================
 void CAlert::Uninit()
 {
+	m_bCheck = false;
+
 	// I—¹ˆ—
 	CObject2D::Uninit();
 }

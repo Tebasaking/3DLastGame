@@ -43,6 +43,7 @@ public:
 	static CPlayerUI *GetPUI() { return m_PlayerUI; }
 	static bool GetFinish() { return m_bFinish; }
 	static void Finish() { m_bFinish = true; }
+	static void Finish2() { m_bFinish_2 = true; }
 	static CScore *GetScore() { return m_pScore; }
 	static void Add(int Score);
 
@@ -54,6 +55,7 @@ private:
 	static CScore *m_pScore;
 	static CAlert *m_pAlert;							// ÉAÉâÅ[Ég
 	static bool m_bFinish;
+	static bool m_bFinish_2;
 	CRadar*				  m_pRadar;
 };
 

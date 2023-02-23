@@ -209,6 +209,7 @@ void CTitleModel::Uninit()
 {
 	// モデルの解放
 	m_apModel[0]->Uninit();
+	delete m_apModel[0];
 
 	// モーションの終了処理
 	CMotionModel3D::Uninit();

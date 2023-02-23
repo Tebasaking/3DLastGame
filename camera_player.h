@@ -76,6 +76,7 @@ private:
 	D3DXVECTOR3			m_rotMove;			// 移動方向
 	D3DXVECTOR3			m_VecGet;			// マウスのベクトル
 	D3DXVECTOR3			m_Dest;				// マウスのDest
+	D3DXVECTOR3			DefPos;		
 	D3DXVECTOR3			m_axisVec;			// 回転方向のベクトル
 	CAMERA_TYPE			m_mode;				// カメラのモード
 

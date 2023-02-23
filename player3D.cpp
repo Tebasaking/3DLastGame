@@ -124,12 +124,6 @@ HRESULT CPlayer3D::Init(const D3DXVECTOR3 &pos)
 	m_pRobot->SetPos(pos);
 	m_pRobot->SetSize(D3DXVECTOR3(0.1f, 0.1f, 0.1f));
 
-	m_pAttack = new CModel3D;
-	m_pAttack->Init();
-	m_pAttack->SetPos(pos);
-	m_pAttack->SetSize(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	m_pAttack->SetSize(m_pAttack->GetMaterial().at(0).size);
-
 	//拡大率の設定
 	/*m_apModel[0]->SetSize(D3DXVECTOR3(1.0f, 1.0f, 1.0f));*/
 
@@ -216,8 +210,21 @@ void CPlayer3D::Uninit()
 		m_apModel[nCnt]->Uninit();
 	}
 
-	// ロボットモデルの終了処理
-	m_pRobot->Uninit();
+	if (m_apModel[0] != nullptr)
+	{
+		// プレイヤーモデルの終了処理
+		m_apModel[0]->Uninit();
+		delete m_apModel[0];
+		m_apModel[0] = nullptr;
+	}
+
+	if (m_pRobot != nullptr)
+	{
+		// ロボットモデルの終了処理
+		m_pRobot->Uninit();
+		delete m_pRobot;
+		m_pRobot = nullptr;
+	}
 
 	// モーションの終了処理
 	CMotionModel3D::Uninit();
@@ -803,6 +810,7 @@ void CPlayer3D::GroundCollison()
 			}
 			if (m_state == DEATH_STATE)
 			{
+				CGame::Add(2000);
 				CExplosion::Create(m_pos, m_quaternion);
 				CApplication::GetCamera()->SetDeathGround();
 

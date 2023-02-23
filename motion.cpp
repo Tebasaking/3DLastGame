@@ -572,16 +572,8 @@ void CMotion::Uninit(void)
 		if (m_pParts[i] != NULL)
 		{
 			m_pParts[i]->Uninit();
-			m_pParts[i] = nullptr;
-		}
-	}
-
-	for (int i = 0; i < (int)m_pParts.size(); i++)
-	{
-		if (m_pParts.at(i) != nullptr)
-		{
 			delete m_pParts.at(i);
-			m_pParts.at(i) = nullptr;
+			m_pParts[i] = nullptr;
 		}
 	}
 }

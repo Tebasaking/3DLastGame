@@ -171,6 +171,7 @@
     <ClCompile Include="explosion.cpp" />
     <ClCompile Include="fade.cpp" />
     <ClCompile Include="game.cpp" />
+    <ClCompile Include="game_over.cpp" />
     <ClCompile Include="input.cpp" />
     <ClCompile Include="inputcontroller.cpp" />
     <ClCompile Include="inputjoypad.cpp" />
@@ -214,8 +215,10 @@
     <ClCompile Include="texture.cpp" />
     <ClCompile Include="texture3D.cpp" />
     <ClCompile Include="time.cpp" />
+    <ClCompile Include="time_over.cpp" />
     <ClCompile Include="title.cpp" />
     <ClCompile Include="title_model.cpp" />
+    <ClCompile Include="tutorial.cpp" />
     <ClCompile Include="utility.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -236,6 +239,7 @@
     <ClInclude Include="explosion.h" />
     <ClInclude Include="fade.h" />
     <ClInclude Include="game.h" />
+    <ClInclude Include="game_over.h" />
     <ClInclude Include="input.h" />
     <ClInclude Include="inputcontroller.h" />
     <ClInclude Include="inputjoypad.h" />
@@ -276,8 +280,10 @@
     <ClInclude Include="texture.h" />
     <ClInclude Include="texture3D.h" />
     <ClInclude Include="time.h" />
+    <ClInclude Include="time_over.h" />
     <ClInclude Include="title.h" />
     <ClInclude Include="title_model.h" />
+    <ClInclude Include="tutorial.h" />
     <ClInclude Include="utility.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

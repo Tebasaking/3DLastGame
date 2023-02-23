@@ -90,8 +90,7 @@ void CMotionModel3D::Uninit()
 		m_pMotion->Uninit();
 
 		// ƒƒ‚ƒŠ‚Ì‰ğ•ú
-		
-		m_pMotion;
+		delete m_pMotion;
 		m_pMotion = nullptr;
 	}
 

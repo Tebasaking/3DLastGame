@@ -67,13 +67,16 @@ HRESULT CBullet3D::Init(const D3DXVECTOR3 &pos)
 
 	//ミサイルアラートの生成====================================
 
-	if (m_TargetObj->GetObjectType() == OBJECT_PLAYER)
-	{// 狙われたターゲットがプレイヤーだった場合のみ生成する
-		m_pAlert = nullptr;
+	if (m_TargetObj != nullptr)
+	{
+		if (m_TargetObj->GetObjectType() == OBJECT_PLAYER)
+		{// 狙われたターゲットがプレイヤーだった場合のみ生成する
+			m_pAlert = nullptr;
 
-		m_pAlert = CMissileAlertManager::Create(this);
+			m_pAlert = CMissileAlertManager::Create(this);
 
-		m_pAlert->SetObject(this);
+			m_pAlert->SetObject(this);
+		}
 	}
 
 	//==========================================================
@@ -103,36 +106,39 @@ void CBullet3D::Update()
 	// 弾の移動制御
 	BulletMove();
 
+	m_TargetObj;
+
 	// 当たり判定
 	if (Collision(m_TargetObj, false))
 	{
 		// 弾が目標オブジェクトと衝突したら消滅する処理
 		CExplosion::Create(m_TargetObj->GetPosition(), m_quaternion);
-		Uninit();
 
-		if (m_TargetObj->GetObjectType() == OBJECT_ENEMY)
-		{// エネミーのステートを変化する
-			CEnemy* pEnemy = (CEnemy*)m_TargetObj;
-
-			pEnemy->SetState(CEnemy::ENEMY_WARNNING);
-			
-			m_TargetObj->ManageHP(-5);
-		}
-		else if (m_TargetObj->GetObjectType() == OBJECT_PLAYER)
+		if (m_TargetObj != nullptr)
 		{
-			CPlayer3D *pPlayer = (CPlayer3D*)m_TargetObj;
+			if (m_TargetObj->GetObjectType() == OBJECT_ENEMY)
+			{// エネミーのステートを変化する
+				CEnemy* pEnemy = (CEnemy*)m_TargetObj;
 
-			if (!pPlayer->GetInvincible())
-			{// 無敵判定
-				m_TargetObj->ManageHP(-1);
-				pPlayer->SetInvincible();
+				pEnemy->SetState(CEnemy::ENEMY_WARNNING);
+
+				m_TargetObj->ManageHP(-5);
+			}
+			else if (m_TargetObj->GetObjectType() == OBJECT_PLAYER)
+			{
+				CPlayer3D *pPlayer = (CPlayer3D*)m_TargetObj;
+
+				if (!pPlayer->GetInvincible())
+				{// 無敵判定
+					m_TargetObj->ManageHP(-1);
+					pPlayer->SetInvincible();
+				}
+
+				//カメラ情報の取得
+				CApplication::GetCamera()->ShakeCamera(60.0f, 10.0f);
 			}
 		}
-		if (m_TargetObj->GetObjectType() == OBJECT_PLAYER)
-		{
-			//カメラ情報の取得
-			CApplication::GetCamera()->ShakeCamera(60.0f, 10.0f);
-		}
+		Uninit();
 	}
 	
 	// グラウンドの取得
@@ -180,6 +186,11 @@ void CBullet3D::Uninit()
 
 	// モデルの終了処理
 	m_pModel->Uninit();
+	delete m_pModel;
+	m_pModel = nullptr;
+
+	m_TargetObj = nullptr;
+	m_pShooter = nullptr;
 
 	//オブジェクトの解放処理
 	CObject::Release();
@@ -315,20 +326,23 @@ void CBullet3D::BulletMove()
 
 		if (m_FrontMoveCnt <= 30)
 		{
-			if (m_pShooter->GetObjectType() == CObject::OBJECT_PLAYER)
+			if (m_pShooter != nullptr)
 			{
-				// クォータニオンを使用した移動の適応
-				Pos = WorldCastVtx(D3DXVECTOR3(0.0f, 0.0f, m_MissileSpeed), m_pos, m_quaternion);
-			}
-			else
-			{
-				// 移動角度の設定
-				MoveRot = m_ShooterRot;
+				if (m_pShooter->GetObjectType() == CObject::OBJECT_PLAYER)
+				{
+					// クォータニオンを使用した移動の適応
+					Pos = WorldCastVtx(D3DXVECTOR3(0.0f, 0.0f, m_MissileSpeed), m_pos, m_quaternion);
+				}
+				else
+				{
+					// 移動角度の設定
+					MoveRot = m_ShooterRot;
 
-				D3DXVECTOR3 Rot = m_pShooter->GetRot();
+					D3DXVECTOR3 Rot = m_pShooter->GetRot();
 
-				// 移動量
-				Pos = WorldCastVtx(D3DXVECTOR3(0.0f, 0.0f, m_MissileSpeed), m_pos, Rot);
+					// 移動量
+					Pos = WorldCastVtx(D3DXVECTOR3(0.0f, 0.0f, m_MissileSpeed), m_pos, Rot);
+				}
 			}
 
 			// 角度の設定

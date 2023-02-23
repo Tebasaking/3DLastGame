@@ -42,8 +42,8 @@ CPlayerUI::~CPlayerUI()
 HRESULT CPlayerUI::Init(const D3DXVECTOR3 &pos)
 {
 	// ゲージ二種設定
-	m_pGage = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH - 150.0f, SCREEN_HEIGHT - 50.0f, 0.0f), 4);
-	m_pGageBox = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH - 150.0f, SCREEN_HEIGHT - 50.0f, 0.0f), 4);
+	m_pGage = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH - 150.0f, SCREEN_HEIGHT - 50.0f, 0.0f), 3);
+	m_pGageBox = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH - 150.0f, SCREEN_HEIGHT - 50.0f, 0.0f), 3);
 
 	m_pGageBox->SetScale(D3DXVECTOR3(100.0f, 5.0f, 0.0f));
 
@@ -52,7 +52,7 @@ HRESULT CPlayerUI::Init(const D3DXVECTOR3 &pos)
 
 	for (int nCnt = 0; nCnt < 2; nCnt++)
 	{
-		pObject2D[nCnt] = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), 4);
+		pObject2D[nCnt] = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), 3);
 		pObject2D[nCnt]->SetScale(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
 	}
 
@@ -79,6 +79,8 @@ HRESULT CPlayerUI::Init(const D3DXVECTOR3 &pos)
 		m_pMissileNum[nCnt]->SetColor(D3DXCOLOR(0.0f, 0.8f, 0.0f, 1.0f));
 		m_pMissileNum[nCnt]->SetScale(D3DXVECTOR3(30.0f, 30.0f, 0.0f));
 	}
+
+	m_bAlert = false;
 
 	// テクスチャ座標の設定
 	Set();
@@ -121,6 +123,8 @@ void CPlayerUI::Update()
 //=========================================
 void CPlayerUI::Uninit()
 {
+	m_bAlert = false;
+
 	for (int nCnt = 0; nCnt < SPEED_DIGITS; nCnt++)
 	{
 		if (m_pSpeedNum[nCnt] != nullptr)
@@ -158,6 +162,8 @@ void CPlayerUI::Uninit()
 	{
 		m_pGage->Uninit();
 	}
+
+	Release();
 }
 //=========================================
 // 数字の設定

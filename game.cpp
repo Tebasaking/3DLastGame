@@ -26,12 +26,14 @@
 #include "missile_alert.h"
 
 bool CGame::m_bFinish = false;
+bool CGame::m_bFinish_2 = false;
 CMesh* CGame::m_pMesh[3] = {};
 CScore* CGame::m_pScore = nullptr;
 CPlayerManager* CGame::m_pPlayerManager = nullptr;
 CEnemy_Manager* CGame::m_pEnemyManager = nullptr;
 CPlayerUI* CGame::m_PlayerUI = nullptr;
 CAlert* CGame::m_pAlert = nullptr;
+
 //=========================================
 // コンストラクタ
 //=========================================
@@ -63,6 +65,7 @@ HRESULT CGame::Init(const D3DXVECTOR3 &pos)
 	m_PlayerUI->Init(D3DXVECTOR3(0.0f,0.0f,0.0f));
 
 	m_bFinish = false;
+	m_bFinish_2 = false;
 
 	CRender *pRender = CApplication::GetRender();
 	pRender->SetFog(true, D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0001f));
@@ -74,7 +77,7 @@ HRESULT CGame::Init(const D3DXVECTOR3 &pos)
 	pTime->SetAlarm(2,0);
 
 	// スコアの生成
-	m_pScore = CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 300.0f, 85.0f, 0.0f));
+	m_pScore = CScore::Create(D3DXVECTOR3(SCREEN_WIDTH - 300.0f, 85.0f, 0.0f),D3DXVECTOR3(40.0f,40.0f,0.0f));
 
 	// 海
 	m_pMesh[0] = CMesh::Create(D3DXVECTOR3(0.0f, -350.0f, 0.0f), CMesh::TYPE_SEA);
@@ -113,14 +116,31 @@ void CGame::Uninit()
 		m_pMesh[nCnt] = nullptr;
 	}
 
-	// スコアの終了処理
-	m_pScore->Uninit();
-	m_pScore = nullptr;
+	if (m_pScore != nullptr)
+	{
+		// スコアの終了処理
+		m_pScore->Uninit();
+		m_pScore = nullptr;
+	}
 
-	m_PlayerUI->Release();
+	if (m_PlayerUI != nullptr)
+	{
+		m_PlayerUI->Release();
+	}
 
-	//m_pPlayerManager->Uninit();
+	if (m_pPlayerManager != nullptr)
+	{
+		m_pPlayerManager->Uninit();
+		delete m_pPlayerManager;
+		m_pPlayerManager = nullptr;
+	}
 
+	if (m_pEnemyManager != nullptr)
+	{
+		m_pEnemyManager->Uninit();
+		delete m_pEnemyManager;
+		m_pEnemyManager = nullptr;
+	}
 	Release();
 }
 
@@ -140,15 +160,25 @@ void CGame::Update()
 	// プレイヤーUIの更新処理
 	m_PlayerUI->Update();
 
-	// ゲームが終了するかしないか
-	//EnemyManage();
-
 	if (m_bFinish)
 	{
 		// ゲームを終了しリザルト画面へ
 		//モードの設定
-		CFade::SetFade(CApplication::MODE_RESULT);
+		CFade::SetFade(CApplication::MODE_TIME_OVER);
 	}
+	if (m_bFinish_2)
+	{
+		// ゲームを終了しリザルト画面へ
+		//モードの設定
+		CFade::SetFade(CApplication::MODE_GAME_OVER);
+	}
+
+	//// モード変更
+	//if (pKeyboard->Trigger(DIK_RETURN) || pKeyboard->Trigger(JOYPAD_A))
+	//{
+	//	//モードの設定
+	//	CFade::SetFade(CApplication::MODE_GAME_OVER);
+	//}
 }
 
 //=========================================

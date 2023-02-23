@@ -10,8 +10,6 @@
 #include "object2D.h"
 #include "number.h"
 
-#define MAX_RANK		(5)			//表示するランキングの最大数
-
 //=========================================
 // スコアクラスを定義
 //=========================================
@@ -20,7 +18,7 @@ class CScore :public CObject2D
 private:
 	static const int MAX_DIGITS = 6;
 public:
-	CScore();							//コンストラクタ
+	explicit CScore();							//コンストラクタ
 	virtual ~CScore() override;			//デストラクタ
 
 	//初期化処理
@@ -36,7 +34,7 @@ public:
 	void Uninit(void) override;
 
 	//クリエイト処理
-	static CScore* Create(const D3DXVECTOR3 &pos);
+	static CScore* Create(const D3DXVECTOR3 &pos, D3DXVECTOR3 Numsize);
 	int GetScore() { return m_Score; }
 
 	//スコアの設定
@@ -46,18 +44,19 @@ public:
 	// スコアの加算処理
 	void Add(int Score) { m_Score += Score; }
 	void ScoreSet(int Score) { m_Score = Score; }
+	void ScoreSizeSet(D3DXVECTOR3 size);
 	void Load();
 	//void Ranking();
 
 private:
 	D3DXVECTOR3 m_pos;					// 座標
 	CNumber*	m_pNumber[MAX_DIGITS];	// ナンバー1
+	D3DXVECTOR3 m_NumSize;				// ナンバーのサイズ
 	int			m_Score;				// スコア
-	int			m_apScore[MAX_RANK];	// スコアの最大数
-	int			m_nRankUpdate;			//更新ランクNo.
-	int			m_nTimerRanking;		//ランキング画面表示タイマー
-	float		m_fPtnrank;				//プレイヤー点滅
-	int			m_nCntrank;				//点滅のカウント用
+	int			m_nRankUpdate;			// 更新ランクNo.
+	int			m_nTimerRanking;		// ランキング画面表示タイマー
+	float		m_fPtnrank;				// プレイヤー点滅
+	int			m_nCntrank;				// 点滅のカウント用
 
 };
 
