@@ -14,7 +14,7 @@
 #include "object.h"
 #include <vector>
 
-#define MAX_MATERIAL_TEXTURE_NUM (100)
+#define MAX_MATERIAL_TEXTURE_NUM (10)
 
 class CModel3D
 {
@@ -52,23 +52,23 @@ public:
 	//=========================================
 	// メンバ関数
 	//=========================================
-	HRESULT Init();															// 初期化
-	void Uninit();															// 終了
-	void Update();															// 更新
-	void Draw();															// 描画
+	HRESULT Init();														// 初期化
+	void Uninit();														// 終了
+	void Update();														// 更新
+	void Draw();														// 描画
 
-	void Draw(D3DXMATRIX mtxParent);										// 描画(オーバーロード)
-	void DrawMaterial();													// マテリアル描画
-	void SetPos(const D3DXVECTOR3 &pos);									// 位置のセッター
-	void SetRot(const D3DXVECTOR3 &rot);									// 向きのセッター
-	void SetSize(const D3DXVECTOR3 &size);									// 大きさのセッター
-	void SetMtxWorld(D3DXMATRIX mtxWorld) { m_mtxWorld = mtxWorld; }		// ワールドマトリックスの設定
-	void SetParent(CModel3D *pParent) { m_pParent = pParent; }				// 親モデルのセッター
-	void SetModelID(const int nModelID) { m_nModelID = nModelID; }			// モデルID
-	void SetColor(const D3DXCOLOR color);									// カラーの設定
-	void SetColor(bool bColor) { m_bColor = bColor; }						// カラーの設定(オーバーロード)
-	void SetShadow(bool bShadow) { m_bShadow = bShadow; }					// 影の使用状況の設定
-	void SetLighting(bool bLighting) { m_bLighting = bLighting; }			// ライトを使用状況の設定
+	void Draw(D3DXMATRIX mtxParent);									// 描画(オーバーロード)
+	void DrawMaterial();												// マテリアル描画
+	void SetPos(const D3DXVECTOR3 &pos);								// 位置のセッター
+	void SetRot(const D3DXVECTOR3 &rot);								// 向きのセッター
+	void SetSize(const D3DXVECTOR3 &size);								// 大きさのセッター
+	void SetMtxWorld(D3DXMATRIX mtxWorld) { m_mtxWorld = mtxWorld; }	// ワールドマトリックスの設定
+	void SetParent(CModel3D *pParent) { m_pParent = pParent; }			// 親モデルのセッター
+	void SetModelID(const int nModelID) { m_nModelID = nModelID; }		// モデルID
+	void SetColor(const D3DXCOLOR color);								// カラーの設定
+	void SetColor(bool bColor) { m_bColor = bColor; }					// カラーの設定(オーバーロード)
+	void SetShadow(bool bShadow) { m_bShadow = bShadow; }				// 影の使用状況の設定
+	void SetLighting(bool bLighting) { m_bLighting = bLighting; }		// ライトを使用状況の設定
 
 	float NormalizeRot(float fRot);
 	float LimitedRot(float fRot, float LimitRot);

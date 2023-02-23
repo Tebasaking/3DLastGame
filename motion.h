@@ -52,7 +52,7 @@ public:
 	typedef struct
 	{
 		int		nFrame;			// フレーム数
-		MyKey	*pKey;			// キー情報
+		std::vector<MyKey>	pKey;			// キー情報
 	}MyKeySet;
 
 	//***************************************************************
@@ -65,7 +65,7 @@ public:
 		int				nCntFrame;				// フレームカウント
 		bool			bLoop;					// ループ使用状況
 		bool			bMotion;				// モーションを行っているか
-		MyKeySet		*pKeySet;				// キー設定情報
+		std::vector<MyKeySet> pKeySet;				// キー設定情報
 	}MyMotion;
 
 	//--------------------------------------------------------------------
@@ -135,9 +135,9 @@ private:
 	//--------------------------------------------------------------------
 	// メンバ変数
 	//--------------------------------------------------------------------
-	CModel3D	*m_pParent;									// 親
-	MyMotion	*m_motion;									// モーション
-	CParts		**m_pParts;									// パーツ
+	CModel3D*	m_pParent;									// 親
+	std::vector<MyMotion>	m_motion;						// モーション
+	std::vector<CParts*>	m_pParts;						// パーツ
 	char		m_partsFile[MAX_MODEL_PARTS][0xff];			// パーツのXファイル名
 	int			m_nMaxParts;								// パーツ数
 	int			m_nNumMotion;								// 扱うモーション

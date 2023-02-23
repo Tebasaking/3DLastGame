@@ -29,10 +29,10 @@ CMotion::CMotion(const char * pFileName)
 	memset(&m_partsFile, 0, sizeof(m_partsFile));
 
 	// モーションの初期化
-	m_motion = nullptr;
+	m_motion.clear();
 
 	// パーツの初期化
-	m_pParts = nullptr;
+	m_pParts.clear();
 
 	// パーツ数の初期化
 	m_nMaxParts = 0;
@@ -97,7 +97,7 @@ void CMotion::Update()
 //=============================================================================
 void CMotion::SetMotion(const int nCntMotionSet)
 {
-	CMotion::MyMotion *motion = (m_motion + nCntMotionSet);
+	CMotion::MyMotion motion = m_motion.at(nCntMotionSet);
 
 	for (int nCntParts = 0; nCntParts < m_nMaxParts; nCntParts++)
 	{
@@ -108,10 +108,10 @@ void CMotion::SetMotion(const int nCntMotionSet)
 		D3DXVECTOR3 rotOrigin = m_pParts[nCntParts]->GetRotOrigin();		// 元の向き
 
 																			// 位置の設定
-		pos = (posOrigin + motion->pKeySet[motion->nCntKeySet].pKey[nCntParts].pos);
+		pos = (posOrigin + motion.pKeySet[motion.nCntKeySet].pKey[nCntParts].pos);
 
 		//	向きの設定
-		rot = (rotOrigin + motion->pKeySet[motion->nCntKeySet].pKey[nCntParts].rot);
+		rot = (rotOrigin + motion.pKeySet[motion.nCntKeySet].pKey[nCntParts].rot);
 
 		// 角度の正規化
 		rot.x = RotNormalization(rot.x);
@@ -157,7 +157,7 @@ void CMotion::SetParts(D3DXMATRIX mtxWorld)
 //=============================================================================
 void CMotion::PlayMotion()
 {
-	CMotion::MyMotion *motion = (m_motion + m_nNumMotion);
+	CMotion::MyMotion motion = m_motion.at(m_nNumMotion);
 
 	for (int nCntParts = 0; nCntParts < m_nMaxParts; nCntParts++)
 	{
@@ -167,15 +167,15 @@ void CMotion::PlayMotion()
 		D3DXVECTOR3 posDest = m_pParts[nCntParts]->GetPosDest();	// 目的の位置
 		D3DXVECTOR3 rotDest = m_pParts[nCntParts]->GetRotDest();	// 目的の向き
 
-		if (motion->nCntFrame == 0)
+		if (motion.nCntFrame == 0)
 		{// フレームカウントが0の時
 			// 変数宣言
 			D3DXVECTOR3 posOrigin = m_pParts[nCntParts]->GetPosOrigin();		// 元の位置
 			D3DXVECTOR3 rotOrigin = m_pParts[nCntParts]->GetRotOrigin();		// 元の向き
 
 			// 目的の位置と向きの算出
-			posDest = (posOrigin + motion->pKeySet[motion->nCntKeySet].pKey[nCntParts].pos) - pos;
-			rotDest = (rotOrigin + motion->pKeySet[motion->nCntKeySet].pKey[nCntParts].rot) - rot;
+			posDest = (posOrigin + motion.pKeySet[motion.nCntKeySet].pKey[nCntParts].pos) - pos;
+			rotDest = (rotOrigin + motion.pKeySet[motion.nCntKeySet].pKey[nCntParts].rot) - rot;
 
 			// 角度の正規化
 			rotDest.x = RotNormalization(rotDest.x);
@@ -188,8 +188,8 @@ void CMotion::PlayMotion()
 		}
 
 		// 変数宣言
-		D3DXVECTOR3 addPos = D3DXVECTOR3(posDest / (float)(motion->pKeySet[motion->nCntKeySet].nFrame));
-		D3DXVECTOR3 addRot = D3DXVECTOR3(rotDest / (float)(motion->pKeySet[motion->nCntKeySet].nFrame));
+		D3DXVECTOR3 addPos = D3DXVECTOR3(posDest / (float)(motion.pKeySet[motion.nCntKeySet].nFrame));
+		D3DXVECTOR3 addRot = D3DXVECTOR3(rotDest / (float)(motion.pKeySet[motion.nCntKeySet].nFrame));
 
 		// 位置の加算
 		pos += addPos;
@@ -208,25 +208,25 @@ void CMotion::PlayMotion()
 	}
 
 	// フレームカウントの加算
-	motion->nCntFrame++;
+	motion.nCntFrame++;
 
-	if (motion->nCntFrame >= motion->pKeySet[motion->nCntKeySet].nFrame)
+	if (motion.nCntFrame >= motion.pKeySet[motion.nCntKeySet].nFrame)
 	{// フレームカウントが指定のフレーム数を超えた場合
 	 // フレーム数の初期化
-		motion->nCntFrame = 0;
+		motion.nCntFrame = 0;
 
 		// 再生中のキー番号数の加算
-		motion->nCntKeySet++;
+		motion.nCntKeySet++;
 
-		if (motion->nCntKeySet >= motion->nNumKey && motion->bLoop)
+		if (motion.nCntKeySet >= motion.nNumKey && motion.bLoop)
 		{// 再生中のキー数カウントがキー数の最大値を超えたとき、そのモーションがループを使用している
 		 // 再生中のキー数カウントを初期化
-			motion->nCntKeySet = 0;
+			motion.nCntKeySet = 0;
 
 		}
-		else if (motion->nCntKeySet >= motion->nNumKey)
+		else if (motion.nCntKeySet >= motion.nNumKey)
 		{
-			motion->nCntKeySet = 0;
+			motion.nCntKeySet = 0;
 			m_bMotion = false;
 		}
 	}
@@ -240,7 +240,7 @@ void CMotion::PlayMotion()
 //=============================================================================
 void CMotion::MotionBlend()
 {
-	CMotion::MyMotion* motion = (m_motion + m_nNumMotion);
+	CMotion::MyMotion motion = m_motion.at(m_nNumMotion);
 
 	for (int nCntParts = 0; nCntParts < m_nMaxParts; nCntParts++)
 	{
@@ -250,14 +250,14 @@ void CMotion::MotionBlend()
 		D3DXVECTOR3 posDest = m_pParts[nCntParts]->GetPosDest();	// 目的の位置
 		D3DXVECTOR3 rotDest = m_pParts[nCntParts]->GetRotDest();	// 目的の向き
 
-		if (motion->nCntFrame == 0)
+		if (motion.nCntFrame == 0)
 		{// フレームカウントが0の時
 		 // 変数宣言
 			D3DXVECTOR3 posOrigin = m_pParts[nCntParts]->GetPosOrigin();		// 元の位置
 			D3DXVECTOR3 rotOrigin = m_pParts[nCntParts]->GetRotOrigin();		// 元の向き
 
 																				// 目的の位置と向きの算出
-			CMotion::MyKey myKey = motion->pKeySet[motion->nCntKeySet].pKey[nCntParts];
+			CMotion::MyKey myKey = motion.pKeySet[motion.nCntKeySet].pKey[nCntParts];
 			posDest = posOrigin + myKey.pos - pos;
 			rotDest = rotOrigin + myKey.rot - rot;
 
@@ -292,13 +292,13 @@ void CMotion::MotionBlend()
 	}
 
 	// フレームカウントの加算
-	motion->nCntFrame++;
+	motion.nCntFrame++;
 
-	if (motion->nCntFrame >= MOTION_BLEND_FRAM)
+	if (motion.nCntFrame >= MOTION_BLEND_FRAM)
 	{// フレームカウントが指定のフレーム数を超えた場合
 
-		motion->nCntFrame = 0;	// フレーム数の初期化
-		motion->nCntKeySet++;	// 再生中のキー番号数の加算
+		motion.nCntFrame = 0;	// フレーム数の初期化
+		motion.nCntKeySet++;	// 再生中のキー番号数の加算
 
 		m_bMotionBlend = false;
 	}
@@ -369,19 +369,17 @@ void CMotion::LoodSetMotion(const char *pFileName)
 						fscanf(pFile, "%d", &m_nMaxParts);
 
 						// メモリの解放
-						m_pParts = new CParts*[m_nMaxParts];
-						m_motion = new MyMotion[MAX_MOTION];
+						m_pParts.resize(m_nMaxParts);
+						m_motion.resize(MAX_MOTION);
 
 						for (int i = 0; i < MAX_MOTION; i++)
 						{
-							m_motion[i].pKeySet = nullptr;
+							m_motion[i].pKeySet.clear();
 						}
 						for (int i = 0; i < m_nMaxParts; i++)
 						{
 							m_pParts[i] = nullptr;
 						}
-
-						assert(m_pParts != nullptr && m_motion != nullptr);
 
 						for (int i = 0; i < m_nMaxParts; i++)
 						{// パーツの生成
@@ -478,13 +476,11 @@ void CMotion::LoodSetMotion(const char *pFileName)
 						fscanf(pFile, "%d", &m_motion[nCntMotion].nNumKey);
 
 						// メモリの確保
-						m_motion[nCntMotion].pKeySet = new MyKeySet[m_motion[nCntMotion].nNumKey];
-						assert(m_motion[nCntMotion].pKeySet != nullptr);
+						m_motion[nCntMotion].pKeySet.resize(m_motion[nCntMotion].nNumKey);
 
 						for (int nCntNumKeySet = 0; nCntNumKeySet < m_motion[nCntMotion].nNumKey; nCntNumKeySet++)
 						{
-							m_motion[nCntMotion].pKeySet[nCntNumKeySet].pKey = new MyKey[m_nMaxParts];
-							assert(m_motion[nCntMotion].pKeySet[nCntNumKeySet].pKey != nullptr);
+							m_motion[nCntMotion].pKeySet[nCntNumKeySet].pKey.resize(m_nMaxParts);
 						}
 					}
 					if (strcmp(&aString[0], "KEYSET") == 0)
@@ -569,50 +565,25 @@ void CMotion::LoodSetMotion(const char *pFileName)
 //=============================================================================
 void CMotion::Uninit(void)
 {
-	for (int nCntMotion = 0; nCntMotion < MAX_MOTION; nCntMotion++)
-	{
-		if (&m_motion[nCntMotion] != nullptr)
-		{// メモリの解放
+	m_motion.clear();
 
-			if (m_motion[nCntMotion].pKeySet != nullptr)
-			{
-				for (int nCntKeySet = 0; nCntKeySet < m_motion[nCntMotion].nNumKey; nCntKeySet++)
-				{
-					if (m_motion[nCntMotion].pKeySet[nCntKeySet].pKey != nullptr)
-					{
-						delete[] m_motion[nCntMotion].pKeySet[nCntKeySet].pKey;
-						m_motion[nCntMotion].pKeySet[nCntKeySet].pKey = nullptr;
-						assert(m_motion[nCntMotion].pKeySet[nCntKeySet].pKey == nullptr);
-					}
-				}
-				delete[] m_motion[nCntMotion].pKeySet;
-				m_motion[nCntMotion].pKeySet = nullptr;
-				assert(m_motion[nCntMotion].pKeySet == nullptr);
-			}
-		}
-	}
-	if (m_motion != nullptr)
+	for (int i = 0; i < m_nMaxParts; i++)
 	{
-		delete[] m_motion;
-		m_motion = nullptr;
-	}
-
-	for (int nCntParts = 0; nCntParts < m_nMaxParts; nCntParts++)
-	{
-		if (m_pParts[nCntParts] != nullptr)
+		if (m_pParts[i] != NULL)
 		{
-			delete m_pParts[nCntParts];
-			m_pParts[nCntParts] = nullptr;
+			m_pParts[i]->Uninit();
+			m_pParts[i] = nullptr;
 		}
 	}
 
-	if (m_pParts != nullptr)
+	for (int i = 0; i < (int)m_pParts.size(); i++)
 	{
-		delete[] m_pParts;
-		m_pParts = nullptr;
+		if (m_pParts.at(i) != nullptr)
+		{
+			delete m_pParts.at(i);
+			m_pParts.at(i) = nullptr;
+		}
 	}
-
-	assert(m_pParts == nullptr);
 }
 //=============================================================================
 // パーツの位置をもとの位置に戻す
