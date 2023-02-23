@@ -202,6 +202,21 @@ void CModel3D::InitModel()
 //=============================================================================
 void CModel3D::UninitModel()
 {
+	for (int i = 0; i < (int)m_material.size(); i++)
+	{
+		if (m_material.at(i).pMesh != nullptr)
+		{
+			m_material.at(i).pMesh->Release();
+			m_material.at(i).pMesh = nullptr;
+		}
+
+		if (m_material.at(i).pBuffer != nullptr)
+		{
+			m_material.at(i).pBuffer->Release();
+			m_material.at(i).pBuffer = nullptr;
+		}
+	}
+
 	m_material.clear();
 }
 
