@@ -22,8 +22,8 @@
 //--------------------------------------------------------------------
 // 静的メンバ変数定義
 //--------------------------------------------------------------------
-CModel3D::MODEL_MATERIAL *CModel3D::m_material = nullptr;		// マテリアル情報
-int CModel3D::m_nMaxModel = 0;									// モデル数		
+std::vector<CModel3D::MODEL_MATERIAL> CModel3D::m_material;		// マテリアル情報
+int CModel3D::m_nMaxModel = 0;									// モデル数
 
 //=============================================================================
 // コンストラクタ
@@ -115,8 +115,7 @@ void CModel3D::InitModel()
 			&m_material[nCntModel].pMesh);
 
 		// マテリアルのテクスチャ情報のメモリ確保
-		m_material[nCntModel].pNumTex = new int[m_material[nCntModel].nNumMat];
-		assert(m_material[nCntModel].pNumTex != nullptr);
+		m_material[nCntModel].pNumTex.resize(m_material[nCntModel].nNumMat);
 
 		// バッファの先頭ポインタをD3DXMATERIALにキャストして取得
 		D3DXMATERIAL *pMat = (D3DXMATERIAL*)m_material[nCntModel].pBuffer->GetBufferPointer();
@@ -203,40 +202,7 @@ void CModel3D::InitModel()
 //=============================================================================
 void CModel3D::UninitModel()
 {
-	for (int nCnt = 0; nCnt < m_nMaxModel; nCnt++)
-	{
-		// メッシュの破棄
-		if (m_material[nCnt].pMesh != nullptr)
-		{
-			m_material[nCnt].pMesh->Release();
-			m_material[nCnt].pMesh = nullptr;
-		}
-
-		// マテリアルの破棄
-		if (m_material[nCnt].pBuffer != nullptr)
-		{
-			m_material[nCnt].pBuffer->Release();
-			m_material[nCnt].pBuffer = nullptr;
-		}
-
-		// 各メッシュのマテリアル情報を取得する 
-		for (int nCntMat = 0; nCntMat < (int)m_material[nCnt].nNumMat; nCntMat++)
-		{
-			if (m_material[nCnt].pTexture[nCntMat] != nullptr)
-			{
-				m_material[nCnt].pTexture[nCntMat]->Release();
-				m_material[nCnt].pTexture[nCntMat] = nullptr;
-			}
-		}
-
-		// メモリの解放
-		delete[] m_material[nCnt].pNumTex;
-		m_material[nCnt].pNumTex = nullptr;
-	}
-
-	// メモリの解放
-	delete[] m_material;
-	m_material = nullptr;
+	m_material.clear();
 }
 
 //=============================================================================
@@ -264,8 +230,7 @@ void CModel3D::LoadModel(const char *pFileName)
 			{
 				fscanf(pFile, "%s", &aStr[0]);
 				fscanf(pFile, "%d", &m_nMaxModel);
-				m_material = new CModel3D::MODEL_MATERIAL[m_nMaxModel];
-				assert(m_material != nullptr);
+				m_material.resize(m_nMaxModel);
 			}
 
 			if (strstr(&aStr[0], "MODEL_FILENAME") != NULL)

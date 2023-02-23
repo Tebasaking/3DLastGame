@@ -407,7 +407,7 @@ void CMotion::LoodSetMotion(const char *pFileName)
 								fscanf(pFile, "%d", &nType);
 
 								// ƒ}ƒeƒŠƒAƒ‹î•ñ‚Ìæ“¾
-								CModel3D::MODEL_MATERIAL *pMaterial = CModel3D::GetMaterial();
+								std::vector<CModel3D::MODEL_MATERIAL> pMaterial = CModel3D::GetMaterial();
 
 								for (int nCntModel = 0; nCntModel < CModel3D::GetMaxModel(); nCntModel++)
 								{

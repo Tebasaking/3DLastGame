@@ -72,7 +72,7 @@ HRESULT CEnemy::Init(const D3DXVECTOR3 &pos)
 	SetPosOld(m_pos);
 	
 	// ƒTƒCƒY‚Ìİ’è
-	m_size = m_apModel[0]->GetMaterial()->size;
+	m_size = m_apModel[0]->GetMaterial()[0].size;
 
 	//‘å‚«‚³‚Ìİ’è
 	SetSize(m_size);

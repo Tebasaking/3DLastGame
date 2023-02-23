@@ -73,7 +73,7 @@ HRESULT CPlayer3D::Init(const D3DXVECTOR3 &pos)
 	m_apModel[0]->SetSize(D3DXVECTOR3(1.0f,1.0f,1.0f));
 
 	//‘å‚«‚³‚ÌÝ’è
-	m_size = m_apModel[0]->GetMaterial()->size;
+	m_size = m_apModel[0]->GetMaterial().at(0).size;
 
 	m_Radar = nullptr;
 
@@ -128,13 +128,13 @@ HRESULT CPlayer3D::Init(const D3DXVECTOR3 &pos)
 	m_pAttack->Init();
 	m_pAttack->SetPos(pos);
 	m_pAttack->SetSize(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
-	m_pAttack->SetSize(m_pAttack->GetMaterial()->size);
+	m_pAttack->SetSize(m_pAttack->GetMaterial().at(0).size);
 
 	//Šg‘å—¦‚ÌÝ’è
 	/*m_apModel[0]->SetSize(D3DXVECTOR3(1.0f, 1.0f, 1.0f));*/
 
 	//‘å‚«‚³‚ÌÝ’è
-	m_size = m_pRobot->GetMaterial()->size;
+	m_size = m_pRobot->GetMaterial().at(0).size;
 
 	SetSize(m_size);
 

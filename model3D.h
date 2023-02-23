@@ -12,8 +12,10 @@
 // インクルード
 //*****************************************************************************
 #include "object.h"
+#include <vector>
 
 #define MAX_MATERIAL_TEXTURE_NUM (100)
+
 class CModel3D
 {
 public:
@@ -26,7 +28,7 @@ public:
 		LPD3DXBUFFER	pBuffer;			// マテリアル情報へのポインタ
 		DWORD			nNumMat;			// マテリアル情報の数
 		D3DXVECTOR3		size;				// モデルの大きさ
-		int				*pNumTex;			// テクスチャタイプ
+		std::vector<int> pNumTex;			// テクスチャタイプ
 		char			aFileName[0xff];	// Xファイルのパス
 		LPDIRECT3DTEXTURE9 pTexture[MAX_MATERIAL_TEXTURE_NUM];		// テクスチャ
 	};
@@ -34,12 +36,12 @@ public:
 	//=========================================
 	// 静的メンバ関数
 	//=========================================
-	static CModel3D *Create();										// 3Dモデルの生成
-	static void InitModel();										// モデルの初期化
-	static void UninitModel();										// モデルの終了
-	static void LoadModel(const char *pFileName);					// モデルの読み込み
-	static MODEL_MATERIAL *GetMaterial() { return m_material; }		// マテリアル情報の取得
-	static int GetMaxModel() { return m_nMaxModel; }				// モデル数 
+	static CModel3D *Create();													// 3Dモデルの生成
+	static void InitModel();													// モデルの初期化
+	static void UninitModel();													// モデルの終了
+	static void LoadModel(const char *pFileName);								// モデルの読み込み
+	static std::vector<MODEL_MATERIAL> GetMaterial() { return m_material; }		// マテリアル情報の取得
+	static int GetMaxModel() { return m_nMaxModel; }							// モデル数
 
 	//=========================================
 	// コンストラクタとデストラクタ
@@ -91,8 +93,8 @@ private:
 	//=========================================
 	// 静的メンバ変数
 	//=========================================
-	static MODEL_MATERIAL	*m_material;		// マテリアル情報
-	static int				m_nMaxModel;		// モデル数			
+	static std::vector<MODEL_MATERIAL> m_material;		// マテリアル情報
+	static int				m_nMaxModel;		// モデル数
 
 	//=========================================
 	// メンバ変数
