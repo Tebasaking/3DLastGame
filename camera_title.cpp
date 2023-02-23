@@ -503,19 +503,6 @@ void CCameraTitle::ShoulderMove()
 //=========================================
 void CCameraTitle::MouseMove(void)
 {
-	CMouse *pMouse = CApplication::GetMouse();
-
-	// 回転のベクトルを設定。
-	m_Dest = D3DXVECTOR3(pMouse->GetMouseCursorMove().y, pMouse->GetMouseCursorMove().x, pMouse->GetMouseCursorMove().z);
-
-	// クリックの情報を保管
-	bool hasRightClick = pMouse->GetPress(CMouse::MOUSE_KEY_RIGHT);
-
-	if (hasRightClick)
-	{
-		Rotate();
-		VPosRotate();
-	}
 }
 
 //=========================================
@@ -525,23 +512,6 @@ void CCameraTitle::MouseMove(void)
 //=========================================
 void CCameraTitle::JoyPadMove(void)
 {
-	CJoypad *pJoypad = CApplication::GetJoy();
-
-	if (pJoypad->GetUseJoyPad() >= 1)
-	{
-		// 回転のベクトルを設定。
-		m_Dest.x = pJoypad->GetStickAngle(CJoypad::JOYKEY_LEFT_STICK, 0) * pJoypad->GetStick(CJoypad::JOYKEY_LEFT_STICK, 0).y * 100.0f;
-
-		if ((pJoypad->GetStickAngle(CJoypad::JOYKEY_LEFT_STICK, 0) >= D3DX_PI * 0.25f && pJoypad->GetStickAngle(CJoypad::JOYKEY_LEFT_STICK, 0) <= D3DX_PI * 0.75f) ||
-			(pJoypad->GetStickAngle(CJoypad::JOYKEY_LEFT_STICK, 0) >= -D3DX_PI * 0.75f && pJoypad->GetStickAngle(CJoypad::JOYKEY_LEFT_STICK, 0) <= -D3DX_PI * 0.25f))
-		{
-			// 回転のベクトルを設定。
-			m_Dest.y = pJoypad->GetStick(CJoypad::JOYKEY_LEFT_STICK, 0).x * 100.0f;
-		}
-
-		Rotate();
-		VPosRotate();
-	}
 }
 
 //=========================================
@@ -574,29 +544,6 @@ void CCameraTitle::FlightEvent()
 //=========================================
 bool CCameraTitle::Limit_Used_Mouse()
 {
-	CMouse *pMouse = CApplication::GetMouse();
-	D3DXVECTOR3 axis = {};
-
-	// クリックの情報を保管
-	bool hasRightClick = pMouse->GetPress(CMouse::MOUSE_KEY_RIGHT);
-
-	if (hasRightClick)
-	{
-		if (m_rotMove.x > 0.0f)
-		{
-			m_MouseMove++;
-		}
-		else if (m_rotMove.x < 0.0f)
-		{
-			m_MouseMove--;
-		}
-
-		// 下方向の上限、上方向の上限
-		if (m_MouseMove >= 5.0f || m_MouseMove <= -10.0f)
-		{
-			return true;
-		}
-	}
 
 	return false;
 }

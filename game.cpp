@@ -51,8 +51,6 @@ CGame::~CGame()
 //=========================================
 HRESULT CGame::Init(const D3DXVECTOR3 &pos)
 {
-	CMouse *pMouse = CApplication::GetMouse();
-
 	//CObject2D *pObject2D = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), 4);
 	//pObject2D->SetScale(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
 	//
@@ -63,9 +61,6 @@ HRESULT CGame::Init(const D3DXVECTOR3 &pos)
 
 	m_PlayerUI = new CPlayerUI(4);
 	m_PlayerUI->Init(D3DXVECTOR3(0.0f,0.0f,0.0f));
-
-	pMouse->SetShowCursor(true);
-	pMouse->UseSetPosLock(true);
 
 	m_bFinish = false;
 

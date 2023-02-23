@@ -284,7 +284,7 @@ void CMesh::Uninit()
 		m_pIdxVtxBuff->Release();
 		m_pIdxVtxBuff = nullptr;
 	}
-
+	
 	CObject::Release();
 }
 

@@ -65,11 +65,9 @@ public:
 	static CCameraPlayer* GetCamera()			{ return m_pCamera; };
 	static CCameraTitle *GetTitleCamera()		{ return m_pTitle; }
 	static CCameraRadar* GetRader()				{ return m_pRader; }
-	static CMouse *GetMouse()					{ return m_pMouse; }
 	static CGame *GetGame()						{ return m_pGame; }
 	static CMode *GetModeObject()				{ return m_pMode; }
 	static CTexture3D *GetTexture3D()			{ return m_pTexture3D; }
-	static CJoypad *GetJoy()					{ return m_pJoy; }
 	static CSound *GetSound()					{ return m_pSound; }
 	static LPD3DXEFFECT GetShader()				{ return m_pEffect; }
 
@@ -81,14 +79,11 @@ private:
 	static CCameraRadar		*m_pRader;
 	static CPlayer			*m_pPlayer;
 	static CEnemy			*m_pEnemy;
-	static CMouse			*m_pMouse;
 	static CGame			*m_pGame;
 	static CMode			*m_pMode;
 	static CTexture3D		*m_pTexture3D;
-	static CJoypad			*m_pJoy;
 	static CSound			*m_pSound;
 	static CCameraTitle		*m_pTitle;
-	static CInput			*m_pInput;
 	static LPD3DXEFFECT		m_pEffect;			// シェーダー
 	bool					m_bCheckViewport;
 };

@@ -619,19 +619,19 @@ void CCameraPlayer::ShoulderMove()
 //=========================================
 void CCameraPlayer::MouseMove(void)
 {
-	CMouse *pMouse = CApplication::GetMouse();
+	//CMouse *pMouse = CApplication::GetMouse();
 
 	// 回転のベクトルを設定。
-	m_Dest = D3DXVECTOR3(pMouse->GetMouseCursorMove().y, pMouse->GetMouseCursorMove().x, pMouse->GetMouseCursorMove().z);
+	//m_Dest = D3DXVECTOR3(pMouse->GetMouseCursorMove().y, pMouse->GetMouseCursorMove().x, pMouse->GetMouseCursorMove().z);
 
-	// クリックの情報を保管
-	bool hasRightClick = pMouse->GetPress(CMouse::MOUSE_KEY_RIGHT);
+	//// クリックの情報を保管
+	//bool hasRightClick = pMouse->GetPress(CMouse::MOUSE_KEY_RIGHT);
 
-	if (hasRightClick)
-	{
-		Rotate();
-		VPosRotate();
-	}
+	//if (hasRightClick)
+	//{
+	//	Rotate();
+	//	VPosRotate();
+	//}
 }
 
 //=========================================
@@ -689,30 +689,6 @@ void CCameraPlayer::FlightEvent()
 //=========================================
 bool CCameraPlayer::Limit_Used_Mouse()
 {
-	CMouse *pMouse = CApplication::GetMouse();
-	D3DXVECTOR3 axis = {};
-
-	// クリックの情報を保管
-	bool hasRightClick = pMouse->GetPress(CMouse::MOUSE_KEY_RIGHT);
-
-	if (hasRightClick)
-	{
-		if (m_rotMove.x > 0.0f)
-		{
-			m_MouseMove++;
-		}
-		else if (m_rotMove.x < 0.0f)
-		{
-			m_MouseMove--;
-		}
-
-		// 下方向の上限、上方向の上限
-		if (m_MouseMove >= 5.0f || m_MouseMove <= -10.0f)
-		{
-			return true;
-		}
-	}
-
 	return false;
 }
 

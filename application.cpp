@@ -36,13 +36,10 @@
 
 CDebugProc *CApplication::m_pDebug = nullptr;
 CRender *CApplication::m_pRender = nullptr;
-CInput *CApplication::m_pInput = nullptr;
 CPlayer *CApplication::m_pPlayer = nullptr;
 CEnemy *CApplication::m_pEnemy = nullptr;
 CTexture* CApplication::m_pTexture = nullptr;
-CMouse* CApplication::m_pMouse = nullptr;
 CMode* CApplication::m_pMode = nullptr;
-CJoypad *CApplication::m_pJoy = {};	
 CGame* CApplication::m_pGame = nullptr;
 CCameraTitle* CApplication::m_pTitle = nullptr;
 CTexture3D* CApplication::m_pTexture3D = nullptr;
@@ -51,7 +48,6 @@ CSound*	CApplication::m_pSound = nullptr;		//サウンド
 CCameraRadar* CApplication::m_pRader = nullptr;
 CCameraPlayer* CApplication::m_pCamera = nullptr;
 
-CSound *pSound = nullptr;
 CApplication::MODE CApplication::m_NextMode = MODE_MAX;
 CApplication::MODE CApplication::m_mode = MODE_MAX;
 
@@ -80,12 +76,8 @@ HRESULT CApplication::Init(HINSTANCE hInstance,HWND hWnd)
 	m_pTexture = new CTexture;
 	m_pCamera = new CCameraPlayer;
 	m_pRader = new CCameraRadar;
-	m_pInput = new CInput;
-	pSound = new CSound;
-	m_pMouse = new CMouse;
 	m_pDebug = new CDebugProc;
 	m_pTexture3D = new CTexture3D;
-	m_pJoy = new CJoypad;
 	m_pTitle = new CCameraTitle;
 
 	if (FAILED(m_pRender->Init(hWnd, true)))
@@ -102,21 +94,9 @@ HRESULT CApplication::Init(HINSTANCE hInstance,HWND hWnd)
 	// Model3Dの読み込み
 	CModel3D::InitModel();
 
-	m_pInput = CInput::Create();
+	CInput::Create();
 
-	//入力処理の初期化処理
-	if (FAILED(m_pInput->Init(hInstance, hWnd)))
-	{
-		return E_FAIL;
-	}
-
-	if (FAILED(m_pMouse->Init(hInstance, hWnd)))
-	{
-		return E_FAIL;
-	}
-
-	// 初期化処理
-	if (FAILED(m_pJoy->Init(1)))
+	if (FAILED(CInput::GetKey()->Init(hInstance, hWnd)))
 	{
 		return E_FAIL;
 	}
@@ -179,10 +159,7 @@ HRESULT CApplication::Init(HINSTANCE hInstance,HWND hWnd)
 void CApplication::Update()
 {
 	//入力処理の更新処理
-	m_pInput->Update();
-
-	// マウス処理の更新処理
-	m_pMouse->Update();
+	CInput::GetKey()->Update();
 
 	// モードの変更
 	ChangeMode();
@@ -218,37 +195,23 @@ void CApplication::Draw()
 void CApplication::Uninit()
 {
 	//入力処理の終了処理
-	m_pInput->Uninit();
+	CInput::GetKey()->Uninit();
 
-	// マウス処理の終了処理
-	m_pMouse->Uninit();
+	if (m_pRender != nullptr)
+	{
+		// レンダーの終了処理
+		m_pRender->Uninit();
+		delete m_pRender;
+		m_pRender = nullptr;
+	}
 
-	// レンダーの終了処理
-	m_pRender->Uninit();
-
-	// テクスチャの終了処理
-	m_pTexture3D->Uninit();
-
-	// モデルの終了処理
-	CModel3D::UninitModel();
-
-	// テクスチャの終了処理
-	m_pTexture->ReleaseAll();
-
-	// ライトの終了処理
-	UninitLight();
-
-	// タイトルカメラの終了処理
-	m_pTitle->Uninit();
-
-	// カメラの終了処理
-	m_pCamera->Uninit();
-
-	// レーダーの終了処理
-	m_pRader->Uninit();
-
-	// デバックの終了処理
-	m_pDebug->Uninit();
+	if (m_pTexture3D != nullptr)
+	{
+		// テクスチャの終了処理
+		m_pTexture3D->Uninit();
+		delete m_pTexture3D;
+		m_pTexture3D = nullptr;
+	}
 
 	if (m_pSound != nullptr)
 	{
@@ -264,11 +227,15 @@ void CApplication::Uninit()
 	}
 	if (m_pTexture != nullptr)
 	{
+		// テクスチャの終了処理
+		m_pTexture->ReleaseAll();
 		delete m_pTexture;
 		m_pTexture = nullptr;
 	}
 	if (m_pCamera != nullptr)
 	{
+		// カメラの終了処理
+		m_pCamera->Uninit();
 		delete m_pCamera;
 		m_pCamera = nullptr;
 	}
@@ -282,13 +249,39 @@ void CApplication::Uninit()
 		delete m_pTitle;
 		m_pTitle = nullptr;
 	}
-	if (m_pJoy != nullptr)
-	{// 終了処理
-		m_pJoy->Uninit();
-
-		delete m_pJoy;
-		m_pJoy = nullptr;
+	if (m_pDebug != nullptr)
+	{
+		// デバックの終了処理
+		m_pDebug->Uninit();
+		delete m_pDebug;
+		m_pDebug = nullptr;
 	}
+	if (m_pRader != nullptr)
+	{
+		// レーダーの終了処理
+		m_pRader->Uninit();
+		delete m_pRader;
+		m_pRader = nullptr;
+	}
+	if (m_pTitle != nullptr)
+	{
+		// タイトルカメラの終了処理
+		m_pTitle->Uninit();
+		delete m_pTitle;
+		m_pTitle = nullptr;
+	}
+	if (m_pMode != nullptr)
+	{
+		m_pMode->Uninit();
+		delete m_pMode;
+		m_pMode = nullptr;
+	}
+
+	// モデルの終了処理
+	CModel3D::UninitModel();
+
+	// ライトの終了処理
+	UninitLight();
 }
 
 //=========================================

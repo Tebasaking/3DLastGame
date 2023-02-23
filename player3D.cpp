@@ -537,13 +537,10 @@ void CPlayer3D::Bullet(D3DXVECTOR3 pos)
 	{
 		if (!(m_Nearest_object->GetSize().x == 0.0f && m_Nearest_object->GetSize().y == 0.0f))
 		{
-			CMouse *pMouse = CApplication::GetMouse();
-
 			// クリックの情報を保管
-			bool hasLeftClick = pMouse->GetPress(CMouse::MOUSE_KEY_LEFT);
 			bool hasJoyPadA = pKeyboard->Trigger(JOYPAD_A,0);
 
-			if (hasLeftClick || hasJoyPadA)
+			if (hasJoyPadA)
 			{
 				if (m_BulletDelay >= MAX_DELAY)
 				{
@@ -644,89 +641,89 @@ void CPlayer3D::Attitude()
 //=========================================
 void CPlayer3D::Slash()
 {
-	if (m_mode != (CPlayer3D::PLAYER_MODE)CPlayerManager::GetMode())
-	{
-		return;
-	}
+	//if (m_mode != (CPlayer3D::PLAYER_MODE)CPlayerManager::GetMode())
+	//{
+	//	return;
+	//}
 
-	CInput *pKeyboard = CInput::GetKey();
-	CMotion *pMotion = GetMotion();
+	//CInput *pKeyboard = CInput::GetKey();
+	//CMotion *pMotion = GetMotion();
 
-	CMouse *pMouse = CApplication::GetMouse();
+	//CMouse *pMouse = CApplication::GetMouse();
 
-	// クリックの情報を保管
-	bool hasLeftClick = pMouse->GetPress(CMouse::MOUSE_KEY_LEFT);
-	bool hasRightClick = pMouse->GetPress(CMouse::MOUSE_KEY_RIGHT);
+	//// クリックの情報を保管
+	//bool hasLeftClick = pMouse->GetPress(CMouse::MOUSE_KEY_LEFT);
+	//bool hasRightClick = pMouse->GetPress(CMouse::MOUSE_KEY_RIGHT);
 
-	if (hasLeftClick && !m_bMotion)
-	{
-		CSound::PlaySound(CSound::SOUND_SE_MARSHALL_ATTACK);
+	//if (hasLeftClick && !m_bMotion)
+	//{
+	//	CSound::PlaySound(CSound::SOUND_SE_MARSHALL_ATTACK);
 
-		// モーションの設定
-		pMotion->SetNumMotion(2);
+	//	// モーションの設定
+	//	pMotion->SetNumMotion(2);
 
-		m_bMotion = true;
-	}
+	//	m_bMotion = true;
+	//}
 
-	if (m_MotionCnt == 30)
-	{
-		D3DXVECTOR3 pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	//if (m_MotionCnt == 30)
+	//{
+	//	D3DXVECTOR3 pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 
-		if (pMotion != nullptr)
-		{// 手のオブジェクトの位置
-			CParts *pHand = pMotion->GetParts(m_nNumHandParts);
-			D3DXMATRIX mtxParts = pHand->GetMtxWorld();
-			D3DXVec3TransformCoord(&pos, &D3DXVECTOR3(0.0f, 0.0f, 0.0f), &mtxParts);
-		}
+	//	if (pMotion != nullptr)
+	//	{// 手のオブジェクトの位置
+	//		CParts *pHand = pMotion->GetParts(m_nNumHandParts);
+	//		D3DXMATRIX mtxParts = pHand->GetMtxWorld();
+	//		D3DXVec3TransformCoord(&pos, &D3DXVECTOR3(0.0f, 0.0f, 0.0f), &mtxParts);
+	//	}
 
-		// 攻撃の当たり判定
-		m_pAttack->SetPos(pos);
+	//	// 攻撃の当たり判定
+	//	m_pAttack->SetPos(pos);
 
-		// オブジェクトの取得
-		for (int nCnt = 0; nCnt < 5; nCnt++)
-		{
-			CObject *pObj = CObject::GetObjectTop(nCnt);
-			CEnemy *pEnemy = nullptr;
+	//	// オブジェクトの取得
+	//	for (int nCnt = 0; nCnt < 5; nCnt++)
+	//	{
+	//		CObject *pObj = CObject::GetObjectTop(nCnt);
+	//		CEnemy *pEnemy = nullptr;
 
-			D3DXVECTOR3 EnemyPos = {};
-			D3DXVECTOR3 EnemySize = {};
+	//		D3DXVECTOR3 EnemyPos = {};
+	//		D3DXVECTOR3 EnemySize = {};
 
-			//プレイヤーの座標を取得
-			while (pObj)
-			{
-				if (pObj != nullptr)
-				{
-					EObjType ObjType = pObj->GetObjectType();
+	//		//プレイヤーの座標を取得
+	//		while (pObj)
+	//		{
+	//			if (pObj != nullptr)
+	//			{
+	//				EObjType ObjType = pObj->GetObjectType();
 
-					if (ObjType == OBJECT_ENEMY)
-					{
-						pEnemy = dynamic_cast<CEnemy*> (pObj);
+	//				if (ObjType == OBJECT_ENEMY)
+	//				{
+	//					pEnemy = dynamic_cast<CEnemy*> (pObj);
 
-						EnemyPos = pEnemy->GetPosition();
-						EnemySize = pEnemy->GetSize() * 10.0f;
+	//					EnemyPos = pEnemy->GetPosition();
+	//					EnemySize = pEnemy->GetSize() * 10.0f;
 
-						D3DXVECTOR3 size = m_pAttack->GetSize() * 5;
+	//					D3DXVECTOR3 size = m_pAttack->GetSize() * 5;
 
-						D3DXVECTOR3 SizeTarget = pEnemy->GetSize();
+	//					D3DXVECTOR3 SizeTarget = pEnemy->GetSize();
 
-						if ((pos.z - size.z) < (EnemyPos.z + SizeTarget.z)
-							&& (pos.z + size.z) > (EnemyPos.z - SizeTarget.z)
-							&& (pos.x - size.x) < (EnemyPos.x + SizeTarget.x)
-							&& (pos.x + size.x) > (EnemyPos.x - SizeTarget.x)
-							&& (pos.y - size.y) < (EnemyPos.y + SizeTarget.y)
-							&& (pos.y + size.y) > (EnemyPos.y - SizeTarget.y))
-						{// モデル内にいる(XYZ軸)
-							pEnemy->ManageHP(-10);
-							// 弾が目標オブジェクトと衝突したら消滅する処理
-							CExplosion::Create(m_pos, m_quaternion);
-							break;
-						}
-					}
-				}
-				pObj = pObj->GetObjectNext();
-			}
-		}
-	}
+	//					if ((pos.z - size.z) < (EnemyPos.z + SizeTarget.z)
+	//						&& (pos.z + size.z) > (EnemyPos.z - SizeTarget.z)
+	//						&& (pos.x - size.x) < (EnemyPos.x + SizeTarget.x)
+	//						&& (pos.x + size.x) > (EnemyPos.x - SizeTarget.x)
+	//						&& (pos.y - size.y) < (EnemyPos.y + SizeTarget.y)
+	//						&& (pos.y + size.y) > (EnemyPos.y - SizeTarget.y))
+	//					{// モデル内にいる(XYZ軸)
+	//						pEnemy->ManageHP(-10);
+	//						// 弾が目標オブジェクトと衝突したら消滅する処理
+	//						CExplosion::Create(m_pos, m_quaternion);
+	//						break;
+	//					}
+	//				}
+	//			}
+	//			pObj = pObj->GetObjectNext();
+	//		}
+	//	}
+	//}
 }
 
 //=========================================

@@ -252,6 +252,9 @@
     <ClCompile Include="missile_alert_manager.cpp">
       <Filter>ソース ファイル\ゲーム\3D\Alert</Filter>
     </ClCompile>
+    <ClCompile Include="precompile.cpp">
+      <Filter>ソース ファイル\システム</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="number.h">
@@ -430,6 +433,9 @@
     </ClInclude>
     <ClInclude Include="missile_alert_manager.h">
       <Filter>ソース ファイル\ゲーム\3D\Alert</Filter>
+    </ClInclude>
+    <ClInclude Include="precompile.h">
+      <Filter>ソース ファイル\システム</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
