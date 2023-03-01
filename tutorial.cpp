@@ -1,23 +1,31 @@
-//=========================================
-// game.cpp
+//==================================================
+//
+// title.cpp
 // Author: 冨所知生
-//=========================================
+//
+//==================================================
 #include "application.h"
 #include "tutorial.h"
 #include "player3D.h"
-#include "input.h"
+#include "enemy.h"
 #include "fade.h"
+#include "texture.h"
+#include "meshfield.h"
+#include "sphere.h"
+#include "camera.h"
+#include "title_model.h"
+#include "input.h"
 
-//=========================================
+//==================================================
 // コンストラクタ
-//=========================================
+//==================================================
 CTutorial::CTutorial()
 {
 }
 
-//=========================================
+//==================================================
 // デストラクタ
-//=========================================
+//==================================================
 CTutorial::~CTutorial()
 {
 }
@@ -27,17 +35,22 @@ CTutorial::~CTutorial()
 //=========================================
 HRESULT CTutorial::Init(const D3DXVECTOR3 &pos)
 {
-	// オブジェクトの生成
-	CObject2D *pObject = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), 0);
+	m_Select = 0;
 
-	// オブジェクトのサイズ設定
-	pObject->SetScale(D3DXVECTOR3((float)SCREEN_HEIGHT, (float)SCREEN_HEIGHT * 0.5f, 0.0f));
+	for (int nCnt = 0; nCnt < 3; nCnt++)
+	{
+		pObject2D[nCnt] = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f), 4);
+		pObject2D[nCnt]->SetScale(D3DXVECTOR3(0.0f,0.0f, 0.0f));
+	}
+	pObject2D[0]->SetScale(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
 
-	// オブジェクトのテクスチャ設定
-	pObject->SetTexture(CTexture::TEXTURE_RANKING);
+	pObject2D[0]->SetTexture(CTexture::TEXTURE_TUTORIAL_000);
+	pObject2D[1]->SetTexture(CTexture::TEXTURE_TUTORIAL_001);
+	pObject2D[2]->SetTexture(CTexture::TEXTURE_TUTORIAL_002);
 
 	return S_OK;
 }
+
 //=========================================
 // 更新処理
 //=========================================
@@ -45,19 +58,28 @@ void CTutorial::Update()
 {
 	CInput *pKeyboard = CInput::GetKey();
 
-	// モード変更
-	if (pKeyboard->Trigger(DIK_RETURN) || pKeyboard->Trigger(JOYPAD_A))
+	float X = SCREEN_WIDTH * 0.5f;
+	float Y = SCREEN_HEIGHT * 0.5f;
+
+
+	if (pKeyboard->Trigger(JOYPAD_A) || pKeyboard->Trigger(DIK_RETURN))
+	{
+		pObject2D[m_Select]->SetScale(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+		m_Select++;
+		if (m_Select != 3)
+		{
+			pObject2D[m_Select]->SetScale(D3DXVECTOR3(SCREEN_WIDTH * 0.5f, SCREEN_HEIGHT * 0.5f, 0.0f));
+		}
+	}
+
+	else if (m_Select == 3)
 	{
 		//モードの設定
 		CFade::SetFade(CApplication::MODE_TITLE);
+
+		for (int nCnt = 0; nCnt < 3; nCnt++)
+		{
+			pObject2D[nCnt]->SetScale(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+		}
 	}
-
-}
-
-//=========================================
-// 終了処理
-//=========================================
-void CTutorial::Uninit()
-{
-	Release();
 }

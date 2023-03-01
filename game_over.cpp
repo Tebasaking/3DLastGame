@@ -8,6 +8,7 @@
 #include "input.h"
 #include "fade.h"
 #include "ranking.h"
+#include "sound.h"
 
 //=========================================
 // コンストラクタ
@@ -37,8 +38,12 @@ HRESULT CGameOver::Init(const D3DXVECTOR3 &pos)
 	// オブジェクトのテクスチャ設定
 	pObject->SetTexture(CTexture::TEXTURE_GAME_OVER);
 
+	//サウンド生成
+	CSound::PlaySound(CSound::SOUND_LABEL_BGM_LOSE);
+
 	return S_OK;
 }
+
 //=========================================
 // 更新処理
 //=========================================
@@ -60,5 +65,9 @@ void CGameOver::Update()
 //=========================================
 void CGameOver::Uninit()
 {
+	// BGMの終了処理
+	CSound::StopSound();
+
+	// 解放処理
 	Release();
 }

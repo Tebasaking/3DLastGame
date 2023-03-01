@@ -98,7 +98,7 @@ void CTime::Update()
 		{
 			CGame::Add(5000);
 			// ƒQ[ƒ€‚ðI—¹‚·‚é
-			CGame::Finish2();
+			CGame::Finish();
 			Uninit();
 		}
 	}
@@ -115,6 +115,7 @@ void CTime::Uninit()
 		if (m_pNumber[nCnt] != nullptr)
 		{
 			m_pNumber[nCnt]->Uninit();
+			m_pNumber[nCnt] = nullptr;
 		}
 	}
 

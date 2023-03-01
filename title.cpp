@@ -15,6 +15,7 @@
 #include "camera.h"
 #include "title_model.h"
 #include "input.h"
+#include "sound.h"
 
 CMesh* CTitle::m_pMesh[3] = {};
 //==================================================
@@ -63,6 +64,9 @@ HRESULT CTitle::Init(const D3DXVECTOR3 &pos)
 	pObject2D[1]->SetTexture(CTexture::TEXTURE_TITLE_START);
 	pObject2D[2]->SetTexture(CTexture::TEXTURE_TITLE_TUTORIAL);
 	pObject2D[3]->SetTexture(CTexture::TEXTURE_TITLE_END);
+
+	//サウンド生成
+	CSound::PlaySound(CSound::SOUND_LABEL_BGM_TITLE);
 
 	return S_OK;
 }
@@ -123,8 +127,16 @@ void CTitle::Update()
 	// モード変更
 	if (pKeyboard->Trigger(DIK_RETURN) || pKeyboard->Trigger(JOYPAD_A))
 	{
-		//モードの設定
-		CFade::SetFade(CApplication::MODE_GAME);
+		if (m_Select == 1)
+		{
+			//モードの設定
+			CFade::SetFade(CApplication::MODE_GAME);
+		}
+		else if (m_Select == 2)
+		{
+			//モードの設定
+			CFade::SetFade(CApplication::MODE_TUTORIAL);
+		}
 
 		for (int nCnt = 0; nCnt < 4; nCnt++)
 		{
@@ -132,4 +144,16 @@ void CTitle::Update()
 			m_bFade = true;
 		}
 	}
+}
+
+//=========================================
+// 終了処理
+//=========================================
+void CTitle::Uninit()
+{
+	// 音を止める処理
+	CSound::StopSound();
+
+	// 解放処理
+	Release();
 }

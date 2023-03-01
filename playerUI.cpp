@@ -130,6 +130,7 @@ void CPlayerUI::Uninit()
 		if (m_pSpeedNum[nCnt] != nullptr)
 		{
 			m_pSpeedNum[nCnt]->Uninit();
+			m_pSpeedNum[nCnt] = nullptr;
 		}
 	}
 
@@ -138,6 +139,7 @@ void CPlayerUI::Uninit()
 		if (m_pAltitude[nCnt] != nullptr)
 		{
 			m_pAltitude[nCnt]->Uninit();
+			m_pAltitude[nCnt] = nullptr;
 		}
 	}
 
@@ -146,21 +148,25 @@ void CPlayerUI::Uninit()
 		if (m_pMissileNum[nCnt] != nullptr)
 		{
 			m_pMissileNum[nCnt]->Uninit();
+			m_pMissileNum[nCnt] = nullptr;
 		}
 	}
 
 	for (int nCnt = 0; nCnt < 2; nCnt++)
 	{
 		pObject2D[nCnt]->Uninit();
+		pObject2D[nCnt] = nullptr;
 	}
 
 	if (m_pGageBox != nullptr)
 	{
 		m_pGageBox->Uninit();
+		m_pGageBox = nullptr;
 	}
 	if (m_pGage != nullptr)
 	{
 		m_pGage->Uninit();
+		m_pGage = nullptr;
 	}
 
 	Release();

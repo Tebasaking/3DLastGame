@@ -210,6 +210,12 @@ void CRender::Draw()
 			CObject::DrawAll(CObject::TITLE_MODE);
 			break;
 		}
+		case CApplication::MODE_TUTORIAL:
+		{
+			// ï`âÊèàóù
+			CObject::DrawAll(CObject::TITLE_MODE);
+			break;
+		}
 
 		}
 

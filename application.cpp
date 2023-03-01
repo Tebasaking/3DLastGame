@@ -35,6 +35,7 @@
 #include "joypad.h"
 #include "time_over.h"
 #include "game_over.h"
+#include "tutorial.h"
 
 CDebugProc *CApplication::m_pDebug = nullptr;
 CRender *CApplication::m_pRender = nullptr;
@@ -414,6 +415,12 @@ void CApplication::ChangeMode()
 		m_pTitle->Init(D3DXVECTOR3(0.0f, 0.0f, -150.0f));
 		// ゲームオーバーの初期化処理
 		m_pMode = new CGameOver;
+		break;
+
+	case MODE_TUTORIAL:
+		m_pTitle->Init(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+		// TUTORIALの初期化処理
+		m_pMode = new CTutorial;
 		break;
 
 	default:

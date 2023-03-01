@@ -141,7 +141,11 @@ void CGame::Uninit()
 		delete m_pEnemyManager;
 		m_pEnemyManager = nullptr;
 	}
+
 	Release();
+
+	// サウンドの終了
+	CSound::StopSound();
 }
 
 //=========================================
@@ -166,14 +170,14 @@ void CGame::Update()
 		//モードの設定
 		CFade::SetFade(CApplication::MODE_TIME_OVER);
 	}
-	if (m_bFinish_2)
+	else if (m_bFinish_2)
 	{
 		// ゲームを終了しリザルト画面へ
 		//モードの設定
 		CFade::SetFade(CApplication::MODE_GAME_OVER);
 	}
 
-	//// モード変更
+	// モード変更
 	//if (pKeyboard->Trigger(DIK_RETURN) || pKeyboard->Trigger(JOYPAD_A))
 	//{
 	//	//モードの設定

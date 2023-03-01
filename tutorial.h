@@ -1,6 +1,6 @@
 //=========================================
 //
-//	game.h
+//	title.h
 //	Author:冨所知生
 //
 //=========================================
@@ -12,6 +12,7 @@
 //=========================================
 // クラス
 //=========================================
+class CObject2D;
 class CTutorial : public CMode
 {
 public:
@@ -19,9 +20,14 @@ public:
 	~CTutorial();
 
 	virtual HRESULT Init(const D3DXVECTOR3 &pos) override;	//初期化処理
-	virtual void Uninit() override;						//終了処理
+	virtual void Uninit() override { Release(); }					//終了処理
 	virtual void Update() override;						//更新処理
 	virtual void Draw() override {};					//描画処理
+
+private:
+	CObject2D *pObject2D[3];
+	int		m_Select;
+	int		m_SelectCnt;
 };
 
-#endif	// _RESULT_H_
+#endif	// _TITLE_H_

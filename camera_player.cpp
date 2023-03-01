@@ -381,7 +381,6 @@ void CCameraPlayer::Rotate()
 	{
 		if (m_Objectmode != CObject::RADAR_MODE)
 		{
-
 			D3DXVECTOR3 axis;
 			// クオータニオンによる行列回転
 			D3DXMATRIX mtxRot, mtxVec;
@@ -407,7 +406,7 @@ void CCameraPlayer::Rotate()
 				// クオータニオンの計算
 				D3DXQUATERNION quaternion;
 
-				D3DXQuaternionRotationAxis(&quaternion, &axis, 0.03f);	// 回転軸と回転角度を指定
+				D3DXQuaternionRotationAxis(&quaternion, &axis, 0.025f);	// 回転軸と回転角度を指定
 
 				// クオータニオンのノーマライズ
 				D3DXQuaternionNormalize(&quaternion, &quaternion);

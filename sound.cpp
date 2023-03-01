@@ -15,7 +15,11 @@
 //------------------------
 CSound::SOUNDPARAM g_aParam[CSound::SOUND_LABEL_MAX] =
 {
-	{ "Data/BGM/bgm000.wav", -1 },		// Title
+	{ "Data/BGM/bgm000.wav", -1 },		// Game
+	{ "Data/BGM/bgm_title.wav",-1},		// Title
+	{ "Data/BGM/bgm_ranking.wav",-1},	// Ranking
+	{ "Data/BGM/bgm_win.wav",-1},		// 勝利
+	{ "Data/BGM/bgm_lose.wav",-1},		// 敗北
 	{ "Data/SE/Attack.wav",0 },			// 近接攻撃した時のSE
 	{ "Data/SE/Explosion.wav",0 },		// 爆発した時の音
 	{ "Data/SE/footstep.wav",0 },		// 足音
@@ -24,6 +28,7 @@ CSound::SOUNDPARAM g_aParam[CSound::SOUND_LABEL_MAX] =
 	{ "Data/SE/Flight.wav",0},			// 飛行中の音
 	{ "Data/SE/Drop.wav",0},			// 着地音
 	{ "Data/SE/Jump.wav",0},			// ジャンプ音
+	{ "Data/SE/LockOn.wav",0},			// ロックオン
 };
 
 //------------------------

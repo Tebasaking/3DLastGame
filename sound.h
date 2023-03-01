@@ -34,6 +34,10 @@ public:
 	typedef enum
 	{
 		SOUND_LABEL_BGM000 = 0,		// ゲーム中のBGM
+		SOUND_LABEL_BGM_TITLE,		// タイトルのBGM
+		SOUND_LABEL_BGM_RANKING,	// ランキングのBGM
+		SOUND_LABEL_BGM_WIN,		// 勝利時のBGM
+		SOUND_LABEL_BGM_LOSE,		// 敗北時のBGM
 		SOUND_SE_MARSHALL_ATTACK,	// 近接攻撃
 		SOUND_SE_EXPLOSION,			// 爆発
 		SOUND_SE_STEP,				// 足音
@@ -42,6 +46,7 @@ public:
 		SOUND_SE_FLIGHT,			// 飛行中の音
 		SOUND_SE_DROP,				// 着地の音
 		SOUND_SE_JUMP,				// ジャンプの音
+		SOUND_SE_LOCK_ON,			// ロックオンの音
 		SOUND_LABEL_MAX
 	} SOUND_LABEL;
 

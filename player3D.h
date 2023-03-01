@@ -125,6 +125,7 @@ private:
 	int						m_StepCnt;					// 足音のカウント
 	int						m_BulletDelay;				// バレットのカウント
 	int						m_InvincibleCnt;			// 無敵カウント
+	int						m_GameOverCnt;				// ゲームオーバーのカウント
 };
 
 #endif

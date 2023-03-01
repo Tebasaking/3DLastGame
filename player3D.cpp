@@ -205,11 +205,6 @@ void CPlayer3D::Update()
 //=========================================
 void CPlayer3D::Uninit()
 {
-	for (int nCnt = 0; nCnt < 1; nCnt++)
-	{
-		m_apModel[nCnt]->Uninit();
-	}
-
 	if (m_apModel[0] != nullptr)
 	{
 		// プレイヤーモデルの終了処理
@@ -568,6 +563,18 @@ void CPlayer3D::Bullet(D3DXVECTOR3 pos)
 			}
 		}
 	}
+
+	if (m_BulletHave <= 0)
+	{
+		m_GameOverCnt++;
+
+		if (m_GameOverCnt >= 300)
+		{
+			// リザルト画面へ移動
+			CApplication::GetGame()->Finish();
+			m_GameOverCnt = 0;
+		}
+	}
 }
 
 //=========================================
@@ -810,12 +817,15 @@ void CPlayer3D::GroundCollison()
 			}
 			if (m_state == DEATH_STATE)
 			{
-				CGame::Add(2000);
-				CExplosion::Create(m_pos, m_quaternion);
-				CApplication::GetCamera()->SetDeathGround();
-
-				// リザルト画面へ移動
-				CApplication::GetGame()->Finish();
+				if (m_GameOverCnt == 0)
+				{
+					CGame::Add(2000);
+					CExplosion::Create(m_pos, m_quaternion);
+					CApplication::GetCamera()->SetDeathGround();
+				
+					// リザルト画面へ移動
+					CApplication::GetGame()->Finish2();
+				}
 			}
 		}
 		else

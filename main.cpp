@@ -31,7 +31,7 @@ namespace
 	// ウインドウのクラス名
 	LPCTSTR CLASS_NAME = _T("AppClass");
 	// ウインドウのキャプション名
-	LPCTSTR WINDOW_NAME = _T("ポリゴンの描画");
+	LPCTSTR WINDOW_NAME = _T("Sky Warriors : Humanoid Asult");
 }
 
 //*****************************************************************************

@@ -41,6 +41,7 @@ private:
 	D3DXVECTOR3			m_pos;				// 現在の座標
 	CObject				*pObject;			// 目標のオブジェクト情報の保存先
 	bool				m_bCheck;			// アラートの状態を管理
+	int	m_SECnt;							// 効果音のカウント
 };
 
 #endif

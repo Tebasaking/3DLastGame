@@ -12,6 +12,7 @@
 #include "bullet3D.h"
 #include "game.h"
 #include "playerUI.h"
+#include "sound.h"
 
 D3DXVECTOR3 CAlert::m_TargetPos = {};
 //=========================================
@@ -95,6 +96,13 @@ void CAlert::Update()
 
 	if (m_bCheck)
 	{
+		m_SECnt++;
+
+		if (m_SECnt % 60 == 0)
+		{
+			CSound::PlaySound(CSound::SOUND_SE_LOCK_ON);
+		}
+
 		SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 	}
 	else

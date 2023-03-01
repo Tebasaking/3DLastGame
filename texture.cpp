@@ -21,7 +21,7 @@ const char* CTexture::s_FileName[] =
 	"Data\\TEXTURE\\bullet.png",	// íe
 	"Data\\TEXTURE\\number001.png",						// ÉiÉìÉoÅ[
 	"Data\\TEXTURE\\explosion000.png",
-	"Data\\TEXTURE\\sky.jpg",
+	"Data\\TEXTURE\\sky_down.jpg",
 	"Data\\TEXTURE\\sea.jpg",
 	"Data\\TEXTURE\\ground.jpg",
 	"Data\\F16_Thuderbirds4.bmp",
@@ -46,9 +46,12 @@ const char* CTexture::s_FileName[] =
 	"Data\\TEXTURE\\GAGE_BOX.png",
 	"Data\\TEXTURE\\GAGE.png",
 	"Data\\TEXTURE\\UI_MISSILE_ALERT.png",
-	"Data\\TEXTURE\\Ranking000.png",
-	"Data\\TEXTURE\\TIME_OVER.png",
+	"Data\\TEXTURE\\Ranking001.png",
 	"Data\\TEXTURE\\GAME_OVER.png",
+	"Data\\TEXTURE\\TIME_OVER.png",
+	"Data\\TEXTURE\\tutorial_01.png",
+	"Data\\TEXTURE\\tutorial_02.png",
+	"Data\\TEXTURE\\tutorial_03.png",
 };
 
 static_assert(sizeof(CTexture::s_FileName) / sizeof(CTexture::s_FileName[0]) == CTexture::TEXTURE_MAX, "aho");

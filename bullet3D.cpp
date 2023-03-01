@@ -182,6 +182,7 @@ void CBullet3D::Uninit()
 	if (m_pAlert != nullptr)
 	{
 		m_pAlert->Uninit();
+		m_pAlert = nullptr;
 	}
 
 	// ƒ‚ƒfƒ‹‚ÌI—¹ˆ—

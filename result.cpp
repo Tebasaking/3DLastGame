@@ -8,6 +8,7 @@
 #include "input.h"
 #include "fade.h"
 #include "ranking.h"
+#include "sound.h"
 
 //=========================================
 // コンストラクタ
@@ -39,6 +40,9 @@ HRESULT CResult::Init(const D3DXVECTOR3 &pos)
 
 	//ランキング生成
 	m_pRanking = CRanking::Create();
+
+	//サウンド生成
+	CSound::PlaySound(CSound::SOUND_LABEL_BGM_RANKING);
 
 	return S_OK;
 }
@@ -83,6 +87,9 @@ void CResult::Uninit()
 		delete m_pRanking;
 		m_pRanking = nullptr;
 	}
+
+	// サウンドの終了
+	CSound::StopSound();
 
 	Release();
 }

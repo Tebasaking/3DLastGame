@@ -157,7 +157,7 @@ void CEnemy::Update()
 	//	m_state = ENEMY_WARNNING;
 	//}
 
-	float EnemySpeed = 8.0f;
+	float EnemySpeed = 5.0f;
 
 	//=========================================
 	// エネミーの現在の状態
@@ -484,12 +484,14 @@ void CEnemy::Death()
 		{
 			// ターゲットの終了処理
 			m_Target->Uninit();
+			m_Target = nullptr;
 		}
 
 		if (m_Radar != nullptr)
 		{
 			// レーダーの終了処理
 			m_Radar->Uninit();
+			m_Radar = nullptr;
 		}
 
 		m_state = ENEMY_DEATH;
