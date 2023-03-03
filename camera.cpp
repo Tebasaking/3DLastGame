@@ -23,7 +23,7 @@
 // 定数定義
 //*****************************************************************************
 const float CCamera::CAMERA_NEAR = 30.0f;		// ニア
-const float CCamera::CAMERA_FUR = 20000.0f;	// ファー
+const float CCamera::CAMERA_FUR = 50000.0f;	// ファー
 
 //=============================================================================
 // コンストラクタ
@@ -246,8 +246,8 @@ void CCamera::Set2()
 	case TYPE_PARALLEL:
 		// プロジェクションマトリックスの作成(平行投影)
 		D3DXMatrixOrthoLH(&m_mtxProj,						// プロジェクションマトリックス
-			(float)SCREEN_WIDTH * 5,						// 幅
-			(float)SCREEN_WIDTH * 5,						// 高さ
+			(float)SCREEN_WIDTH * 10,						// 幅
+			(float)SCREEN_WIDTH * 10,						// 高さ
 			CAMERA_NEAR,									// ニア
 			CAMERA_FUR);									// ファー
 		break;

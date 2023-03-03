@@ -264,6 +264,9 @@
     <ClCompile Include="tutorial.cpp">
       <Filter>ソース ファイル\システム\モード</Filter>
     </ClCompile>
+    <ClCompile Include="serihu.cpp">
+      <Filter>ソース ファイル\ゲーム\2D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="number.h">
@@ -454,6 +457,9 @@
     </ClInclude>
     <ClInclude Include="tutorial.h">
       <Filter>ソース ファイル\システム\モード</Filter>
+    </ClInclude>
+    <ClInclude Include="serihu.h">
+      <Filter>ソース ファイル\ゲーム\2D</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

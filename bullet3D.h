@@ -15,6 +15,7 @@
 class CModel3D;
 class CObject;
 class CMissileAlertManager;
+class CRadar;
 class CBullet3D : public CObject
 {
 public:
@@ -67,6 +68,7 @@ private:
 	CModel3D*				m_pModel;					// モデルの最大数
 	CObject*				m_TargetObj;				// ターゲットオブジェクト
 	CObject*				m_pShooter;					// シューター
+	CRadar*					m_pRadar;					// レーダー
 	D3DXQUATERNION			m_quaternion;				// クォータニオン
 	D3DXVECTOR3				m_Rot;						// オイラー角
 	D3DXVECTOR3				m_pos;						// 座標

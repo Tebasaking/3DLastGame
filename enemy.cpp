@@ -219,7 +219,7 @@ void CEnemy::Update()
 	//=========================================
 	// 戦闘状態のエネミーの行動処理
 	//=========================================
-	if (m_state == ENEMY_WARNNING)
+	if (m_state == ENEMY_WARNNING && m_type != ENEMY_TUTORIAL)
 	{
 		//情報の取得
 		D3DXVECTOR3 Pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
@@ -403,6 +403,11 @@ void CEnemy::Update()
 	// 回転の設定
 	SetRotation(rot);
 
+	if (m_Radar != nullptr)
+	{
+		m_Radar->SetRotation(D3DXVECTOR3(0.0f,-GetRot().y,0.0f));
+	}
+
 	// モーションの更新処理
 	CMotionModel3D::Update();
 
@@ -472,6 +477,11 @@ void CEnemy::Draw()
 //=========================================
 void CEnemy::Death()
 {
+	if (CApplication::GetMode() != CApplication::MODE_GAME)
+	{
+		return;
+	}
+
 	int nLife = GetHP();
 
 	if (nLife <= 0 && m_state != ENEMY_DEATH)
@@ -577,6 +587,10 @@ void CEnemy::SetType(EnemyType type)
 
 	case ENEMY_GROUND:
 		SetMotion("data/MOTION/tank.txt");
+		break;
+
+	case ENEMY_TUTORIAL:
+		SetMotion("data/MOTION/fly_motion.txt");
 		break;
 	}
 }

@@ -213,7 +213,7 @@ void CRender::Draw()
 		case CApplication::MODE_TUTORIAL:
 		{
 			// •`‰æˆ—
-			CObject::DrawAll(CObject::TITLE_MODE);
+			CObject::DrawAll(CObject::NORMAL_MODE);
 			break;
 		}
 
@@ -243,7 +243,7 @@ void CRender::SetFog(bool bFlag, D3DXCOLOR col)
 
 	// ”ÍˆÍŽw’è(¦LINEARŽž‚ÉŽw’è)
 	float fFogStartPos = 100;
-	float fFogEndPos = 13000;
+	float fFogEndPos = 23000;
 
 	m_pD3DDevice->SetRenderState(D3DRS_FOGSTART, *(DWORD*)(&fFogStartPos));
 	m_pD3DDevice->SetRenderState(D3DRS_FOGEND, *(DWORD*)(&fFogEndPos));

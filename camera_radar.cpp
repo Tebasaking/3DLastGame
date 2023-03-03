@@ -67,7 +67,7 @@ CCameraRadar::~CCameraRadar()
 //=============================================================================
 HRESULT CCameraRadar::Init(D3DXVECTOR3 pos)
 {
-	m_posV = D3DXVECTOR3(0.0f, 5000.0f, 0.0f);
+	m_posV = D3DXVECTOR3(0.0f, 15000.0f, 0.0f);
 	m_posR = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_quaternion = D3DXQUATERNION(0.0f, 0.0f, 0.0f, 1.0f);

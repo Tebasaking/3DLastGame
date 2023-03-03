@@ -34,6 +34,7 @@ public:
 	{
 		ENEMY_FLY,			// 空にいる敵
 		ENEMY_GROUND,		// 陸にいる敵
+		ENEMY_TUTORIAL,		// TUTORIAL用エネミー
 		ENEMY_MAX
 	};
 

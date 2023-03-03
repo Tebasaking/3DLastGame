@@ -41,13 +41,13 @@ HRESULT CMesh::Init(const D3DXVECTOR3 &pos)
 	{
 	case TYPE_SEA:
 		m_texture = CTexture::TEXTURE_WAVE;
-		SetMeshSize(10000.0f);
+		SetMeshSize(100000.0f);
 		SetBlock(2.0f, 2.0f);
 		break;
 
 	case TYPE_WAVE:
 		m_texture = CTexture::TEXTURE_SEA;
-		SetMeshSize(2000.0f);
+		SetMeshSize(3000.0f);
 		SetBlock(10.0f, 10.0f);
 		break;
 

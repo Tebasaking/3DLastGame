@@ -21,6 +21,7 @@
 #include "camera_player.h"
 #include "player_manager.h"
 #include "missile_alert.h"
+#include "serihu.h"
 
 //==================================================
 // コンストラクタ
@@ -41,6 +42,11 @@ CPlayerUI::~CPlayerUI()
 //=========================================
 HRESULT CPlayerUI::Init(const D3DXVECTOR3 &pos)
 {
+	// ストップUIの表示
+	pStop = CSerihu::Create(CSerihu::STOP);
+	pStop->SetColor(D3DXCOLOR(1.0f,1.0f,1.0f, 0.0f));
+	pStop->SetTexture(CTexture::TEXTURE_STOP);
+
 	// ゲージ二種設定
 	m_pGage = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH - 150.0f, SCREEN_HEIGHT - 50.0f, 0.0f), 3);
 	m_pGageBox = CObject2D::Create(D3DXVECTOR3(SCREEN_WIDTH - 150.0f, SCREEN_HEIGHT - 50.0f, 0.0f), 3);
@@ -100,6 +106,17 @@ void CPlayerUI::Update()
 	{
 		nReload = pPlayer->GetPlayer()->GetBulletDelay();
 	}
+	if (pStop != nullptr)
+	{
+		if (m_bStop)
+		{
+			pStop->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+		}
+		else
+		{
+			pStop->SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 0.0f));
+		}
+	}
 
 	m_pGage->SetScale(D3DXVECTOR3(nReload, 5.0f, 0.0f));
 
@@ -124,6 +141,12 @@ void CPlayerUI::Update()
 void CPlayerUI::Uninit()
 {
 	m_bAlert = false;
+
+	if (pStop != nullptr)
+	{
+		pStop->Uninit();
+		pStop = nullptr;
+	}
 
 	for (int nCnt = 0; nCnt < SPEED_DIGITS; nCnt++)
 	{

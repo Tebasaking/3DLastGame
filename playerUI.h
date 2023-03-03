@@ -17,6 +17,7 @@
 //=========================================
 class CNumber;
 class CObject2D;
+class CSerihu;
 class CPlayerUI : public CObject
 {
 	enum COLOR
@@ -36,10 +37,12 @@ public:
 	void AlertCheck();
 	void SetAlertColor(COLOR col);
 	void SetAlert(bool Alert) { m_bAlert = Alert; }
+	void SetStop(bool bSto) { m_bStop = bSto; }
 	bool GetAlert() { return m_bAlert; }
 
 private:
 	CObject2D	*pObject2D[2];
+	CSerihu		*pStop;										// ストップを表示する文章
 	CNumber		*m_pSpeedNum[SPEED_DIGITS];					// ナンバー1
 	CNumber		*m_pAltitude[ALTITUDE_DIGITS];				// ナンバー1
 	CNumber		*m_pMissileNum[MISSILE_DIGITS];				// ミサイルナンバー
@@ -49,6 +52,7 @@ private:
 
 	COLOR		*m_ColorType;
 	bool		m_bAlert;									// アラートが使用されているかいないか
+	bool		m_bStop;									// ストップが使用されているかいないか
 };
 
 #endif	// _TITLE_H_

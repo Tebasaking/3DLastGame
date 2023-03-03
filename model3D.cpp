@@ -457,7 +457,7 @@ void CModel3D::DrawMaterial()
 			break;
 
 		case CApplication::MODE_TUTORIAL:
-			pCamera = CApplication::GetTitleCamera();
+			pCamera = CApplication::GetCamera();
 		}
 		break;
 	case true:

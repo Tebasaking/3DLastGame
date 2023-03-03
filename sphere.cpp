@@ -14,7 +14,7 @@
 CSphere::CSphere()
 {
 	m_pVtxBuff = nullptr;
-	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	m_pos = D3DXVECTOR3(0.0f, 0.0f, 1000.0f);
 	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	// テクスチャの設定
 	CSphere::SetTexture(CTexture::TEXTURE_SKY);

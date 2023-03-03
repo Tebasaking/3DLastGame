@@ -33,11 +33,9 @@ public:
 	void VtxUpdate();
 	void SetColor(const D3DXCOLOR &col);
 	void SetPosition(const D3DXVECTOR3& pos);
-	void SetRotation(const D3DXVECTOR3& rot) { m_rot = rot; }
 	void SetAnim(const int Num,const int Pattern);
 	void SetScale(const D3DXVECTOR3 Size);
 
-	D3DXVECTOR3 GetRotation() { return m_rot; }
 	D3DXVECTOR3 GetTest(){ return m_pos; };
 
 private:
@@ -46,7 +44,6 @@ private:
 	CTexture::TEXTURE m_texture;			// テクスチャの列挙型
 	D3DXVECTOR3 m_size;						// 大きさ
 	D3DXVECTOR3	m_scale;					// 拡大率
-	D3DXVECTOR3 m_rot;
 	D3DXCOLOR m_col;						// 色
 	float m_fLength;						// 長さ
 	float m_fAngle;							// 対角線

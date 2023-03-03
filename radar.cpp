@@ -35,6 +35,11 @@ CRadar::~CRadar()
 //=========================================
 HRESULT CRadar::Init(const D3DXVECTOR3 &pos)
 {
+	if (m_type != RADAR_PLAYER)
+	{// ビルボードをOFFにする
+		SetBill(false);
+	}
+
 	CBillboard::Init(pos);
 	m_pos = pos;
 
@@ -53,14 +58,14 @@ HRESULT CRadar::Init(const D3DXVECTOR3 &pos)
 			//サイズの設定
 			CBillboard::SetSize(D3DXVECTOR3(1000000.0f, 1000000.0f, 0.0f));
 			// COLOR設定
-			SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+			SetColor(D3DXCOLOR(0.0f, 0.0f, 0.0f, 1.0f));
 			break;
 
 		case RADAR_PLAYER:
 			// テクスチャの設定
 			CBillboard::SetTexture(CTexture::TEXTURE_ENEMY_FLY);
 			//サイズの設定
-			CBillboard::SetSize(D3DXVECTOR3(200.0f, 200.0f, 0.0f));
+			CBillboard::SetSize(D3DXVECTOR3(400.0f, 400.0f, 0.0f));
 			// COLOR設定
 			CBillboard::SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 			break;
@@ -69,9 +74,19 @@ HRESULT CRadar::Init(const D3DXVECTOR3 &pos)
 			// テクスチャの設定
 			CBillboard::SetTexture(CTexture::TEXTURE_ENEMY_TANK);
 			//サイズの設定
-			CBillboard::SetSize(D3DXVECTOR3(200.0f, 200.0f, 0.0f));
+			CBillboard::SetSize(D3DXVECTOR3(400.0f, 400.0f, 0.0f));
 			// COLOR設定
 			CBillboard::SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+			break;
+
+		case RADAR_MISSILE:
+			// テクスチャの設定
+			CBillboard::SetTexture(CTexture::TEXTURE_MISSILE_MARK);
+			//サイズの設定
+			CBillboard::SetSize(D3DXVECTOR3(400.0f, 400.0f, 0.0f));
+			// COLOR設定
+			CBillboard::SetColor(D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+			break;
 		}
 	}
 

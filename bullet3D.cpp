@@ -18,6 +18,7 @@
 #include "missile_locus.h"
 #include "missile_alert_manager.h"
 #include "player3D.h"
+#include "radar.h"
 
 //=========================================
 //コンストラクタ
@@ -80,6 +81,13 @@ HRESULT CBullet3D::Init(const D3DXVECTOR3 &pos)
 	}
 
 	//==========================================================
+
+	// レーダーの生成 =========================================
+	m_pRadar = nullptr;
+
+	// エネミーをレーダー上に表示させる
+	m_pRadar = CRadar::Create(D3DXVECTOR3(0.0f, 0.0f, 0.0f), GetObjectinfo(), CRadar::RADAR_MISSILE);
+	//========================================================
 
 	// 初期化
 	m_pModel->Init();
@@ -183,6 +191,13 @@ void CBullet3D::Uninit()
 	{
 		m_pAlert->Uninit();
 		m_pAlert = nullptr;
+	}
+
+
+	if (m_pRadar != nullptr)
+	{
+		m_pRadar->Uninit();
+		m_pRadar = nullptr;
 	}
 
 	// モデルの終了処理
@@ -302,6 +317,8 @@ D3DXVECTOR3 CBullet3D::LockOn()
 //=========================================
 void CBullet3D::BulletMove()
 {
+	D3DXVECTOR3 posOld = GetPosition();
+
 	if (m_TargetObj != nullptr)
 	{
 		// 徐々にミサイルのスピードを速くする
@@ -402,7 +419,14 @@ void CBullet3D::BulletMove()
 		// 移動量を加算する
 		m_pos += m_move;
 
+		// モデルの角度設定
 		m_pModel->SetRot(D3DXVECTOR3(m_FllowRot.x, m_FllowRot.y, 0.0f));
+
+		if (m_pRadar != nullptr)
+		{
+			// レーダーの角度の設定
+			m_pRadar->SetRotation(D3DXVECTOR3(0.0f, m_FllowRot.y, 0.0f));
+		}
 
 		// 重力
 		m_pos.y -= 3.0f;

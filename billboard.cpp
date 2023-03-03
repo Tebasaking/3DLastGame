@@ -17,12 +17,13 @@ CBillboard::CBillboard(int nPriority) : CObject(nPriority)
 {
 	m_pVtxBuff = nullptr;
 	m_pos = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
-	m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
+	//m_rot = D3DXVECTOR3(0.0f, 0.0f, 0.0f);
 	m_col = D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f);
 	SetObjectType(OBJECT_EFFECT);
 	m_texture = CTexture::TEXTURE_NONE;
 	m_zFunc = D3DCMP_LESS;							// Zテストの優先度
 	m_nAlphaValue = 0;								// アルファテストの透過率
+	m_bBill = true;
 }
 
 //=========================================
@@ -85,7 +86,7 @@ HRESULT CBillboard::Init(const D3DXVECTOR3 &pos)
 //=========================================
 void CBillboard::Update()
 {
-	SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+	//SetColor(D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
 }
 
 //=========================================
@@ -106,8 +107,8 @@ void CBillboard::Uninit()
 //オブジェクトの描画処理
 //=========================================
 void CBillboard::Draw()
-{	
-//	m_texture = CTexture::TEXTURE_NONE;
+{
+	//	m_texture = CTexture::TEXTURE_NONE;
 
 	LPDIRECT3DDEVICE9 pDevice = CApplication::GetRender()->GetDevice();
 	CTexture* pTexture = CApplication::GetTexture();
@@ -123,11 +124,11 @@ void CBillboard::Draw()
 
 	// カリングの設定
 	pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_NONE);
-	
+
 	pDevice->SetTextureStageState(0, D3DTSS_COLOROP, D3DTOP_MODULATE);
 	pDevice->SetTextureStageState(0, D3DTSS_COLORARG1, D3DTA_TEXTURE);
 	pDevice->SetTextureStageState(0, D3DTSS_COLORARG2, D3DTA_DIFFUSE);
-	
+
 	// Zテストを使用する
 	pDevice->SetRenderState(D3DRS_ZENABLE, TRUE);
 	pDevice->SetRenderState(D3DRS_ZWRITEENABLE, TRUE);
@@ -154,18 +155,23 @@ void CBillboard::Draw()
 
 	pDevice->GetTransform(D3DTS_VIEW, &mtxView);
 
-	// カメラ逆行列を設定
-	D3DXMatrixInverse(&m_mtxWorld, NULL, &mtxView);
-	m_mtxWorld._41 = 0.0f;
-	m_mtxWorld._42 = 0.0f;
-	m_mtxWorld._43 = 0.0f;
+	if (m_bBill)
+	{
+		// カメラ逆行列を設定
+		D3DXMatrixInverse(&m_mtxWorld, NULL, &mtxView);
+		m_mtxWorld._41 = 0.0f;
+		m_mtxWorld._42 = 0.0f;
+		m_mtxWorld._43 = 0.0f;
+	}
+	else
+	{
+		// 向きの反映
+		D3DXVECTOR3 rot = GetRot();
 
-	// 向きの反映
-	// 行列回転関数 (第一引数に[ヨー(y)ピッチ(x)ロール(z)]方向の回転行列を作成)
-	D3DXMatrixRotationZ(&mtxRot,-m_rot.z);
-
-	// 行列掛け算関数 (第二引数 * 第三引数を第一引数に格納)
-	D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);
+		// 向きの反映
+		D3DXMatrixRotationYawPitchRoll(&mtxRot, rot.y, D3DX_PI * 0.5f, rot.z);			// 行列回転関数
+		D3DXMatrixMultiply(&m_mtxWorld, &m_mtxWorld, &mtxRot);						// 行列掛け算関数 
+	}
 
 	// 位置を反映
 	// 行列移動関数 (第一引数にX,Y,Z方向の移動行列を作成)

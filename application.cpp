@@ -418,7 +418,7 @@ void CApplication::ChangeMode()
 		break;
 
 	case MODE_TUTORIAL:
-		m_pTitle->Init(D3DXVECTOR3(0.0f, 0.0f, 0.0f));
+		m_pCamera->Init(D3DXVECTOR3(0.0f, 1000.0f, -150.0f));
 		// TUTORIAL‚Ì‰Šú‰»ˆ—
 		m_pMode = new CTutorial;
 		break;

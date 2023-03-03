@@ -242,7 +242,8 @@ void CPlayer3D::Draw()
 		// 計算用マトリックス
 		D3DXMATRIX mtxRot, mtxTrans, mtxScale;
 
-		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);				// カリングの設定
+		// カリングの設定
+		pDevice->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
 		
 		// Zテストの設定
 		pDevice->SetRenderState(D3DRS_ZFUNC, D3DCMP_LESS);

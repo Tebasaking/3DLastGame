@@ -30,6 +30,7 @@
 #include "player3D.h"
 #include "sound.h"
 #include "utility.h"
+#include "playerUI.h"
 
 //=============================================================================
 // コンストラクタ
@@ -107,16 +108,34 @@ void CCameraPlayer::Uninit(void)
 //=============================================================================
 void CCameraPlayer::Update(void)
 {
-	if (m_posV.x <= -10000 || m_posV.x >= 10000)
+	// field範囲の設定=====================================================
+	if (CGame::GetPUI() != nullptr)
+	{
+		if (m_posV.x <= -10000 || m_posV.x >= 10000)
+		{
+			CGame::GetPUI()->SetStop(true);
+		}
+		else if (m_posV.z <= -10000 || m_posV.z >= 10000)
+		{
+			CGame::GetPUI()->SetStop(true);
+		}
+		else
+		{
+			CGame::GetPUI()->SetStop(false);
+		}
+	}
+
+	if (m_posV.x <= -15000 || m_posV.x >= 15000)
 	{
 		m_posV = DefPos;
 		m_posR = D3DXVECTOR3(0.0f, 1000.0f, 0.0f);
 	}
-	else if (m_posV.z <= -10000 || m_posV.z >= 10000)
+	else if (m_posV.z <= -15000 || m_posV.z >= 15000)
 	{
 		m_posV = DefPos;
 		m_posR = D3DXVECTOR3(0.0f, 1000.0f, 0.0f);
 	}
+	//======================================================================
 
 	CDebugProc::Print("%f,%f,%f", m_posV.x, m_posV.y, m_posV.z);
 
@@ -126,8 +145,10 @@ void CCameraPlayer::Update(void)
 		CInput *pKeyboard = CInput::GetKey();
 
 		m_mode = (CCameraPlayer::CAMERA_TYPE)CPlayerManager::GetMode();
+		CApplication::MODE AppMode = CApplication::GetMode();
 
-		if (CApplication::GetMode() == CApplication::MODE_GAME)
+		if (AppMode == CApplication::MODE_GAME ||
+			AppMode == CApplication::MODE_TUTORIAL)
 		{
 			// 状態ごとに移動方法を変える
 			switch (m_mode)
@@ -662,7 +683,7 @@ void CCameraPlayer::JoyPadMove(void)
 		D3DXVECTOR3 MoveJoy = pJoypad->VectorMoveJoyStick(false, 0);
 
 		// 回転のベクトルを設定。
-		m_rotMove = D3DXVECTOR3(MoveJoy.y, MoveJoy.x, MoveJoy.z);
+		m_rotMove = D3DXVECTOR3(-MoveJoy.y, MoveJoy.x, MoveJoy.z);
 
 		Rotate();
 		VPosRotate();

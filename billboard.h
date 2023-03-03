@@ -36,6 +36,7 @@ public:
 
 	void SetZFunc(const _D3DCMPFUNC zFunc) { m_zFunc = zFunc; }						// Zテストの優先度のセッター
 	void SetAlphaValue(const int nAlphaValue) { m_nAlphaValue = nAlphaValue; }		// アルファテストの透過率のセッター
+	void SetBill(bool bBill) { m_bBill = bBill; }
 
 	D3DCOLOR GetColor() { return m_col; }
 	D3DXVECTOR3 GetSize() { return m_scale; }
@@ -48,9 +49,9 @@ private:
 	D3DXVECTOR3				m_size;			// 大きさ
 	D3DXVECTOR3				m_scale;		// 拡大率
 	_D3DCMPFUNC				m_zFunc;		// Zテストの設定
-	D3DXCOLOR m_col;							// 色
-	D3DXVECTOR3 m_rot;
+	D3DXCOLOR m_col;						// 色
 
+	bool					m_bBill;		// billboardのON/OFF
 	int						m_nAlphaValue;	// αテストの透過率
 };
 

@@ -234,6 +234,7 @@ void CObject2D::VtxUpdate()
 		m_fAngle = atan2f(m_scale.x, m_scale.y);
 	}
 
+	D3DXVECTOR3 m_rot = GetRot();
 	if (m_pVtxBuff != nullptr)
 	{
 		//頂点情報へのポインタ
